@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type Material {
+  name   String
+  amount Float  @default(0)
+}
+
+type Position {
+  x Int
+  y Int
+}
+
+type Conduit {
+  input_type    Int?
+  input_offset  Position?
+  output_type   Int?
+  output_offset Position?
+}
+
+type LogicPort {
+  input_offset  Position?
+  output_offset Position?
+}
+
+type PowerPort {
+  type            String //Can be generator, consumer or battery
+  consume_amount  Float?
+  generate_amount Float?
+  input_offset    Position?
+  output_offset   Position?
+}
+
+model Building {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  name               String     @unique
+  display_name       String
+  display_image      String
+  texture_name       String
+  special_texture    String[] // For things like "pipes", "wires" that has different texture when draw on canvas
+  width              Int
+  height             Int
+  placement_offset   Json
+  scene_layer        Int?       @default(0)
+  object_layer       Int?       @default(0)
+  tile_layer         Int?       @default(0)
+  search_term        String[]
+  is_drag_build      Boolean // "DragBuild" field
+  is_need_foundation Boolean // "ContinuouslyCheckFoundation" field
+  is_foundation      Boolean
+  conduit            Conduit?
+  logic_port         LogicPort?
+  power_port         PowerPort?
+  materials          Material[]
+  category           String? // "buildingAndSubcategoryDataPairs"
+  type               String?
+}

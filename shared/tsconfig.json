@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": ["src/*"]
+        },
+        "moduleResolution": "node",
+        "target": "ES2020",
+        "module": "ES2020",
+        "strict": true
+    },
+    "include": ["src"]
+}

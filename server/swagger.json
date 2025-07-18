@@ -1,0 +1,89 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Construction ONI API",
+    "description": "API for ONI Buildings",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3003",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/buildings": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of buildings"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Building": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "string"
+        },
+        "name": {
+          "type": "string",
+          "example": "string"
+        },
+        "category": {
+          "type": "string",
+          "example": "string"
+        },
+        "subcategory": {
+          "type": "string",
+          "example": "string"
+        },
+        "size": {
+          "type": "object",
+          "properties": {}
+        },
+        "materials": {
+          "type": "object",
+          "properties": {}
+        },
+        "properties": {
+          "type": "object",
+          "properties": {}
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2024-01-01T00:00:00.000Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2024-01-01T00:00:00.000Z"
+        }
+      }
+    }
+  }
+}
