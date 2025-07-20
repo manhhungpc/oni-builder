@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 
 export interface CameraState {
     x: number;
@@ -8,14 +8,15 @@ export interface CameraState {
 
 export class Camera {
     private container: PIXI.Container;
-    private state: CameraState = { x: 0, y: 0, zoom: 1 };
+    private state: CameraState = { x: 0, y: 0, zoom: 1.5 };
 
     readonly MIN_ZOOM = 0.5;
-    readonly MAX_ZOOM = 2.0;
+    readonly MAX_ZOOM = 2.5;
     readonly ZOOM_STEP = 0.1;
 
     constructor(container: PIXI.Container) {
         this.container = container;
+        this.updateTransform();
     }
 
     get position() {
@@ -32,7 +33,10 @@ export class Camera {
     }
 
     zoomAt(mouseX: number, mouseY: number, scaleFactor: number): void {
-        const newZoom = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, this.state.zoom * scaleFactor));
+        const newZoom = Math.max(
+            this.MIN_ZOOM,
+            Math.min(this.MAX_ZOOM, this.state.zoom * scaleFactor)
+        );
 
         if (newZoom === this.state.zoom) return;
 

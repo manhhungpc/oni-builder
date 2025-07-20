@@ -109,9 +109,15 @@ function updateGridTexture(
         newSprite.x = worldPos.x;
         newSprite.y = worldPos.y;
 
-        // Size the sprite to match the grid cell
-        newSprite.width = building.width * CELL_SIZE;
-        newSprite.height = building.height * CELL_SIZE;
+        const originalTexture = newSprite.texture;
+
+        // Calculate scale to fit within CELL_SIZE boundaries while maintaining aspect ratio
+        const scaleX = CELL_SIZE / originalTexture.width;
+        const scaleY = CELL_SIZE / originalTexture.height;
+        const scale = Math.min(scaleX, scaleY);
+
+        newSprite.width = originalTexture.width * scale;
+        newSprite.height = originalTexture.height * scale;
 
         globalState.buildContainer?.addChild(newSprite);
 
