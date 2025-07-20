@@ -74,3 +74,9 @@ docker-compose exec app npm run build
 ## Resources
 
 1. [OniExtract2024](https://github.com/cnctemaR/OniExtract2024): Export data from game Oxygen Not Included.
+
+## Known issues
+
+1. [Prisma needs to perform transactions, which requires your MongoDB server to be run as a replica set](https://github.com/prisma/prisma/discussions/18958)
+
+    This happen when run seed, because Prisma will run bulk create, which run on transactions

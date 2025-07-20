@@ -1,24 +1,23 @@
-import { Container, FederatedPointerEvent, Graphics, Sprite } from 'pixi.js';
+import { FederatedPointerEvent, Sprite } from 'pixi.js';
 import { addConnection } from 'src/lib/helpers/gridAdjacency';
 import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
-import type { Position } from '@shared/src/interface';
+import type { IBuilding, Position } from '@shared/src/interface';
 import type { Camera } from 'src/utils/camera';
 import type { SvelteMap } from 'svelte/reactivity';
 import { CELL_SIZE, MOUSE_CLICK } from 'src/lib/constant';
-import type { DragDrawHandlers } from 'src/interface/building';
+import type { DragDrawHandlers, NodeData } from 'src/interface/building';
+import { globalState } from 'src/lib/universal/globalState.svelte';
 
-// Drag between 2 grid - connect it using functions in gridAdjacency.ts
 function dragDrawBuilding(
-    container: Container,
     camera: Camera,
-    connectionList: SvelteMap<string, string[]>,
+    connectionList: SvelteMap<string, NodeData>,
+    building: IBuilding,
     options?: {
         onConnect?: (from: Position, to: Position) => void;
     }
 ): DragDrawHandlers {
     let isDragging = false;
     let startGrid: Position | null = null;
-    let debug_dragLine: Graphics | null = null;
 
     const startDrag = (event: FederatedPointerEvent) => {
         if (event.button !== MOUSE_CLICK.LEFT) return;
@@ -28,12 +27,6 @@ function dragDrawBuilding(
 
         startGrid = { x: gridX, y: gridY };
         isDragging = true;
-
-        // Create drag line visual
-        debug_dragLine = new Graphics();
-        debug_dragLine.zIndex = 555;
-
-        container.addChild(debug_dragLine);
     };
 
     const moveDrag = (event: FederatedPointerEvent) => {
@@ -42,28 +35,16 @@ function dragDrawBuilding(
         const worldPos = camera.screenToWorld(event.global.x, event.global.y);
         const { gridX, gridY } = worldToGrid(worldPos);
 
-        const startPos = gridToWorld(startGrid.x, startGrid.y);
         const endPos = gridToWorld(gridX, gridY);
-
-        if (startPos.x != endPos.x && startPos.y! + endPos.y) {
-            // TODO: Handle when user drag in diagonal line, not adjacency line
-        }
-
-        if (debug_dragLine) {
-            // Draw from center of start grid to center of current grid
-            debug_dragLine.setStrokeStyle({
-                width: 4,
-                color: '#008000',
-            });
-            debug_dragLine.moveTo(startPos.x + CELL_SIZE / 2, startPos.y + CELL_SIZE / 2);
-            debug_dragLine.lineTo(endPos.x + CELL_SIZE / 2, endPos.y + CELL_SIZE / 2);
-            debug_dragLine.stroke();
-        }
 
         const endGridPosition = worldToGrid(endPos);
         const endGrid = { x: endGridPosition.gridX, y: endGridPosition.gridY };
         if (startGrid.x !== endGrid.x || startGrid.y !== endGrid.y) {
             addConnection(connectionList, startGrid, endGrid);
+
+            // Update textures for both grids
+            updateGridTexture(building, startGrid, connectionList);
+            updateGridTexture(building, endGrid, connectionList);
         }
 
         // End position of the grid dragged to become new starting position
@@ -103,52 +84,50 @@ function dragDrawBuilding(
     };
 }
 
-// Update texture of grid drag from, grid drag to
-function updateConnectionTextures() {}
-
-// Helper function to update a single grid's texture based on its connections
 function updateGridTexture(
-    container: Container,
+    building: IBuilding,
     gridPos: Position,
-    connectionList: SvelteMap<string, string[]>,
-    textureMap: Map<string, string>
+    connectionList: SvelteMap<string, NodeData>
 ): void {
     const key = `${gridPos.x},${gridPos.y}`;
-    const connections = connectionList.get(key);
+    const nodeData = connectionList.get(key);
 
-    if (!connections || connections.length === 0) return;
+    if (!nodeData || nodeData.list.length === 0) return;
 
-    // Calculate connection pattern
-    const pattern = calculateConnectionPattern(gridPos, connections);
+    nodeData.metadata.displayName = building.display_image;
 
-    // Get texture name from pattern
-    const textureName = textureMap.get(pattern);
-    if (!textureName) return;
+    const pattern = calculateConnectPattern(gridPos, nodeData.list);
+    const textureAlias = `${building.name}_${pattern}`;
 
-    // Find sprite at this grid position
-    const worldPos = gridToWorld(gridPos.x, gridPos.y);
-    const sprites = container.children.filter(
-        (child) =>
-            child instanceof Sprite &&
-            Math.abs(child.x - worldPos.x) < 1 &&
-            Math.abs(child.y - worldPos.y) < 1
-    ) as Sprite[];
+    if (nodeData.metadata.sprite) {
+        const updatedSprite = Sprite.from(textureAlias).texture;
+        nodeData.metadata.sprite.texture = updatedSprite;
+    } else {
+        const newSprite = Sprite.from(textureAlias);
 
-    // Update texture for each sprite found at this position
-    sprites.forEach((sprite) => {
-        sprite.texture = Sprite.from(textureName).texture;
-    });
+        const worldPos = gridToWorld(gridPos.x, gridPos.y);
+        newSprite.x = worldPos.x;
+        newSprite.y = worldPos.y;
+
+        // Size the sprite to match the grid cell
+        newSprite.width = building.width * CELL_SIZE;
+        newSprite.height = building.height * CELL_SIZE;
+
+        globalState.buildContainer?.addChild(newSprite);
+
+        nodeData.metadata.sprite = newSprite;
+    }
 }
 
 // Calculate connection pattern as a string in LRUD order (e.g., "L", "LR", "LU", "LRUD")
-function calculateConnectionPattern(gridPos: Position, connections: string[]): string {
+function calculateConnectPattern(gridPos: Position, connections: string[]): string {
     let hasLeft = false;
     let hasRight = false;
     let hasUp = false;
     let hasDown = false;
 
-    connections.forEach((connectionKey) => {
-        const [x, y] = connectionKey.split(',').map(Number);
+    connections.forEach((value) => {
+        const [x, y] = value.split(',').map(Number);
         const dx = x - gridPos.x;
         const dy = y - gridPos.y;
 
@@ -165,6 +144,8 @@ function calculateConnectionPattern(gridPos: Position, connections: string[]): s
     if (hasRight) pattern += 'R';
     if (hasUp) pattern += 'U';
     if (hasDown) pattern += 'D';
+
+    if (pattern == '') pattern = 'None';
 
     return pattern;
 }

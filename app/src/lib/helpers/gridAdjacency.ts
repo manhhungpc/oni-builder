@@ -1,4 +1,5 @@
 import type { Position } from '@shared/src/interface';
+import type { NodeData, NodeMetadata } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 
 // Helper functions for node keys
@@ -11,52 +12,57 @@ function parseNodeKey(key: string): Position {
     return { x, y };
 }
 
-// Add a new node
-function addNode(connectionList: SvelteMap<string, string[]>, node: Position): void {
+function addNode(connectionList: SvelteMap<string, NodeData>, node: Position): void {
     const key = nodeKey(node);
     if (!connectionList.has(key)) {
-        connectionList.set(key, []);
+        connectionList.set(key, {
+            list: [],
+            metadata: {},
+        });
     }
 }
 
-// Connect 2 nodes
 function addConnection(
-    connectionList: SvelteMap<string, string[]>,
+    connectionList: SvelteMap<string, NodeData>,
     node1: Position,
     node2: Position
 ): void {
     const key1 = nodeKey(node1);
     const key2 = nodeKey(node2);
 
+    // Ensure both nodes exist
     addNode(connectionList, node1);
     addNode(connectionList, node2);
 
-    const connections1 = connectionList.get(key1);
-    if (connections1 && !connections1.includes(key2)) {
-        connections1.push(key2);
+    const nodeValue1 = connectionList.get(key1);
+    const nodeValue2 = connectionList.get(key2);
+
+    if (nodeValue1 && !nodeValue1.list.includes(key2)) {
+        nodeValue1.list.push(key2);
     }
 
-    const connections2 = connectionList.get(key2);
-    if (connections2 && !connections2.includes(key1)) {
-        connections2.push(key1);
+    if (nodeValue2 && !nodeValue2.list.includes(key1)) {
+        nodeValue2.list.push(key1);
     }
 }
 
-// Delete a node and all its connections
-function removeNode(connectionList: SvelteMap<string, string[]>, node: Position): void {
-    const key = nodeKey(node);
+function removeNode(connectionList: SvelteMap<string, NodeData>, node: Position): void {
+    const keyToRemove = nodeKey(node);
 
-    connectionList.forEach((connections, nodeKey) => {
-        const filteredConnections = connections.filter((connectionKey) => connectionKey !== key);
-        connectionList.set(nodeKey, filteredConnections);
+    // Remove references to this node from all other nodes
+    connectionList.forEach((nodeValue) => {
+        const index = nodeValue.list.indexOf(keyToRemove);
+        if (index !== -1) {
+            nodeValue.list.splice(index, 1);
+        }
     });
 
-    connectionList.delete(key);
+    // Remove the node itself
+    connectionList.delete(keyToRemove);
 }
 
-// Delete a connection between two nodes
 function removeConnection(
-    connectionList: SvelteMap<string, string[]>,
+    connectionList: SvelteMap<string, NodeData>,
     node1: Position,
     node2: Position
 ): boolean {
@@ -65,22 +71,20 @@ function removeConnection(
 
     let removed = false;
 
-    const connections1 = connectionList.get(key1);
-    if (connections1) {
-        const initialLength1 = connections1.length;
-        const filteredConnections1 = connections1.filter((connectionKey) => connectionKey !== key2);
-        if (filteredConnections1.length !== initialLength1) {
-            connectionList.set(key1, filteredConnections1);
+    const nodeValue1 = connectionList.get(key1);
+    if (nodeValue1) {
+        const index1 = nodeValue1.list.indexOf(key2);
+        if (index1 !== -1) {
+            nodeValue1.list.splice(index1, 1);
             removed = true;
         }
     }
 
-    const connections2 = connectionList.get(key2);
-    if (connections2) {
-        const initialLength2 = connections2.length;
-        const filteredConnections2 = connections2.filter((connectionKey) => connectionKey !== key1);
-        if (filteredConnections2.length !== initialLength2) {
-            connectionList.set(key2, filteredConnections2);
+    const nodeValue2 = connectionList.get(key2);
+    if (nodeValue2) {
+        const index2 = nodeValue2.list.indexOf(key1);
+        if (index2 !== -1) {
+            nodeValue2.list.splice(index2, 1);
             removed = true;
         }
     }
@@ -88,34 +92,68 @@ function removeConnection(
     return removed;
 }
 
+function updateNodeMetadata(
+    connectionList: SvelteMap<string, NodeData>,
+    node: Position,
+    metadata: NodeMetadata
+): void {
+    const key = nodeKey(node);
+    const nodeValue = connectionList.get(key);
+    if (nodeValue) {
+        nodeValue.metadata = { ...nodeValue.metadata, ...metadata };
+    }
+}
+
+// Get node metadata
+function getNodeMetadata(
+    connectionList: SvelteMap<string, NodeData>,
+    node: Position
+): NodeMetadata {
+    const key = nodeKey(node);
+    const nodeValue = connectionList.get(key);
+    return nodeValue?.metadata || {};
+}
+
+// Get all connections for a node
+function getNodeConnections(
+    connectionList: SvelteMap<string, NodeData>,
+    node: Position
+): Position[] {
+    const key = nodeKey(node);
+    const nodeValue = connectionList.get(key);
+
+    if (!nodeValue) return [];
+
+    return nodeValue.list.map(parseNodeKey);
+}
+
 // Utility functions
-function clearAdjacencyMap(connectionList: SvelteMap<string, string[]>): void {
+function clearAdjacencyMap(connectionList: SvelteMap<string, NodeData>): void {
     connectionList.clear();
 }
 
-function getSize(connectionList: SvelteMap<string, string[]>): number {
+function getSize(connectionList: SvelteMap<string, NodeData>): number {
     return connectionList.size;
 }
 
-function hasNode(connectionList: SvelteMap<string, string[]>, node: Position): boolean {
+function hasNode(connectionList: SvelteMap<string, NodeData>, node: Position): boolean {
     return connectionList.has(nodeKey(node));
 }
 
 function hasConnection(
-    connectionList: SvelteMap<string, string[]>,
+    connectionList: SvelteMap<string, NodeData>,
     from: Position,
     to: Position
 ): boolean {
     const fromKey = nodeKey(from);
     const toKey = nodeKey(to);
 
-    const connections = connectionList.get(fromKey);
-    if (!connections) return false;
+    const nodeValue = connectionList.get(fromKey);
+    if (!nodeValue) return false;
 
-    return connections.includes(toKey);
+    return nodeValue.list.includes(toKey);
 }
 
-// Export all functions at the bottom
 export {
     nodeKey,
     parseNodeKey,
@@ -123,6 +161,9 @@ export {
     addConnection,
     removeNode,
     removeConnection,
+    updateNodeMetadata,
+    getNodeMetadata,
+    getNodeConnections,
     clearAdjacencyMap,
     getSize,
     hasNode,

@@ -11,11 +11,15 @@
     import { Camera } from 'src/utils/camera';
     import { Renderer } from 'src/utils/renderer';
     import { Controller } from 'src/utils/controller';
-    import { MOUSE_CLICK } from 'src/lib/constant';
+    import { CATEGORY, MOUSE_CLICK } from 'src/lib/constant';
     import { drawBuilding } from 'src/lib/core/drawBuilding';
     import { dragDrawBuilding } from 'src/lib/core/connectBuilding';
     import { previewBuilding } from 'src/lib/core/previewBuilding';
-    import { pipesConnection, wiresConnection } from 'src/lib/universal/gridConnections.svelte';
+    import {
+        otherConnection,
+        pipesConnection,
+        wiresConnection,
+    } from 'src/lib/universal/gridConnections.svelte';
     import { calculateBuildingOffset } from 'src/lib/core/positionBuilding';
     import { createPlacementSprite, cleanupPlacement } from 'src/utils/pixi';
     import type { PlacementState } from 'src/interface/building';
@@ -211,6 +215,9 @@
             app.stage.on('pointermove', previewState.mouseMoveHandler);
         }
         if (placementState.clickHandler) {
+            if (selectedBuilding.is_drag_build || selectedBuilding.special_texture.length > 0)
+                return;
+
             app.stage.on('pointerdown', placementState.clickHandler);
         }
 
@@ -233,31 +240,35 @@
         const app = globalState.pixiApp;
         const camera = globalState.camera;
         const selectedBuilding = globalState.selectedBuilding;
-        const container = globalState.buildContainer;
 
         if (
             !selectedBuilding ||
             !selectedBuilding.is_drag_build ||
             selectedBuilding.special_texture.length === 0 ||
             !app ||
-            !camera ||
-            !container
+            !camera
         ) {
             return;
         }
 
         // TODO: Determine which connection list to use based on building type
         let connectionList;
-        if (selectedBuilding.type === 'pipes') {
-            connectionList = pipesConnection;
-        } else if (selectedBuilding.type === 'wires') {
-            connectionList = wiresConnection;
-        } else {
-            connectionList = pipesConnection;
+        switch (selectedBuilding.category) {
+            case CATEGORY.PLUMBING:
+            case CATEGORY.VENTILATION:
+                connectionList = pipesConnection;
+                break;
+            case CATEGORY.POWER:
+            case CATEGORY.AUTOMATION:
+                connectionList = wiresConnection;
+                break;
+            default:
+                connectionList = otherConnection;
+                break;
         }
 
         // Get drag handlers
-        const dragHandlers = dragDrawBuilding(container, camera, connectionList, {
+        const dragHandlers = dragDrawBuilding(camera, connectionList, selectedBuilding, {
             onConnect: (from, to) => {
                 // TODO: Update textures after connection
                 // This will be implemented after updateConnectionTextures is available
@@ -294,8 +305,6 @@
             dragHandlers.cancelDrag();
         };
     });
-
-    $inspect(pipesConnection).with(console.info);
 </script>
 
 <div class="grid-wrapper">

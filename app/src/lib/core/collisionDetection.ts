@@ -1,12 +1,15 @@
 import type { IBuilding, Position } from '@shared/src/interface';
 import type { PlacedBuildings } from 'src/interface';
 import { calculateBuildingGridPositions } from './positionBuilding';
+import type { NodeData } from 'src/interface/building';
+import type { SvelteMap } from 'svelte/reactivity';
 
 interface CollisionCheckParams {
-    placedBuildings: PlacedBuildings[];
-    currentBuilding: IBuilding;
     gridX: number;
     gridY: number;
+    currentBuilding?: IBuilding;
+    placedBuildings?: PlacedBuildings[];
+    connectionList?: SvelteMap<string, NodeData>;
 }
 
 interface BoundingBox {
@@ -18,7 +21,10 @@ interface BoundingBox {
 
 function doBoxesOverlap(box1: BoundingBox, box2: BoundingBox): boolean {
     const noOverlap =
-        box1.right < box2.left || box2.right < box1.left || box1.bottom < box2.top || box2.bottom < box1.top;
+        box1.right < box2.left ||
+        box2.right < box1.left ||
+        box1.bottom < box2.top ||
+        box2.bottom < box1.top;
 
     return !noOverlap;
 }
@@ -39,6 +45,8 @@ function worldPositionsToBoundingBox(topLeft: Position, bottomRight: Position): 
 export function checkBuildingCollision(params: CollisionCheckParams): boolean {
     const { placedBuildings, currentBuilding, gridX, gridY } = params;
 
+    if (!placedBuildings || !currentBuilding) return false;
+
     // Calculate grid positions for the current building
     const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY);
     const currentBox = worldPositionsToBoundingBox(
@@ -48,7 +56,10 @@ export function checkBuildingCollision(params: CollisionCheckParams): boolean {
 
     // Check against all placed buildings (which also store grid positions)
     for (const placedBuilding of placedBuildings) {
-        const placedBox = worldPositionsToBoundingBox(placedBuilding.top_left, placedBuilding.bottom_right);
+        const placedBox = worldPositionsToBoundingBox(
+            placedBuilding.top_left,
+            placedBuilding.bottom_right
+        );
 
         if (doBoxesOverlap(currentBox, placedBox)) {
             return true; // Collision detected
@@ -66,6 +77,8 @@ export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuild
     const { placedBuildings, currentBuilding, gridX, gridY } = params;
     const collidingBuildings: PlacedBuildings[] = [];
 
+    if (!placedBuildings || !currentBuilding) return [];
+
     // Calculate grid positions for the current building
     const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY);
     const currentBox = worldPositionsToBoundingBox(
@@ -75,7 +88,10 @@ export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuild
 
     // Check against all placed buildings (which also store grid positions)
     for (const placedBuilding of placedBuildings) {
-        const placedBox = worldPositionsToBoundingBox(placedBuilding.top_left, placedBuilding.bottom_right);
+        const placedBox = worldPositionsToBoundingBox(
+            placedBuilding.top_left,
+            placedBuilding.bottom_right
+        );
 
         if (doBoxesOverlap(currentBox, placedBox)) {
             collidingBuildings.push(placedBuilding);
@@ -91,7 +107,11 @@ export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuild
  * @param y Grid Y coordinate
  * @returns true if the position is occupied, false otherwise
  */
-export function isGridPositionOccupied(x: number, y: number, placedBuildings: PlacedBuildings[]): boolean {
+export function isGridPositionOccupied(
+    x: number,
+    y: number,
+    placedBuildings: PlacedBuildings[]
+): boolean {
     for (const building of placedBuildings) {
         if (
             x >= building.top_left.x &&
@@ -103,4 +123,24 @@ export function isGridPositionOccupied(x: number, y: number, placedBuildings: Pl
         }
     }
     return false;
+}
+
+export function getCollidingConduit(params: CollisionCheckParams): string[] {
+    const { connectionList, gridX, gridY } = params;
+    const collidingBuildings: string[] = [];
+
+    if (!connectionList) return collidingBuildings;
+
+    // Create the key for the current position
+    const currentKey = `${gridX},${gridY}`;
+
+    // Check if this position exists in the connectionList
+    if (connectionList.has(currentKey)) {
+        const nodeData = connectionList.get(currentKey);
+        if (nodeData?.metadata.displayName) {
+            collidingBuildings.push(nodeData.metadata.displayName);
+        }
+    }
+
+    return collidingBuildings;
 }

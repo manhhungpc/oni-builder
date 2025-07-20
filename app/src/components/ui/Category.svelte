@@ -1,28 +1,29 @@
 <!-- Category for buildings - https://oxygennotincluded.wiki.gg/wiki/Building -->
 <script lang="ts">
-    import { globalState, placedBuildings } from '$lib/universal/globalState.svelte';
+    import { globalState } from '$lib/universal/globalState.svelte';
     import type { IBuilding } from '@shared/src/interface';
     import { loadSprites, cleanupPlacement as cleanupPlacementUtil } from 'src/utils/pixi';
     import type { PlacementState } from 'src/interface/building';
     import { listBuilding } from 'src/api/building';
     import { debounce } from 'src/utils/helper';
+    import { CATEGORY } from 'src/lib/constant';
 
     const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
     const categories = [
-        { id: 'base', name: 'Base', icon: 'icon_category_base.png' },
-        { id: 'oxygen', name: 'Oxygen', icon: 'icon_category_oxygen.png' },
-        { id: 'power', name: 'Power', icon: 'icon_category_electrical.png' },
-        { id: 'food', name: 'Food', icon: 'icon_category_food.png' },
-        { id: 'plumbing', name: 'Plumbing', icon: 'icon_category_plumbing.png' },
-        { id: 'hvac', name: 'Ventilation', icon: 'icon_category_ventilation.png' },
-        { id: 'refining', name: 'Refinement', icon: 'icon_category_refinery.png' },
-        { id: 'medical', name: 'Medicine', icon: 'icon_category_medical.png' },
-        { id: 'furniture', name: 'Furniture', icon: 'icon_category_furniture.png' },
-        { id: 'equipment', name: 'Stations', icon: 'icon_category_misc.png' },
-        { id: 'utilities', name: 'Utilities', icon: 'icon_category_utilities.png' },
-        { id: 'automation', name: 'Automation', icon: 'icon_category_automation.png' },
-        { id: 'conveyance', name: 'Shipping', icon: 'icon_category_shipping.png' },
-        { id: 'rocketry', name: 'Rocketry', icon: 'icon_category_rocketry.png' },
+        { id: CATEGORY.BASE, name: 'Base', icon: 'icon_category_base.png' },
+        { id: CATEGORY.OXYGEN, name: 'Oxygen', icon: 'icon_category_oxygen.png' },
+        { id: CATEGORY.POWER, name: 'Power', icon: 'icon_category_electrical.png' },
+        { id: CATEGORY.FOOD, name: 'Food', icon: 'icon_category_food.png' },
+        { id: CATEGORY.PLUMBING, name: 'Plumbing', icon: 'icon_category_plumbing.png' },
+        { id: CATEGORY.VENTILATION, name: 'Ventilation', icon: 'icon_category_ventilation.png' },
+        { id: CATEGORY.REFINEMENT, name: 'Refinement', icon: 'icon_category_refinery.png' },
+        { id: CATEGORY.MEDICINE, name: 'Medicine', icon: 'icon_category_medical.png' },
+        { id: CATEGORY.FURNITURE, name: 'Furniture', icon: 'icon_category_furniture.png' },
+        { id: CATEGORY.STATIONS, name: 'Stations', icon: 'icon_category_misc.png' },
+        { id: CATEGORY.UTILITIES, name: 'Utilities', icon: 'icon_category_utilities.png' },
+        { id: CATEGORY.AUTOMATION, name: 'Automation', icon: 'icon_category_automation.png' },
+        { id: CATEGORY.SHIPPING, name: 'Shipping', icon: 'icon_category_shipping.png' },
+        { id: CATEGORY.ROCKETRY, name: 'Rocketry', icon: 'icon_category_rocketry.png' },
         // { id: 'hep', name: 'Radiation', icon: 'icon_category_radiation.png' },
     ];
 
@@ -72,8 +73,6 @@
             cleanupPreview();
         };
     });
-
-    $inspect(placedBuildings);
 </script>
 
 <div class="fixed z-50 left-2 top-2 p-2 bg-dark-primary rounded-lg">

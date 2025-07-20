@@ -13,3 +13,13 @@ export interface DragDrawHandlers {
     endDrag: (event: FederatedPointerEvent) => void;
     cancelDrag: () => void;
 }
+
+export interface NodeData {
+    list: string[];
+    metadata: NodeMetadata;
+}
+
+export interface NodeMetadata {
+    displayName?: string;
+    sprite?: Sprite;
+}

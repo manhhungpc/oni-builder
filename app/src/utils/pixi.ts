@@ -4,6 +4,7 @@ import { CELL_SIZE } from 'src/lib/constant';
 import type { AssetConfig } from 'src/interface';
 import type { IBuilding } from '@shared/src/interface';
 import type { PlacementState } from 'src/interface/building';
+import { getAliasFromUrl } from 'src/utils/helper';
 
 export const drawInfiniteGrid = (
     container: PIXI.Container | null,
@@ -49,12 +50,25 @@ export const drawInfiniteGrid = (
     container.addChild(gridLines);
 };
 
+export async function loadSprites(buildings: IBuilding[], baseImgPath?: string): Promise<void> {
+    const assetsToLoad: AssetConfig[] = [];
 
-export async function loadSprites(configs: IBuilding[], baseImgPath?: string): Promise<void> {
-    const assetsToLoad: AssetConfig[] = configs.map((config) => ({
-        alias: config.name,
-        src: baseImgPath + config.name + '.png',
-    }));
+    for (const building of buildings) {
+        assetsToLoad.push({
+            alias: building.name,
+            src: baseImgPath + building.name + '.png',
+        });
+
+        if (building.special_texture.length > 0) {
+            for (const urlTexture of building.special_texture) {
+                const alias = getAliasFromUrl(urlTexture);
+                assetsToLoad.push({
+                    alias: alias,
+                    src: urlTexture,
+                });
+            }
+        }
+    }
 
     await Assets.load(assetsToLoad);
 }
@@ -90,7 +104,16 @@ export function createPlacementSprite(
         zIndex: number;
     }
 ): Sprite {
-    const sprite = Sprite.from(building.name);
+    let sprite: Sprite;
+
+    if (building.special_texture.length > 0) {
+        const defaultTextureUrl = building.special_texture.find((url) => url.endsWith('_None.png'));
+
+        const aliasName = getAliasFromUrl(defaultTextureUrl ?? '');
+        sprite = Sprite.from(aliasName);
+    } else {
+        sprite = Sprite.from(building.name);
+    }
 
     sprite.zIndex = options.zIndex;
 
