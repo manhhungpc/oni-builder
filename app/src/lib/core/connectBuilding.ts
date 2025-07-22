@@ -1,5 +1,5 @@
 import { FederatedPointerEvent, Sprite } from 'pixi.js';
-import { addConnection } from 'src/lib/helpers/gridAdjacency';
+import { addConnection, addNode } from 'src/lib/helpers/gridAdjacency';
 import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
 import type { IBuilding, Position } from '@shared/src/interface';
 import type { Camera } from 'src/utils/camera';
@@ -27,6 +27,9 @@ function dragDrawBuilding(
 
         startGrid = { x: gridX, y: gridY };
         isDragging = true;
+
+        addNode(connectionList, startGrid);
+        updateGridTexture(building, startGrid, connectionList);
     };
 
     const moveDrag = (event: FederatedPointerEvent) => {
@@ -92,7 +95,7 @@ function updateGridTexture(
     const key = `${gridPos.x},${gridPos.y}`;
     const nodeData = connectionList.get(key);
 
-    if (!nodeData || nodeData.list.length === 0) return;
+    if (!nodeData) return;
 
     nodeData.metadata.displayName = building.display_image;
 

@@ -33,7 +33,7 @@ function drawBuilding(
 }
 
 function placeOnGridHandler(
-    buildingConfig: IBuilding,
+    buildingData: IBuilding,
     camera: Camera,
     container: Container,
     options: {
@@ -42,35 +42,38 @@ function placeOnGridHandler(
     }
 ): (event: FederatedPointerEvent) => void {
     return (event: FederatedPointerEvent) => {
-        const offset = calculateBuildingOffset(buildingConfig);
+        const offset = calculateBuildingOffset(buildingData);
 
         if (event.button === MOUSE_CLICK.LEFT) {
             // Check if placement is valid
             if (!globalState.isValidPlacement) {
-                return; // Don't place if invalid
+                return;
             }
             const worldPos = camera.screenToWorld(event.global.x, event.global.y);
             const { gridX, gridY } = worldToGrid(worldPos);
 
             // Create permanent building
-            const building = Sprite.from(buildingConfig.name);
-            building.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
-            building.width = buildingConfig.width * CELL_SIZE;
-            building.height = buildingConfig.height * CELL_SIZE;
-            building.zIndex = buildingConfig.scene_layer;
-            container.addChild(building);
+            let buildingSprite = Sprite.from(buildingData.name);
+            buildingSprite.position.set(
+                (gridX + offset.x) * CELL_SIZE,
+                (gridY + offset.y) * CELL_SIZE
+            );
+            buildingSprite.width = buildingData.width * CELL_SIZE;
+            buildingSprite.height = buildingData.height * CELL_SIZE;
+            buildingSprite.zIndex = buildingData.scene_layer;
+            container.addChild(buildingSprite);
             const buildingWorldPosition = calculateBuildingGridPositions(
-                buildingConfig,
+                buildingData,
                 gridX,
                 gridY
             );
 
             placedBuildings.push({
-                display_name: buildingConfig.display_name,
-                category: buildingConfig.category || '',
-                object_layer: buildingConfig.object_layer,
-                scene_layer: buildingConfig.scene_layer,
-                tile_layer: buildingConfig.tile_layer,
+                display_name: buildingData.display_name,
+                category: buildingData.category || '',
+                object_layer: buildingData.object_layer,
+                scene_layer: buildingData.scene_layer,
+                tile_layer: buildingData.tile_layer,
                 top_left: buildingWorldPosition.topLeft,
                 bottom_right: buildingWorldPosition.bottomRight,
             });

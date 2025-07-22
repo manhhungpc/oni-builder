@@ -129,22 +129,40 @@ async function sharpImage(textureFilePath, sprite, matchModifier) {
         if (matchModifier.scale.y < 0) {
             image = image.flip();
         }
-
-        // Apply scaling
-        // const scaleX = Math.abs(matchModifier.scale.x || 1);
-        // const scaleY = Math.abs(matchModifier.scale.y || 1);
-
-        // if (scaleX !== 1 || scaleY !== 1) {
-        //     const newWidth = Math.round(sprite.uvSize.x * scaleX);
-        //     const newHeight = Math.round(sprite.uvSize.y * scaleY);
-        //     image = image.resize(newWidth, newHeight);
-        // }
     }
 
-    // Apply rotation (clockwise)
     if (matchModifier.rotation && matchModifier.rotation !== 0) {
         image = image.rotate(-matchModifier.rotation);
     }
+
+    const transformedSprite = await image.toBuffer({ resolveWithObject: true });
+    const transformedWidth = transformedSprite.info.width;
+    const transformedHeight = transformedSprite.info.height;
+
+    const squareSize = Math.max(transformedWidth, transformedHeight);
+
+    // Calculate offsets to center the transformed sprite in the square
+    const xOffset = Math.floor((squareSize - transformedWidth) / 2);
+    const yOffset = Math.floor((squareSize - transformedHeight) / 2);
+
+    // Create a transparent square canvas
+    image = sharp({
+        create: {
+            width: squareSize,
+            height: squareSize,
+            channels: 4,
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+    });
+
+    // Composite the transformed sprite onto the square canvas, centered
+    image = image.composite([
+        {
+            input: transformedSprite.data,
+            left: xOffset,
+            top: yOffset,
+        },
+    ]);
 
     return image;
 }

@@ -86,12 +86,12 @@ export function cleanupPlacement(
     }
 
     if (placementState.mouseMoveHandler && app) {
-        app.stage.off('pointermove', placementState.mouseMoveHandler);
+        app.stage?.removeEventListener('pointermove', placementState.mouseMoveHandler);
         placementState.mouseMoveHandler = null;
     }
 
     if (placementState.clickHandler && app) {
-        app.stage.off('pointerdown', placementState.clickHandler);
+        app.stage?.removeEventListener('pointerdown', placementState.clickHandler);
         placementState.clickHandler = null;
     }
 }

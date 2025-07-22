@@ -24,8 +24,9 @@ cp .env.example .env
 cd server
 npm install
 
-# Push database schema
+# Push database schema and generate client
 npm run db:push
+npm run db:generate
 
 # Seed the database
 npm run db:seed
