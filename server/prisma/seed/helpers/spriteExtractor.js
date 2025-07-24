@@ -100,7 +100,7 @@ async function modifierSprite(sprite, spriteModifiers, textureFilePath, outputPa
         }
 
         const outputFilePath = path.join(outputPath, `${matchModifier.name}.png`);
-        textures.push(process.env.IMAGE_PATH + matchModifier.name + '.png');
+        textures.push(process.env.EXTRACT_UV_IMAGE_PATH + matchModifier.name + '.png');
 
         if (fs.existsSync(outputFilePath)) {
             console.log(`File exists, skip: ${matchModifier.name}.png`);
@@ -113,40 +113,96 @@ async function modifierSprite(sprite, spriteModifiers, textureFilePath, outputPa
         console.log(`Extracted: ${matchModifier.name}.png (from sprite: ${sprite.name})`);
     }
 
-    console.log('🐧 ~ modifierSprite ~ textures:', textures);
     return textures;
 }
 
 async function sharpImage(textureFilePath, sprite, matchModifier) {
-    let image = sharp(textureFilePath).extract({
+    let itemImage = sharp(textureFilePath).extract({
         left: sprite.uvMin.x,
         top: sprite.uvMin.y,
         width: sprite.uvSize.x,
         height: sprite.uvSize.y,
     });
 
+    const itemBuffer = await itemImage.toBuffer({ resolveWithObject: true });
+    const itemWidth = itemBuffer.info.width;
+    const itemHeight = itemBuffer.info.height;
+
+    // Trim 8 pixels from each edge of the extracted sprite
+    const trimAmount = 8;
+    const trimmedWidth = itemWidth - 2 * trimAmount;
+    const trimmedHeight = itemHeight - 2 * trimAmount;
+
+    if (trimmedWidth > 0 && trimmedHeight > 0) {
+        itemImage = sharp(itemBuffer.data).extract({
+            left: trimAmount,
+            top: trimAmount,
+            width: trimmedWidth,
+            height: trimmedHeight,
+        });
+    }
+
+    // Create square sprite based on pivot point BEFORE any transformations
+    if (sprite.pivot && sprite.pivot.x !== undefined && sprite.pivot.y !== undefined) {
+        const trimmedBuffer = await itemImage.toBuffer({ resolveWithObject: true });
+        const trimmedSpriteWidth = trimmedBuffer.info.width;
+        const trimmedSpriteHeight = trimmedBuffer.info.height;
+
+        // Calculate anchor point position in the trimmed sprite
+        // Note: pivot is from bottom-left, but Sharp uses top-left coordinates
+        // So we need to convert: anchorY = height - (pivot.y * height)
+        const anchorX = Math.round(sprite.pivot.x * trimmedSpriteWidth);
+        const anchorY = Math.round(trimmedSpriteHeight - sprite.pivot.y * trimmedSpriteHeight);
+
+        // Calculate distances from anchor point to each side of the sprite
+        const distanceToLeft = anchorX;
+        const distanceToRight = trimmedSpriteWidth - anchorX;
+        const distanceToTop = anchorY;
+        const distanceToBottom = trimmedSpriteHeight - anchorY;
+
+        // Square size = 2 * max distance from anchor to any side
+        const maxDistance = Math.max(
+            distanceToLeft,
+            distanceToRight,
+            distanceToTop,
+            distanceToBottom
+        );
+        const squareSize = maxDistance * 2;
+
+        // Calculate padding needed to center the sprite with anchor at square center
+        const centerX = Math.floor(squareSize / 2);
+        const centerY = Math.floor(squareSize / 2);
+
+        // Calculate padding for each side
+        const padLeft = Math.max(0, centerX - anchorX);
+        const padRight = Math.max(0, squareSize - trimmedSpriteWidth - padLeft);
+        const padTop = Math.max(0, centerY - anchorY);
+        const padBottom = Math.max(0, squareSize - trimmedSpriteHeight - padTop);
+
+        // Use extend to add padding around the sprite
+        itemImage = itemImage.extend({
+            top: Math.round(padTop),
+            bottom: Math.round(padBottom),
+            left: Math.round(padLeft),
+            right: Math.round(padRight),
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+        });
+
+        const squareBuffer = await itemImage.toBuffer();
+        itemImage = sharp(squareBuffer);
+    }
+
     if (matchModifier.scale) {
         if (matchModifier.scale.y < 0) {
-            image = image.flip();
+            itemImage = itemImage.flip();
         }
-
-        // Apply scaling
-        // const scaleX = Math.abs(matchModifier.scale.x || 1);
-        // const scaleY = Math.abs(matchModifier.scale.y || 1);
-
-        // if (scaleX !== 1 || scaleY !== 1) {
-        //     const newWidth = Math.round(sprite.uvSize.x * scaleX);
-        //     const newHeight = Math.round(sprite.uvSize.y * scaleY);
-        //     image = image.resize(newWidth, newHeight);
-        // }
     }
 
-    // Apply rotation (clockwise)
     if (matchModifier.rotation && matchModifier.rotation !== 0) {
-        image = image.rotate(-matchModifier.rotation);
+        itemImage = itemImage.rotate(-matchModifier.rotation);
     }
 
-    return image;
+    return itemImage;
 }
 
 module.exports = { extractSpriteSheet, getSpriteInfo };

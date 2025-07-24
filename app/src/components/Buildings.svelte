@@ -11,20 +11,16 @@
     import { Camera } from 'src/utils/camera';
     import { Renderer } from 'src/utils/renderer';
     import { Controller } from 'src/utils/controller';
-    import { CATEGORY, MOUSE_CLICK } from 'src/lib/constant';
+    import { MOUSE_CLICK } from 'src/lib/constant';
     import { drawBuilding } from 'src/lib/core/drawBuilding';
     import { dragDrawBuilding } from 'src/lib/core/connectBuilding';
     import { previewBuilding } from 'src/lib/core/previewBuilding';
-    import {
-        otherConnection,
-        pipesConnection,
-        wiresConnection,
-    } from 'src/lib/universal/gridConnections.svelte';
     import { calculateBuildingOffset } from 'src/lib/core/positionBuilding';
     import { createPlacementSprite, cleanupPlacement } from 'src/utils/pixi';
     import type { PlacementState } from 'src/interface/building';
     import MousePopup from 'src/components/common/MousePopup.svelte';
     import { worldToGrid } from 'src/lib/helpers/gridTransform';
+    import { getConnectionListType } from 'src/utils/helper';
 
     let canvasElement = $state<HTMLCanvasElement | null>(null);
     let isPanning = $state(false);
@@ -252,20 +248,7 @@
         }
 
         // TODO: Determine which connection list to use based on building type
-        let connectionList;
-        switch (selectedBuilding.category) {
-            case CATEGORY.PLUMBING:
-            case CATEGORY.VENTILATION:
-                connectionList = pipesConnection;
-                break;
-            case CATEGORY.POWER:
-            case CATEGORY.AUTOMATION:
-                connectionList = wiresConnection;
-                break;
-            default:
-                connectionList = otherConnection;
-                break;
-        }
+        let connectionList = getConnectionListType();
 
         // Get drag handlers
         const dragHandlers = dragDrawBuilding(camera, connectionList, selectedBuilding, {
@@ -298,10 +281,10 @@
         app.stage.on('pointerleave', handlePointerLeave);
 
         return () => {
-            app.stage.off('pointerdown', handlePointerDown);
-            app.stage.off('pointermove', handlePointerMove);
-            app.stage.off('pointerup', handlePointerUp);
-            app.stage.off('pointerleave', handlePointerLeave);
+            app.stage?.removeEventListener('pointerdown', handlePointerDown);
+            app.stage?.removeEventListener('pointermove', handlePointerMove);
+            app.stage?.removeEventListener('pointerup', handlePointerUp);
+            app.stage?.removeEventListener('pointerleave', handlePointerLeave);
             dragHandlers.cancelDrag();
         };
     });

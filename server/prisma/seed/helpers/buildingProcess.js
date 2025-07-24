@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { mapConduitType } = require('./mappers');
 const { extractSpriteSheet, getSpriteInfo } = require('./spriteExtractor');
 const dataReader = require('./dataReader');
 
@@ -41,7 +40,7 @@ async function processBuildingData(buildingData, categoryData) {
     return {
         name: buildingData.PrefabID || buildingData.name,
         display_name: getDisplayName(buildingData.Name),
-        display_image: process.env.IMAGE_PATH + buildingData.PrefabID + '.png',
+        display_image: process.env.UI_IMAGE_PATH + buildingData.PrefabID + '.png',
         texture_name: textureData.textureName,
         special_texture,
         width: buildingData.WidthInCells,
@@ -77,14 +76,14 @@ function getConduitData(buildingData) {
         buildingData.OutputConduitType !== undefined
     ) {
         conduit = {
-            input_type: mapConduitType(buildingData.InputConduitType),
+            input_type: buildingData.InputConduitType,
             input_offset: buildingData.UtilityInputOffset
                 ? {
                       x: buildingData.UtilityInputOffset.x,
                       y: buildingData.UtilityInputOffset.y,
                   }
                 : null,
-            output_type: mapConduitType(buildingData.OutputConduitType),
+            output_type: buildingData.OutputConduitType,
             output_offset: buildingData.UtilityOutputOffset
                 ? {
                       x: buildingData.UtilityOutputOffset.x,

@@ -1,5 +1,5 @@
 import { FederatedPointerEvent, Sprite } from 'pixi.js';
-import { addConnection } from 'src/lib/helpers/gridAdjacency';
+import { addConnection, addNode } from 'src/lib/helpers/gridAdjacency';
 import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
 import type { IBuilding, Position } from '@shared/src/interface';
 import type { Camera } from 'src/utils/camera';
@@ -27,6 +27,9 @@ function dragDrawBuilding(
 
         startGrid = { x: gridX, y: gridY };
         isDragging = true;
+
+        addNode(connectionList, startGrid);
+        updateGridTexture(building, startGrid, connectionList);
     };
 
     const moveDrag = (event: FederatedPointerEvent) => {
@@ -92,7 +95,7 @@ function updateGridTexture(
     const key = `${gridPos.x},${gridPos.y}`;
     const nodeData = connectionList.get(key);
 
-    if (!nodeData || nodeData.list.length === 0) return;
+    if (!nodeData) return;
 
     nodeData.metadata.displayName = building.display_image;
 
@@ -109,9 +112,15 @@ function updateGridTexture(
         newSprite.x = worldPos.x;
         newSprite.y = worldPos.y;
 
-        // Size the sprite to match the grid cell
-        newSprite.width = building.width * CELL_SIZE;
-        newSprite.height = building.height * CELL_SIZE;
+        const originalTexture = newSprite.texture;
+
+        // Calculate scale to fit within CELL_SIZE boundaries while maintaining aspect ratio
+        const scaleX = CELL_SIZE / originalTexture.width;
+        const scaleY = CELL_SIZE / originalTexture.height;
+        const scale = Math.min(scaleX, scaleY);
+
+        newSprite.width = originalTexture.width * scale;
+        newSprite.height = originalTexture.height * scale;
 
         globalState.buildContainer?.addChild(newSprite);
 
