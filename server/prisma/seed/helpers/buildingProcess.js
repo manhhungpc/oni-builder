@@ -40,7 +40,7 @@ async function processBuildingData(buildingData, categoryData) {
     return {
         name: buildingData.PrefabID || buildingData.name,
         display_name: getDisplayName(buildingData.Name),
-        display_image: process.env.IMAGE_PATH + buildingData.PrefabID + '.png',
+        display_image: process.env.UI_IMAGE_PATH + buildingData.PrefabID + '.png',
         texture_name: textureData.textureName,
         special_texture,
         width: buildingData.WidthInCells,
