@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+    # MongoDB for local development with replica set
+    mongodb:
+        image: mongo:7-jammy
+        container_name: oni-builders-mongodb-dev
+        ports:
+            - '27017:27017'
+        environment:
+            - MONGO_INITDB_DATABASE=oni_builders_dev
+        volumes:
+            - mongodata:/data/db
+            - mongoconfig:/data/configdb
+        networks:
+            - oni-builders-network
+        command: mongod --replSet rs0 --bind_ip localhost,mongodb
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
+
+    # MongoDB replica set initializer
+    mongo-init-replica:
+        image: mongo:7-jammy
+        container_name: oni-builders-mongo-init
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        networks:
+            - oni-builders-network
+        command: >
+            mongosh --host mongodb:27017 --eval
+            'rs.initiate({
+                _id: "rs0",
+                members: [{ _id: 0, host: "mongodb:27017" }]
+            })'
+        restart: "no"
+
+    # Backend server in development mode
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        container_name: oni-builders-server-dev
+        ports:
+            - '3003:3003'
+        environment:
+            - NODE_ENV=development
+            - DATABASE_URL=mongodb://mongodb:27017/oni_builders_dev?directConnection=true
+        volumes:
+            - ./server:/app
+            - ./shared:/shared # Mount shared directory
+            - ./data:/data # Mount data directory for seed files
+            - ./tsconfig.json:/tsconfig.json # Mount root tsconfig.json
+            - /app/node_modules
+        command: sh -c "npm run db:push && npm run db:seed && npm run dev" # Push schema, seed data, then start dev server
+        depends_on:
+            - mongodb
+            - mongo-init-replica
+        networks:
+            - oni-builders-network
+
+    # Frontend app in development mode
+    app:
+        build:
+            context: ./app
+            dockerfile: Dockerfile
+        container_name: oni-builders-app-dev
+        ports:
+            - '5170:5170'
+        environment:
+            - NODE_ENV=development
+            - VITE_API_URL=http://localhost:3003 # For API calls
+        volumes:
+            - ./app:/app
+            - ./shared:/shared # Mount shared directory
+            - ./tsconfig.json:/tsconfig.json # Mount root tsconfig.json
+            - /app/node_modules
+        command: npm run dev
+        depends_on:
+            - server
+        networks:
+            - oni-builders-network
+
+networks:
+    oni-builders-network:
+        driver: bridge
+
+volumes:
+    mongodata:
+    mongoconfig:
