@@ -4,15 +4,22 @@
     import { Switch } from '$lib/ui/common/switch';
     import { Button } from '$lib/ui/common/button';
     import { appConfig, globalState } from '$lib/universal/globalState.svelte';
+    import { SimpleTooltip } from '$lib/ui/common/tooltip/index.js';
+    import ScissorsLineDashed from '@lucide/svelte/icons/scissors-line-dashed';
+    import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
+    import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
+    import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
+    import { ACTION } from 'src/lib/constant';
+    import { OVERLAY } from '@shared/src/enum';
+    import { cn } from 'src/lib/utils';
 
     function onActionClick(action: ACTION) {
         globalState.currentAction = action;
+        globalState.currentOverlays.value = OVERLAY.PLUMBING;
         if (action == ACTION.CUT) {
             globalState.selectedBuilding = null;
         }
     }
-
-    import { ACTION } from 'src/lib/constant';
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -44,17 +51,59 @@
             <Switch disabled class="disabled:!cursor-not-allowed" />
         </div>
 
-        <div class="flex justify-between gap-2">
-            <Button
-                class="bg-red-500 hover:cursor-pointer"
-                onclick={() => onActionClick(ACTION.CUT)}>Cut connection</Button
-            >
-            <Button
-                class="bg-red-500 hover:cursor-pointer"
-                onclick={() => onActionClick(ACTION.DELETE)}>Delete building</Button
-            >
+        <div class="flex gap-2">
+            <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
+                {#snippet trigger()}
+                    <Button
+                        class={cn(
+                            'text-white hover:bg-dark-active hover:cursor-pointer',
+                            globalState.currentAction == ACTION.SELECT
+                                ? 'bg-orange-primary'
+                                : 'bg-dark-secondary ',
+                        )}
+                        onclick={() => onActionClick(ACTION.SELECT)}
+                    >
+                        <MousePointer2 />
+                    </Button>
+                {/snippet}
+                {#snippet content()}
+                    Select building / View properties
+                {/snippet}
+            </SimpleTooltip>
+            <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
+                {#snippet trigger()}
+                    <Button
+                        class="bg-dark-secondary hover:bg-dark-active hover:cursor-pointer"
+                        onclick={() => onActionClick(ACTION.CUT)}
+                    >
+                        <ScissorsLineDashed />
+                    </Button>
+                {/snippet}
+                {#snippet content()}
+                    Cut connection
+                {/snippet}
+            </SimpleTooltip>
+            <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
+                {#snippet trigger()}
+                    <Button
+                        class="bg-dark-secondary hover:bg-dark-active hover:cursor-pointer"
+                        onclick={() => onActionClick(ACTION.DELETE)}
+                    >
+                        <OctagonMinus />
+                    </Button>
+                {/snippet}
+                {#snippet content()}
+                    Delete building
+                {/snippet}
+            </SimpleTooltip>
         </div>
+        {#if globalState.currentAction == ACTION.CUT}
+            <small class="text-yellow-4 flex items-center gap-2">
+                <MessageCircleWarning />
+                Choose overlay before proceed
+            </small>
+        {/if}
 
-        <Button class="bg-red-500 hover:cursor-pointer">Get shared url</Button>
+        <Button class="bg-red-500 hover:bg-dark-active hover:cursor-pointer">Get shared url</Button>
     </div>
 </div>

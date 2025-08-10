@@ -10,6 +10,7 @@
 -   [x] 8. ~~Cut tools (for pipes, wires, conveyor connect) implementation~~
 -   [ ] 9. Delete building implementation
 -   [ ] 10. Rethinking the logic of connect special building (pipes, wires, conveyor), it should automatically update the texture in a grid, when 1 of the connect with it is changed
+-   [ ] 11. Add tutorial button
 
 ### Check for collision rules:
 

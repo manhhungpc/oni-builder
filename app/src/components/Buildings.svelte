@@ -26,7 +26,7 @@
     import { Camera } from 'src/utils/camera';
     import { Renderer } from 'src/utils/renderer';
     import { Controller } from 'src/utils/controller';
-    import { ACTION, MOUSE_CLICK } from 'src/lib/constant';
+    import { ACTION, CELL_SIZE, MOUSE_CLICK } from 'src/lib/constant';
     import { drawBuilding } from 'src/lib/core/drawBuilding';
     import { dragDrawBuilding, updateGridTexture } from 'src/lib/core/connectBuilding';
     import { previewBuilding } from 'src/lib/core/previewBuilding';
@@ -34,7 +34,7 @@
     import { createPlacementSprite, cleanupAttachSprite } from 'src/utils/pixi';
     import type { PlacementState } from 'src/interface/building';
     import MousePopup from 'src/components/common/MousePopup.svelte';
-    import { worldToGrid } from 'src/lib/helpers/gridTransform';
+    import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
     import { getConnectionListType } from 'src/utils/helper';
     import type { IBuilding } from '@shared/src/interface';
 
@@ -64,6 +64,11 @@
 
         app.stage.addChild(mainContainer);
         mainContainer.addChild(buildContainer);
+
+        // Create hover highlight graphics
+        const hoverHighlight = new PIXI.Graphics();
+        hoverHighlight.zIndex = 1;
+        buildContainer.addChild(hoverHighlight);
 
         app.stage.eventMode = 'static';
         app.stage.hitArea = app.screen;
@@ -134,6 +139,17 @@
             const { gridX, gridY } = worldToGrid(currentHoverPosition);
             gridPosition.x = gridX;
             gridPosition.y = gridY;
+
+            if (globalState.currentAction === ACTION.CUT && !isPanning) {
+                hoverHighlight.clear();
+
+                const worldPos = gridToWorld(gridX, gridY);
+                hoverHighlight.rect(worldPos.x, worldPos.y, CELL_SIZE, CELL_SIZE);
+                hoverHighlight.fill({ color: 0xff0000, alpha: 0.3 });
+                hoverHighlight.visible = true;
+            } else {
+                hoverHighlight.visible = false;
+            }
 
             if (isPanning) {
                 const deltaX = event.global.x - lastPanPosition.x;
