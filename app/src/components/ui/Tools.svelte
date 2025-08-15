@@ -15,10 +15,20 @@
 
     function onActionClick(action: ACTION) {
         globalState.currentAction = action;
-        globalState.currentOverlays.value = OVERLAY.PLUMBING;
         if (action == ACTION.CUT) {
+            globalState.currentOverlays = OVERLAY.PLUMBING;
             globalState.selectedBuilding = null;
         }
+    }
+
+    function getActionButtonClass(action: ACTION) {
+        const isActive = globalState.currentAction === action;
+        return cn(
+            'hover:cursor-pointer',
+            isActive 
+                ? 'bg-orange-primary hover:bg-orange-primary text-white'
+                : 'bg-dark-secondary hover:bg-dark-active text-white'
+        );
     }
 </script>
 
@@ -55,12 +65,7 @@
             <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
                 {#snippet trigger()}
                     <Button
-                        class={cn(
-                            'text-white hover:bg-dark-active hover:cursor-pointer',
-                            globalState.currentAction == ACTION.SELECT
-                                ? 'bg-orange-primary'
-                                : 'bg-dark-secondary ',
-                        )}
+                        class={getActionButtonClass(ACTION.SELECT)}
                         onclick={() => onActionClick(ACTION.SELECT)}
                     >
                         <MousePointer2 />
@@ -73,7 +78,7 @@
             <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
                 {#snippet trigger()}
                     <Button
-                        class="bg-dark-secondary hover:bg-dark-active hover:cursor-pointer"
+                        class={getActionButtonClass(ACTION.CUT)}
                         onclick={() => onActionClick(ACTION.CUT)}
                     >
                         <ScissorsLineDashed />
@@ -86,7 +91,7 @@
             <SimpleTooltip arrowClasses="bg-white" contentClass="bg-white text-black">
                 {#snippet trigger()}
                     <Button
-                        class="bg-dark-secondary hover:bg-dark-active hover:cursor-pointer"
+                        class={getActionButtonClass(ACTION.DELETE)}
                         onclick={() => onActionClick(ACTION.DELETE)}
                     >
                         <OctagonMinus />

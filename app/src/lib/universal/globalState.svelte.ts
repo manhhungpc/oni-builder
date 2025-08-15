@@ -7,10 +7,7 @@ export const globalState = $state<GlobalState>({
     selectedBuilding: null,
     initWindowWidth: 0,
     initWindowHeight: 0,
-    currentOverlays: {
-        value: 0,
-        text: 'Buildings',
-    },
+    currentOverlays: 0,
     camera: null,
     buildContainer: null,
     isValidPlacement: false,

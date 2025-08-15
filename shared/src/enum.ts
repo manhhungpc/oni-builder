@@ -11,7 +11,6 @@ export enum GRID_TYPE {
     SHIPPING_OUTPUT = 9,
 }
 
-// "viewMode" field
 export enum OVERLAY {
     BUILDING = 0,
     POWER = 1,

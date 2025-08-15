@@ -286,7 +286,7 @@
         let connectionList = getConnectionListType();
 
         if (globalState.currentAction == ACTION.CUT) {
-            connectionList = getConnectionListType(globalState.currentOverlays.value);
+            connectionList = getConnectionListType(globalState.currentOverlays);
         }
 
         // Get drag handlers

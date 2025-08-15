@@ -10,12 +10,7 @@ export interface GlobalState {
     selectedBuilding: null | IBuilding;
     initWindowWidth: number;
     initWindowHeight: number;
-    currentOverlays: {
-        value: OVERLAY;
-        text: string;
-        icon?: string;
-        [key: string]: any;
-    };
+    currentOverlays: OVERLAY;
     camera: null | Camera;
     buildContainer: null | Container;
     isValidPlacement: boolean;

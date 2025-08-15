@@ -32,16 +32,10 @@
     ];
 
     let open = $state(false);
-    let selectedOverlays = $state(OVERLAY.BUILDING);
-
-    $effect(() => {
-        globalState.currentOverlays = overlays.find(
-            (item) => item.value == selectedOverlays,
-        ) as any;
-    });
+    let overlayData = $derived(overlays.find((item) => item.value === globalState.currentOverlays));
 
     function selectOverlay(value: number) {
-        selectedOverlays = value;
+        globalState.currentOverlays = value;
         open = false;
     }
 
@@ -83,11 +77,11 @@
                 class="flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-dark-secondary transition-colors"
             >
                 <img
-                    src={`/src/assets/overlays/${globalState.currentOverlays.icon}`}
+                    src={`/src/assets/overlays/${overlayData?.icon}`}
                     alt="selected_overlay"
                     class="w-5 h-5"
                 />
-                <p>{globalState.currentOverlays.text}</p>
+                <p>{overlayData?.text}</p>
                 <div
                     class={`transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`}
                 >
@@ -99,7 +93,7 @@
                 sideOffset={20}
                 align="end"
             >
-                <DropdownMenu.RadioGroup value={selectedOverlays.toString()}>
+                <DropdownMenu.RadioGroup value={globalState.currentOverlays.toString()}>
                     {#each overlays as overlay}
                         <DropdownMenu.RadioItem
                             value={overlay.value.toString()}

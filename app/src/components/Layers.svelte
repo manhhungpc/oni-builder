@@ -59,7 +59,7 @@
 
     $effect(() => {
         const buildContainer = globalState.buildContainer;
-        const currentOverlay = globalState.currentOverlays.value;
+        const currentOverlay = globalState.currentOverlays;
 
         if (!buildContainer) return;
 

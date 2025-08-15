@@ -63,6 +63,11 @@
 
         globalState.selectedBuilding = building;
         globalState.currentAction = ACTION.BUILD;
+        
+        // Update currentOverlays to match the building's view mode if it exists
+        if (building.view_mode !== undefined && building.view_mode !== null) {
+            globalState.currentOverlays = building.view_mode;
+        }
     }
 
     $effect(() => {
