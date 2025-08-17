@@ -78,8 +78,15 @@ export function cleanupAttachSprite(
     container: Container | null,
     app: Application | null
 ): void {
-    // Remove sprite from container
-    if (placementState.sprite && container) {
+    // Remove and destroy preview container if it exists
+    if (placementState.previewContainer && container) {
+        container.removeChild(placementState.previewContainer);
+        placementState.previewContainer.destroy({ children: true });
+        placementState.previewContainer = null;
+    }
+    
+    // Remove sprite from container (only if no preview container)
+    if (placementState.sprite && container && !placementState.previewContainer) {
         container.removeChild(placementState.sprite);
         placementState.sprite.destroy();
         placementState.sprite = null;

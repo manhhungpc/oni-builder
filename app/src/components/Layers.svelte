@@ -26,6 +26,27 @@
 
     // Load conduit sprites on component mount
     async function loadConduitSprites() {
+        const portSpriteAlias = [
+            'conduit_input',
+            'conduit_output',
+            'power_port',
+            'logic_input',
+            'logic_output',
+        ];
+
+        try {
+            await Assets.load(
+                portSpriteAlias.map((alias) => ({
+                    alias,
+                    src: `images/ports/${alias}.png`,
+                })),
+            );
+        } catch (error) {
+            console.error('Failed to load conduit sprites:', error);
+        }
+    }
+
+    function getPortSpriteAlias() {
         if (
             overlayType == OVERLAY.PLUMBING ||
             overlayType == OVERLAY.VENTILATION ||
@@ -43,15 +64,6 @@
         if (overlayType == OVERLAY.AUTOMATION) {
             portSpriteInput = 'logic_input';
             portSpriteOutput = 'logic_output';
-        }
-
-        try {
-            await Assets.load([
-                { alias: portSpriteInput, src: `images/ports/${portSpriteInput}.png` },
-                { alias: portSpriteOutput, src: `images/ports/${portSpriteOutput}.png` },
-            ]);
-        } catch (error) {
-            console.error('Failed to load conduit sprites:', error);
         }
     }
 
@@ -81,6 +93,7 @@
         });
 
         // Draw port sprites for each port
+        getPortSpriteAlias();
         ports.forEach((portType, gridKey) => {
             const [gridX, gridY] = gridKey.split(',').map(Number);
 

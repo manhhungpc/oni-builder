@@ -243,6 +243,7 @@
 
         currentPlacement = {
             sprite: sprite,
+            previewContainer: previewState.previewContainer,
             mouseMoveHandler: previewState.mouseMoveHandler,
             clickHandler: placementState.clickHandler,
         };

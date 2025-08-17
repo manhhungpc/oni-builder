@@ -1,10 +1,16 @@
-import type { FederatedPointerEvent, Sprite } from 'pixi.js';
+import type { Container, FederatedPointerEvent, Sprite } from 'pixi.js';
 
 // Placement state interface
 export interface PlacementState {
     sprite: Sprite | null;
+    previewContainer?: Container | null;
     mouseMoveHandler?: ((event: FederatedPointerEvent) => void) | null;
     clickHandler?: ((event: FederatedPointerEvent) => void) | null;
+}
+
+export interface PreviewState {
+    previewContainer: Container;
+    mouseMoveHandler?: ((event: FederatedPointerEvent) => void) | null;
 }
 
 export interface DragDrawHandlers {

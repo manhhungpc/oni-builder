@@ -9,8 +9,16 @@ import {
 } from 'src/lib/core/positionBuilding';
 import { globalState, placedBuildings, gridPosition } from 'src/lib/universal/globalState.svelte';
 import { worldToGrid } from 'src/lib/helpers/gridTransform';
-import { CONDUIT_TYPE } from '@shared/src/enum';
-import { liquidPorts, gasPorts, powerPorts, logicPorts } from 'src/lib/universal/ports.svelte';
+import { CONDUIT_TYPE, OVERLAY } from '@shared/src/enum';
+import { liquidPorts, gasPorts, powerPorts, logicPorts, conveyorPorts } from 'src/lib/universal/ports.svelte';
+
+// Type for the port handler callback
+type PortHandler = (
+    x: number,
+    y: number,
+    portType: PORT,
+    portCategory: OVERLAY
+) => void;
 
 // Initialize building draw on canvas
 function drawBuilding(
@@ -81,7 +89,7 @@ function placeOnGridHandler(
                 bottom_right: buildingWorldPosition.bottomRight,
             });
 
-            positionPort(buildingData, gridX, gridY);
+            positionPort(buildingData, gridX, gridY, setPortToGrid);
 
             options.onPlace?.(gridX, gridY);
         } else if (event.button === MOUSE_CLICK.RIGHT) {
@@ -90,7 +98,33 @@ function placeOnGridHandler(
     };
 }
 
-function positionPort(building: IBuilding, gridX: number, gridY: number) {
+const setPortToGrid: PortHandler = (
+    x: number,
+    y: number,
+    portType: PORT,
+    portCategory: OVERLAY
+) => {
+    const key = `${x},${y}`;
+    switch (portCategory) {
+        case OVERLAY.VENTILATION:
+            gasPorts.set(key, portType);
+            break;
+        case OVERLAY.PLUMBING:
+            liquidPorts.set(key, portType);
+            break;
+        case OVERLAY.POWER:
+            powerPorts.set(key, portType);
+            break;
+        case OVERLAY.AUTOMATION:
+            logicPorts.set(key, portType);
+            break;
+        case OVERLAY.SHIPPING:
+            conveyorPorts.set(key, portType);
+            break;
+    }
+};
+
+function positionPort(building: IBuilding, gridX: number, gridY: number, portHandler: PortHandler) {
     if (building.conduit) {
         const isGasConduit =
             building.conduit.input_type === CONDUIT_TYPE.GAS ||
@@ -106,10 +140,10 @@ function positionPort(building: IBuilding, gridX: number, gridY: number) {
             );
 
             if (isGasConduit) {
-                gasPorts.set(`${inputPort.x},${inputPort.y}`, PORT.INPUT);
+                portHandler(inputPort.x, inputPort.y, PORT.INPUT, OVERLAY.VENTILATION);
             }
             if (isLiquidConduit) {
-                liquidPorts.set(`${inputPort.x},${inputPort.y}`, PORT.INPUT);
+                portHandler(inputPort.x, inputPort.y, PORT.INPUT, OVERLAY.PLUMBING);
             }
         }
 
@@ -121,10 +155,10 @@ function positionPort(building: IBuilding, gridX: number, gridY: number) {
 
             // Step 6: Add to appropriate port map based on conduit type
             if (isGasConduit) {
-                gasPorts.set(`${outputPort.x},${outputPort.y}`, PORT.OUTPUT);
+                portHandler(outputPort.x, outputPort.y, PORT.OUTPUT, OVERLAY.VENTILATION);
             }
             if (isLiquidConduit) {
-                liquidPorts.set(`${outputPort.x},${outputPort.y}`, PORT.OUTPUT);
+                portHandler(outputPort.x, outputPort.y, PORT.OUTPUT, OVERLAY.PLUMBING);
             }
         }
     }
@@ -133,7 +167,7 @@ function positionPort(building: IBuilding, gridX: number, gridY: number) {
         building.logic_port.forEach((port) => {
             const portPosition = calculatePortOffset({ x: gridX, y: gridY }, port.offset);
             const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
-            logicPorts.set(`${portPosition.x},${portPosition.y}`, portType);
+            portHandler(portPosition.x, portPosition.y, portType, OVERLAY.AUTOMATION);
         });
     }
 
@@ -144,7 +178,7 @@ function positionPort(building: IBuilding, gridX: number, gridY: number) {
                 { x: gridX, y: gridY },
                 building.power_port.input_offset
             );
-            powerPorts.set(`${inputPort.x},${inputPort.y}`, PORT.INPUT);
+            portHandler(inputPort.x, inputPort.y, PORT.INPUT, OVERLAY.POWER);
         }
 
         // Step 12: Process power output ports
@@ -153,7 +187,7 @@ function positionPort(building: IBuilding, gridX: number, gridY: number) {
                 { x: gridX, y: gridY },
                 building.power_port.output_offset
             );
-            powerPorts.set(`${outputPort.x},${outputPort.y}`, PORT.OUTPUT);
+            portHandler(outputPort.x, outputPort.y, PORT.OUTPUT, OVERLAY.POWER);
         }
     }
 }
@@ -165,4 +199,5 @@ function calculatePortOffset(position: Position, offset: Position) {
     return { x, y };
 }
 
-export { drawBuilding };
+export { drawBuilding, calculatePortOffset, positionPort };
+export type { PortHandler };
