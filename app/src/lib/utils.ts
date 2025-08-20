@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { ComponentType, Snippet } from 'svelte';
-import { OVERLAY } from '@shared/src/enum';
+import { OVERLAY } from 'src/lib/constant';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

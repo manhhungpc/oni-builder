@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Assets, Sprite, Container, Application } from 'pixi.js';
 import { CELL_SIZE } from 'src/lib/constant';
 import type { AssetConfig } from 'src/interface';
-import type { IBuilding } from '@shared/src/interface';
+import type { IBuilding } from 'src/interface/building';
 import type { PlacementState } from 'src/interface/building';
 import { getAliasFromUrl } from 'src/utils/helper';
 
@@ -84,7 +84,7 @@ export function cleanupAttachSprite(
         placementState.previewContainer.destroy({ children: true });
         placementState.previewContainer = null;
     }
-    
+
     // Remove sprite from container (only if no preview container)
     if (placementState.sprite && container && !placementState.previewContainer) {
         container.removeChild(placementState.sprite);

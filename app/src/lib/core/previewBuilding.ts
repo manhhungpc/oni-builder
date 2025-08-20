@@ -1,4 +1,4 @@
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { Camera } from 'src/utils/camera';
 import { FederatedPointerEvent, Sprite, Container, Assets } from 'pixi.js';
 import { CELL_SIZE, PORT } from 'src/lib/constant';
@@ -8,7 +8,7 @@ import { globalState, message, placedBuildings } from 'src/lib/universal/globalS
 import { worldToGrid } from 'src/lib/helpers/gridTransform';
 import { getPortSpriteAlias } from 'src/lib/utils';
 import { positionPort, type PortHandler } from './drawBuilding';
-import { OVERLAY } from '@shared/src/enum';
+import { OVERLAY } from 'src/lib/constant';
 
 // Create mouse move handler for building preview with grid snapping
 function previewBuilding(
@@ -56,15 +56,17 @@ function previewBuilding(
 
         try {
             const portSprite = Sprite.from(spriteAlias);
-            portSprite.width = CELL_SIZE;
-            portSprite.height = CELL_SIZE;
+            portSprite.width = CELL_SIZE / 2;
+            portSprite.height = CELL_SIZE / 2;
             // Ports are relative to building origin, but need to account for building offset
             // Since the container is already offset, we need to subtract the offset from port position
+            // Position the sprite centered in the grid cell
             portSprite.position.set(
-                (port.x - offset.x) * CELL_SIZE, 
-                (port.y - offset.y) * CELL_SIZE
+                (port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
+                (port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
             );
             portSprite.alpha = 0.7;
+            portContainer.zIndex = 1001;
             portContainer.addChild(portSprite);
         } catch (error) {
             console.warn(`Port sprite ${spriteAlias} not loaded yet`);

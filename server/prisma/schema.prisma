@@ -61,4 +61,5 @@ model Building {
   category           String? // "buildingAndSubcategoryDataPairs"
   type               String?
   view_mode          Int?
+  build_rule         Int
 }

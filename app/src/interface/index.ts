@@ -1,7 +1,7 @@
 import type { Application, Container, Renderer } from 'pixi.js';
-import { OVERLAY } from '@shared/src/enum';
+import { OVERLAY } from 'src/lib/constant';
 import type { Camera } from 'src/utils/camera';
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { ACTION } from 'src/lib/constant';
 
 export interface GlobalState {

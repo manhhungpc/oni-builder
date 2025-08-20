@@ -3,7 +3,7 @@
     import { globalState } from 'src/lib/universal/globalState.svelte';
     import { PORT, CELL_SIZE } from 'src/lib/constant';
     import { gridToWorld } from 'src/lib/helpers/gridTransform';
-    import { OVERLAY } from '@shared/src/enum';
+    import { OVERLAY } from 'src/lib/constant';
     import type { SvelteMap } from 'svelte/reactivity';
     import type { NodeData } from 'src/interface/building';
 

@@ -11,26 +11,6 @@ export enum GRID_TYPE {
     SHIPPING_OUTPUT = 9,
 }
 
-export enum OVERLAY {
-    BUILDING = 0,
-    POWER = 1,
-    PLUMBING = 2,
-    VENTILATION = 3,
-    AUTOMATION = 4,
-    OXYGEN = 5,
-    SHIPPING = 6,
-    DECOR = 7,
-    LIGHT = 8,
-    TEMPERATURE = 9,
-    ROOM = 10,
-}
-
-export enum CONDUIT_TYPE {
-    GAS = 1,
-    LIQUID = 2,
-    CONVEYOR = 3,
-}
-
 export enum OBJECT_LAYER {
     Building = 1,
     BackBuilding = 2,

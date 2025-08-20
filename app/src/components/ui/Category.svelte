@@ -1,7 +1,7 @@
 <!-- Category for buildings - https://oxygennotincluded.wiki.gg/wiki/Building -->
 <script lang="ts">
     import { globalState } from '$lib/universal/globalState.svelte';
-    import type { IBuilding } from '@shared/src/interface';
+    import type { IBuilding } from 'src/interface/building';
     import { loadSprites, cleanupAttachSprite } from 'src/utils/pixi';
     import type { PlacementState } from 'src/interface/building';
     import { listBuilding } from 'src/api/building';

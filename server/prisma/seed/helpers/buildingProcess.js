@@ -73,6 +73,7 @@ async function processBuildingData(buildingData, categoryData) {
         category,
         type,
         view_mode: extraData.view_mode,
+        build_rule: buildingData.BuildLocationRule,
     };
 }
 

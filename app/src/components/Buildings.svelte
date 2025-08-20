@@ -22,7 +22,7 @@
         wiresConnection,
         logicWiresConnection,
     } from 'src/lib/universal/connections.svelte';
-    import { OVERLAY } from '@shared/src/enum';
+    import { OVERLAY } from 'src/lib/constant';
     import { Camera } from 'src/utils/camera';
     import { Renderer } from 'src/utils/renderer';
     import { Controller } from 'src/utils/controller';
@@ -36,7 +36,7 @@
     import MousePopup from 'src/components/common/MousePopup.svelte';
     import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
     import { getConnectionListType } from 'src/utils/helper';
-    import type { IBuilding } from '@shared/src/interface';
+    import type { IBuilding } from 'src/interface/building';
 
     let canvasElement = $state<HTMLCanvasElement | null>(null);
     let isPanning = $state(false);
@@ -61,6 +61,7 @@
 
         const mainContainer = new PIXI.Container({ label: 'Main' });
         const buildContainer = new PIXI.Container({ label: 'Building grid' });
+        buildContainer.sortableChildren = true; // Enable zIndex sorting
 
         app.stage.addChild(mainContainer);
         mainContainer.addChild(buildContainer);
@@ -281,6 +282,12 @@
         selectedBuilding = globalState.selectedBuilding;
 
         if (!app || !camera) {
+            return;
+        }
+        
+        // Only handle drag-to-build buildings or when in CUT mode
+        if (globalState.currentAction !== ACTION.CUT && 
+            (!selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)) {
             return;
         }
 

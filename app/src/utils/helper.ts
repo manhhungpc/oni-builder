@@ -10,7 +10,7 @@ import { globalState } from 'src/lib/universal/globalState.svelte';
 import { CATEGORY } from 'src/lib/constant';
 import type { NodeData } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
-import { OVERLAY } from '@shared/src/enum';
+import { OVERLAY } from 'src/lib/constant';
 
 export function debounce<T extends (...args: any[]) => any>(
     func: T,

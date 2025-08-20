@@ -1,4 +1,4 @@
-import type { Position } from '@shared/src/interface';
+import type { Position } from 'src/interface/building';
 import type { NodeData, NodeMetadata } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 

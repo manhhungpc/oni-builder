@@ -10,7 +10,7 @@
     import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
     import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
     import { ACTION } from 'src/lib/constant';
-    import { OVERLAY } from '@shared/src/enum';
+    import { OVERLAY } from 'src/lib/constant';
     import { cn } from 'src/lib/utils';
 
     function onActionClick(action: ACTION) {

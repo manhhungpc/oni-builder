@@ -1,8 +1,9 @@
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { PlacedBuildings } from 'src/interface';
 import { calculateBuildingGridPositions } from './positionBuilding';
 import type { NodeData } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
+import { BUILD_RULE } from 'src/lib/constant';
 
 interface CollisionCheckParams {
     gridX: number;
@@ -47,6 +48,14 @@ export function checkBuildingCollision(params: CollisionCheckParams): boolean {
 
     if (!placedBuildings || !currentBuilding) return false;
 
+    if (
+        currentBuilding.build_rule === BUILD_RULE.ConduitBridge ||
+        currentBuilding.build_rule === BUILD_RULE.LogicBridge ||
+        currentBuilding.build_rule === BUILD_RULE.WireBridge
+    ) {
+        return false;
+    }
+
     // Calculate grid positions for the current building
     const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY);
     const currentBox = worldPositionsToBoundingBox(
@@ -78,6 +87,15 @@ export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuild
     const collidingBuildings: PlacedBuildings[] = [];
 
     if (!placedBuildings || !currentBuilding) return [];
+
+    // Bridge types can overlap with each other
+    if (
+        currentBuilding.build_rule === BUILD_RULE.ConduitBridge ||
+        currentBuilding.build_rule === BUILD_RULE.LogicBridge ||
+        currentBuilding.build_rule === BUILD_RULE.WireBridge
+    ) {
+        return [];
+    }
 
     // Calculate grid positions for the current building
     const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY);

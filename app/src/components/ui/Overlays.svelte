@@ -1,7 +1,7 @@
 <!-- Overlays panel - based on Oxygen Not Included UI -->
 <script lang="ts">
     import { globalState } from '$lib/universal/globalState.svelte';
-    import { OVERLAY } from '@shared/src/enum';
+    import { OVERLAY } from 'src/lib/constant';
     import type { DropdownItem } from 'src/interface';
     import { ChevronDown } from '@lucide/svelte';
     import * as DropdownMenu from '$lib/ui/common/dropdown-menu';

@@ -1,4 +1,4 @@
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { Camera } from 'src/utils/camera';
 import { Container, FederatedPointerEvent, Sprite, Application } from 'pixi.js';
 import { CELL_SIZE } from 'src/lib/constant';

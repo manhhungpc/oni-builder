@@ -1,4 +1,4 @@
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { Camera } from 'src/utils/camera';
 import { Container, FederatedPointerEvent, Sprite, Application, Graphics } from 'pixi.js';
 import { CELL_SIZE, MOUSE_CLICK, PORT } from 'src/lib/constant';
@@ -9,16 +9,17 @@ import {
 } from 'src/lib/core/positionBuilding';
 import { globalState, placedBuildings, gridPosition } from 'src/lib/universal/globalState.svelte';
 import { worldToGrid } from 'src/lib/helpers/gridTransform';
-import { CONDUIT_TYPE, OVERLAY } from '@shared/src/enum';
-import { liquidPorts, gasPorts, powerPorts, logicPorts, conveyorPorts } from 'src/lib/universal/ports.svelte';
+import { CONDUIT_TYPE, OVERLAY } from 'src/lib/constant';
+import {
+    liquidPorts,
+    gasPorts,
+    powerPorts,
+    logicPorts,
+    conveyorPorts,
+} from 'src/lib/universal/ports.svelte';
 
 // Type for the port handler callback
-type PortHandler = (
-    x: number,
-    y: number,
-    portType: PORT,
-    portCategory: OVERLAY
-) => void;
+type PortHandler = (x: number, y: number, portType: PORT, portCategory: OVERLAY) => void;
 
 // Initialize building draw on canvas
 function drawBuilding(

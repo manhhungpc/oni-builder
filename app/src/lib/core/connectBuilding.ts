@@ -1,7 +1,7 @@
 import { FederatedPointerEvent, Sprite } from 'pixi.js';
 import { addConnection, addNode, removeConnection } from 'src/lib/helpers/gridAdjacency';
 import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
-import type { IBuilding, Position } from '@shared/src/interface';
+import type { IBuilding, Position } from 'src/interface/building';
 import type { Camera } from 'src/utils/camera';
 import type { SvelteMap } from 'svelte/reactivity';
 import { CELL_SIZE, MOUSE_CLICK, ACTION } from 'src/lib/constant';
@@ -117,6 +117,7 @@ function updateGridTexture(
 
         newSprite.width = originalTexture.width * scale;
         newSprite.height = originalTexture.height * scale;
+        newSprite.zIndex = building.scene_layer || 1;
 
         globalState.buildContainer?.addChild(newSprite);
 
