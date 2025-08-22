@@ -115,6 +115,8 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         transform: translateZ(0);
         will-change: transform;
+        white-space: pre-line;
+        text-align: start;
         transition:
             left 0.15s ease-out,
             top 0.15s ease-out;

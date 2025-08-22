@@ -1,7 +1,14 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { ComponentType, Snippet } from 'svelte';
-import { OVERLAY } from 'src/lib/constant';
+import { OVERLAY, PORT } from 'src/lib/constant';
+import {
+    liquidPorts,
+    gasPorts,
+    powerPorts,
+    logicPorts,
+    conveyorPorts,
+} from 'src/lib/universal/ports.svelte';
+import type { OverlayInfo } from 'src/interface/building';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -42,4 +49,41 @@ export function getPortSpriteAlias(overlayType: OVERLAY) {
         portSpriteInput,
         portSpriteOutput,
     };
+}
+
+export function getOverlayInfo(overlay: OVERLAY): OverlayInfo | null {
+    switch (overlay) {
+        case OVERLAY.VENTILATION:
+            return {
+                name: 'Gas',
+                ports: gasPorts,
+                setPort: (key: string, portType: PORT) => gasPorts.set(key, portType),
+            };
+        case OVERLAY.PLUMBING:
+            return {
+                name: 'Liquid',
+                ports: liquidPorts,
+                setPort: (key: string, portType: PORT) => liquidPorts.set(key, portType),
+            };
+        case OVERLAY.POWER:
+            return {
+                name: 'Power',
+                ports: powerPorts,
+                setPort: (key: string, portType: PORT) => powerPorts.set(key, portType),
+            };
+        case OVERLAY.AUTOMATION:
+            return {
+                name: 'Logic',
+                ports: logicPorts,
+                setPort: (key: string, portType: PORT) => logicPorts.set(key, portType),
+            };
+        case OVERLAY.SHIPPING:
+            return {
+                name: 'Conveyor',
+                ports: conveyorPorts,
+                setPort: (key: string, portType: PORT) => conveyorPorts.set(key, portType),
+            };
+        default:
+            return null;
+    }
 }

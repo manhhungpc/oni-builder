@@ -1,9 +1,4 @@
 import type { IBuilding, Position } from 'src/interface/building';
-import type { Camera } from 'src/utils/camera';
-import { Container, FederatedPointerEvent, Sprite, Application } from 'pixi.js';
-import { CELL_SIZE } from 'src/lib/constant';
-import { createPlacementSprite } from 'src/utils/pixi';
-import type { PlacementState } from 'src/interface/building';
 import type { BuildingBounds } from 'src/interface';
 
 function getBuildingBounds(building: IBuilding): BuildingBounds {

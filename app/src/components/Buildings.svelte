@@ -284,10 +284,12 @@
         if (!app || !camera) {
             return;
         }
-        
+
         // Only handle drag-to-build buildings or when in CUT mode
-        if (globalState.currentAction !== ACTION.CUT && 
-            (!selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)) {
+        if (
+            globalState.currentAction !== ACTION.CUT &&
+            (!selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)
+        ) {
             return;
         }
 
@@ -382,7 +384,7 @@
         containerLabel="Conveyor"
     />
     {#if message.popup && !globalState.isValidPlacement}
-        <MousePopup content={`Collide with building ${message.popup}`} {mousePosition} />
+        <MousePopup content={message.popup} {mousePosition} />
     {/if}
 </div>
 

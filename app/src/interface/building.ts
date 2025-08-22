@@ -1,5 +1,5 @@
 import type { Container, FederatedPointerEvent, Sprite } from 'pixi.js';
-import { BUILD_RULE } from '$lib/constant';
+import { BUILD_RULE, OVERLAY, PORT } from '$lib/constant';
 
 // Building related interfaces
 export interface Material {
@@ -90,4 +90,18 @@ export interface NodeMetadata {
     name?: string;
     displayName?: string;
     sprite?: Sprite;
+}
+
+export interface OverlayInfo {
+    name: string;
+    ports: Map<string, PORT>;
+    setPort: (key: string, portType: PORT) => void;
+}
+
+export interface PortOverlapDetail {
+    hasOverlap: boolean;
+    overlaps: Array<{
+        existPortType: PORT;
+        category: OVERLAY;
+    }>;
 }

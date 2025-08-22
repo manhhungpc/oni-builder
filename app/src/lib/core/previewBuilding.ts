@@ -1,4 +1,4 @@
-import type { IBuilding, Position } from 'src/interface/building';
+import type { IBuilding, PortOverlapDetail, Position } from 'src/interface/building';
 import type { Camera } from 'src/utils/camera';
 import { FederatedPointerEvent, Sprite, Container, Assets } from 'pixi.js';
 import { CELL_SIZE, PORT } from 'src/lib/constant';
@@ -6,8 +6,8 @@ import type { PlacementState, PreviewState } from 'src/interface/building';
 import { getCollidingBuildings } from './collisionDetection';
 import { globalState, message, placedBuildings } from 'src/lib/universal/globalState.svelte';
 import { worldToGrid } from 'src/lib/helpers/gridTransform';
-import { getPortSpriteAlias } from 'src/lib/utils';
-import { positionPort, type PortHandler } from './drawBuilding';
+import { getPortSpriteAlias, getOverlayInfo } from 'src/lib/utils';
+import { getPortPositions } from './drawBuilding';
 import { OVERLAY } from 'src/lib/constant';
 
 // Create mouse move handler for building preview with grid snapping
@@ -32,22 +32,11 @@ function previewBuilding(
     const currentOverlay = globalState.currentOverlays;
     const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(currentOverlay);
 
-    // First, collect all port positions using positionPort
-    const portPositions: Array<{ x: number; y: number; type: PORT; category: OVERLAY }> = [];
-    const collectPorts: PortHandler = (
-        x: number,
-        y: number,
-        portType: PORT,
-        portCategory: OVERLAY
-    ) => {
-        portPositions.push({ x, y, type: portType, category: portCategory });
-    };
+    // Get all port positions of the building
+    const buildingPorts = getPortPositions(currentBuilding, 0, 0);
 
-    // Calculate port positions relative to building position (0,0)
-    positionPort(currentBuilding, 0, 0, collectPorts);
-
-    // Now create sprites for each collected port
-    portPositions.forEach((port) => {
+    // Create sprites for each port of the building
+    buildingPorts.forEach((port) => {
         if (port.category != globalState.currentOverlays) {
             return;
         }
@@ -58,9 +47,7 @@ function previewBuilding(
             const portSprite = Sprite.from(spriteAlias);
             portSprite.width = CELL_SIZE / 2;
             portSprite.height = CELL_SIZE / 2;
-            // Ports are relative to building origin, but need to account for building offset
-            // Since the container is already offset, we need to subtract the offset from port position
-            // Position the sprite centered in the grid cell
+            // Center port on a grid
             portSprite.position.set(
                 (port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
                 (port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
@@ -77,7 +64,8 @@ function previewBuilding(
         previewContainer,
         camera,
         offset,
-        currentBuilding
+        currentBuilding,
+        buildingPorts
     );
 
     return {
@@ -86,11 +74,47 @@ function previewBuilding(
     };
 }
 
+function checkPortOverlap(
+    buildingPorts: Array<{ x: number; y: number; type: PORT; category: OVERLAY }>,
+    gridX: number,
+    gridY: number,
+    currentOverlay: OVERLAY
+): PortOverlapDetail {
+    const result: PortOverlapDetail = {
+        hasOverlap: false,
+        overlaps: [],
+    };
+
+    const overlayInfo = getOverlayInfo(currentOverlay);
+    if (!overlayInfo) return result;
+
+    for (const port of buildingPorts) {
+        if (port.category !== currentOverlay) continue;
+
+        // Calculate the actual grid position of this port
+        const portGridX = gridX + port.x;
+        const portGridY = gridY + port.y;
+        const key = `${portGridX},${portGridY}`;
+
+        const existingPort = overlayInfo.ports.get(key);
+        if (existingPort !== undefined) {
+            result.hasOverlap = true;
+            result.overlaps.push({
+                existPortType: existingPort,
+                category: currentOverlay,
+            });
+        }
+    }
+
+    return result;
+}
+
 function gridSnapPreviewHandler(
     container: Container,
     camera: Camera,
     offset: Position,
-    currentBuilding: IBuilding
+    currentBuilding: IBuilding,
+    buildingPorts: Array<{ x: number; y: number; type: PORT; category: OVERLAY }>
 ): (event: FederatedPointerEvent) => void {
     return (event: FederatedPointerEvent) => {
         const worldPos = camera.screenToWorld(event.global.x, event.global.y);
@@ -116,11 +140,29 @@ function gridSnapPreviewHandler(
         const invalidPlacement =
             collideBuildings.length && collideBuildingLayers.has(currentBuilding.object_layer);
 
+        const portOverlapDetail = checkPortOverlap(
+            buildingPorts,
+            gridX,
+            gridY,
+            globalState.currentOverlays
+        );
+
         if (invalidPlacement) {
-            message.popup = collideBuildings
-                .filter((building) => building.object_layer === currentBuilding.object_layer)
-                .map((building) => building.display_name)
-                .join(', ');
+            message.popup =
+                'Collide with building ' +
+                collideBuildings
+                    .filter((building) => building.object_layer === currentBuilding.object_layer)
+                    .map((building) => building.display_name)
+                    .join(', ');
+            globalState.isValidPlacement = false;
+        } else if (portOverlapDetail.hasOverlap) {
+            const overlapMessages = portOverlapDetail.overlaps.map((overlap) => {
+                const overlayInfo = getOverlayInfo(overlap.category);
+                const categoryName = overlayInfo?.name || 'Unknown';
+                const portType = overlap.existPortType === PORT.INPUT ? 'Input' : 'Output';
+                return `• Overlap with ${categoryName} ${portType} port`;
+            });
+            message.popup = 'Cannot build:\n' + overlapMessages.join('\n');
             globalState.isValidPlacement = false;
         } else {
             message.popup = '';
