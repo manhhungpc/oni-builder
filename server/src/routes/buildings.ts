@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { normalizeData } from '../utils/normalizeData';
 import type { QueryBuildings } from '@shared/interface';
 
-const router = Router();
+const router: Router = Router();
 const prisma = new PrismaClient();
 
 router.get(

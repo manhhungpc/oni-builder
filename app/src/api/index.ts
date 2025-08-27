@@ -1,6 +1,6 @@
 const baseApiUrl = import.meta.env.VITE_API_URL;
 
-type FetchOptions = RequestInit & { params: Record<string, any> };
+type FetchOptions = RequestInit & { params?: Record<string, any> };
 export async function fetchAPI<T>(url: string, options?: FetchOptions): Promise<T> {
     try {
         let fullUrl = baseApiUrl + url;

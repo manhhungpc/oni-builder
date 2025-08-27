@@ -63,3 +63,29 @@ model Building {
   view_mode          Int?
   build_rule         Int
 }
+
+model User {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String      @unique
+  avatar     String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  blueprints Blueprint[]
+}
+
+model Blueprint {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  shareId     String   @unique
+  name        String
+  buildings   Json // Compressed building data
+  connections Json? // Compressed connection data (optional)
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String?  @db.ObjectId
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([userId])
+}

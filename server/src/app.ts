@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import buildingsRouter from './routes/buildings';
+import blueprintsRouter from './routes/blueprints';
 import * as swaggerDocument from '../swagger.json';
 
 const app: Application = express();
@@ -17,5 +18,6 @@ app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API endpoints
 app.use('/api/buildings', buildingsRouter);
+app.use('/api/blueprints', blueprintsRouter);
 
 export default app;
