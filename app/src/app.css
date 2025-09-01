@@ -1,34 +1,34 @@
 /* @import "tailwindcss"; */
 @import './tailwind.css';
 :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
 
-    color-scheme: light dark;
+	color-scheme: light dark;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-    color: #ffffff;
+	margin: 0;
+	display: flex;
+	place-items: center;
+	min-width: 320px;
+	min-height: 100vh;
+	color: #ffffff;
 }
 
 #app {
-    /* max-width: 1280px; */
-    /* margin: 0 auto; */
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    text-align: center;
+	/* max-width: 1280px; */
+	/* margin: 0 auto; */
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	text-align: center;
 }
 
 /* button {
@@ -43,54 +43,54 @@ body {
     transition: transform 0.25s;
 } */
 button:hover {
-    transform: translateY(-1px);
+	transform: translateY(-1px);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #1a1a1a;
-    border-radius: 4px;
+	background: #1a1a1a;
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+	background: #888;
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+	background: #555;
 }
 
 /* Firefox */
 * {
-    scrollbar-width: thin;
-    scrollbar-color: #888 #1a1a1a;
+	scrollbar-width: thin;
+	scrollbar-color: #888 #1a1a1a;
 }
 
 @media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
+	:root {
+		color: #213547;
+		background-color: #ffffff;
+	}
 
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
 
-    ::-webkit-scrollbar-thumb {
-        background: #888;
-    }
+	::-webkit-scrollbar-thumb {
+		background: #888;
+	}
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
+	::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
 
-    * {
-        scrollbar-color: #888 #f1f1f1;
-    }
+	* {
+		scrollbar-color: #888 #f1f1f1;
+	}
 }
