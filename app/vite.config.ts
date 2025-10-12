@@ -5,6 +5,9 @@ import path from 'path';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	server: {
+		port: 5170
+	},
 	resolve: {
 		alias: {
 			'@shared': path.resolve('../shared')

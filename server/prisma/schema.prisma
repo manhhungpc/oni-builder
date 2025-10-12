@@ -75,16 +75,16 @@ model User {
 }
 
 model Blueprint {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  shareId     String   @unique
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  shareId     String    @unique
   name        String
   buildings   Json // Compressed building data
   connections Json? // Compressed connection data (optional)
-  viewCount   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String?  @db.ObjectId
-  user        User?    @relation(fields: [userId], references: [id])
+  lastViewAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String?   @db.ObjectId
+  user        User?     @relation(fields: [userId], references: [id])
 
   @@index([createdAt])
   @@index([userId])

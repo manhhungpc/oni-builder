@@ -9,6 +9,7 @@
 	import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
 	import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
+	import Copy from '@lucide/svelte/icons/copy';
 	import { ACTION } from 'src/lib/constant';
 	import { OVERLAY } from 'src/lib/constant';
 	import { cn } from 'src/lib/utils';
@@ -28,6 +29,7 @@
 		conveyorConnection,
 		otherConnection
 	} from '$lib/universal/connections.svelte';
+	import { createSharedBlueprint } from 'src/api/blueprint';
 
 	function onActionClick(action: ACTION) {
 		globalState.currentAction = action;
@@ -84,21 +86,18 @@
 			};
 
 			// Create blueprint via API
-			// const response = await createSharedBlueprint({
-			//     name: 'Shared Blueprint',
-			//     buildings: compressedBuildings,
-			//     connections: compressedConnections,
-			// });
+			const response = await createSharedBlueprint({
+				name: 'Shared Blueprint',
+				buildings: compressedBuildings,
+				connections: compressedConnections
+			});
 
-			// if (response.success && response.data.shareId) {
-			//     // Construct and set the share URL
-			//     shareUrl = `${window.location.origin}/share/${response.data.shareId}`;
-
-			//     // Copy the share URL to clipboard
-			//     await navigator.clipboard.writeText(shareUrl);
-			// } else {
-			//     shareError = 'Failed to create share URL';
-			// }
+			if (response.success && response.data.shareId) {
+				// Construct and set the share URL
+				shareUrl = `${window.location.origin}/blueprints/${response.data.shareId}`;
+			} else {
+				shareError = 'Failed to create share URL';
+			}
 		} catch (error) {
 			console.error('Error sharing blueprint:', error);
 			shareError = error instanceof Error ? error.message : 'Failed to share';
@@ -225,7 +224,9 @@
 				<p class="cursor-pointer select-text break-all text-xs text-blue-400">
 					{shareUrl}
 				</p>
-				<small class="text-gray-500">Click to copy</small>
+				<Button size="icon" onclick={() => navigator.clipboard.writeText(shareUrl)}>
+					<Copy />
+				</Button>
 			</div>
 		{/if}
 

@@ -5,7 +5,8 @@
 		mousePosition,
 		gridPosition,
 		message,
-		appConfig
+		appConfig,
+		placedBuildings
 	} from '$lib/universal/globalState.svelte';
 	import Layers from 'src/components/Layers.svelte';
 	import {
@@ -26,17 +27,32 @@
 	import { Camera } from 'src/utils/camera';
 	import { Renderer } from 'src/utils/renderer';
 	import { Controller } from 'src/utils/controller';
-	import { ACTION, CELL_SIZE, MOUSE_CLICK } from 'src/lib/constant';
+	import { ACTION, CELL_SIZE, MOUSE_CLICK, CONDUIT_TYPE, PORT } from 'src/lib/constant';
 	import { drawBuilding } from 'src/lib/core/drawBuilding';
 	import { dragDrawBuilding, updateGridTexture } from 'src/lib/core/connectBuilding';
 	import { previewBuilding } from 'src/lib/core/previewBuilding';
-	import { calculateBuildingOffset } from 'src/lib/core/positionBuilding';
-	import { createPlacementSprite, cleanupAttachSprite } from 'src/utils/pixi';
+	import {
+		calculateBuildingOffset,
+		calculateBuildingGridPositions
+	} from 'src/lib/core/positionBuilding';
+	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from 'src/utils/pixi';
 	import type { PlacementState } from 'src/interface/building';
 	import MousePopup from 'src/components/common/MousePopup.svelte';
 	import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
 	import { getConnectionListType } from 'src/utils/helper';
 	import type { IBuilding } from 'src/interface/building';
+	import type { PlacedBuildings } from 'src/interface';
+	import { listBuilding } from 'src/api/building';
+	import { getOverlayInfo } from 'src/lib/utils';
+	import { decompress } from 'compress-json';
+	import type { CompressedCanvasData, SimplifiedBuilding } from 'src/interface/compressData';
+
+	// Props
+	interface Props {
+		savedBuildings?: PlacedBuildings[] | CompressedCanvasData;
+	}
+
+	let { savedBuildings }: Props = $props();
 
 	let canvasElement = $state<HTMLCanvasElement | null>(null);
 	let isPanning = $state(false);
@@ -182,6 +198,154 @@
 		canvasElement.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
 		});
+
+		// Load saved buildings after initialization
+		if (savedBuildings) {
+			loadSavedBuildings(buildContainer).catch(console.error);
+		}
+	}
+
+	// Load saved buildings onto the canvas
+	async function loadSavedBuildings(container: PIXI.Container) {
+		if (!savedBuildings || !globalState.pixiApp || !container) return;
+
+		let buildingsToLoad: PlacedBuildings[] = [];
+
+		// Check if data is compressed
+		if ('buildings' in savedBuildings) {
+			// Decompress the data
+			const decompressed = decompress(savedBuildings.buildings) as SimplifiedBuilding[];
+			buildingsToLoad = decompressed.map((b) => ({
+				display_name: b.d,
+				top_left: { x: b.tl[0], y: b.tl[1] },
+				bottom_right: { x: b.br[0], y: b.br[1] },
+				scene_layer: b.sl,
+				object_layer: b.ol,
+				tile_layer: b.tl2,
+				view_mode: b.vm,
+				category: b.c
+			}));
+		} else if (Array.isArray(savedBuildings)) {
+			buildingsToLoad = savedBuildings;
+		}
+
+		// Get unique building names to fetch from API
+		const uniqueNames = [...new Set(buildingsToLoad.map((b) => b.display_name))];
+
+		// Create a map of building display_name to full building data
+		const buildingDataMap = new Map<string, IBuilding>();
+
+		// Fetch building data for each unique building type
+		for (const displayName of uniqueNames) {
+			try {
+				const buildings = await listBuilding({ search: displayName });
+				const building = buildings.find((b) => b.display_name === displayName);
+				if (building) {
+					buildingDataMap.set(displayName, building);
+				}
+			} catch (error) {
+				console.error(`Failed to fetch building data for ${displayName}:`, error);
+			}
+		}
+
+		// Load sprites for all buildings
+		const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
+		const buildingsToLoadSprites = Array.from(buildingDataMap.values());
+		if (buildingsToLoadSprites.length > 0) {
+			await loadSprites(buildingsToLoadSprites, BASE_IMG_PATH);
+		}
+
+		// Place each building on the canvas
+		for (const savedBuilding of buildingsToLoad) {
+			const buildingData = buildingDataMap.get(savedBuilding.display_name);
+			if (!buildingData) {
+				console.warn(`Building data not found for ${savedBuilding.display_name}`);
+				continue;
+			}
+
+			// Calculate grid position from saved top_left
+			const gridX = savedBuilding.top_left.x;
+			const gridY = savedBuilding.top_left.y;
+
+			// Create and place the building sprite
+			const buildingSprite = PIXI.Sprite.from(buildingData.name);
+			const offset = calculateBuildingOffset(buildingData);
+
+			buildingSprite.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
+			buildingSprite.width = buildingData.width * CELL_SIZE;
+			buildingSprite.height = buildingData.height * CELL_SIZE;
+			buildingSprite.zIndex = savedBuilding.scene_layer;
+			container.addChild(buildingSprite);
+
+			// Add to placedBuildings array
+			placedBuildings.push(savedBuilding);
+
+			// Reconstruct ports
+			reconstructBuildingPorts(buildingData, gridX, gridY);
+		}
+	}
+
+	// Reconstruct port connections for a building
+	function reconstructBuildingPorts(building: IBuilding, gridX: number, gridY: number) {
+		// Handle conduit ports (liquid/gas)
+		if (building.conduit) {
+			if (
+				building.conduit.input_type !== undefined &&
+				building.conduit.input_type !== null &&
+				building.conduit.input_offset
+			) {
+				const inputX = gridX + building.conduit.input_offset.x;
+				const inputY = gridY + building.conduit.input_offset.y;
+				const key = `${inputX},${inputY}`;
+
+				if (building.conduit.input_type === CONDUIT_TYPE.LIQUID) {
+					liquidPorts.set(key, PORT.INPUT);
+				} else if (building.conduit.input_type === CONDUIT_TYPE.GAS) {
+					gasPorts.set(key, PORT.INPUT);
+				}
+			}
+
+			if (
+				building.conduit.output_type !== undefined &&
+				building.conduit.output_type !== null &&
+				building.conduit.output_offset
+			) {
+				const outputX = gridX + building.conduit.output_offset.x;
+				const outputY = gridY + building.conduit.output_offset.y;
+				const key = `${outputX},${outputY}`;
+
+				if (building.conduit.output_type === CONDUIT_TYPE.LIQUID) {
+					liquidPorts.set(key, PORT.OUTPUT);
+				} else if (building.conduit.output_type === CONDUIT_TYPE.GAS) {
+					gasPorts.set(key, PORT.OUTPUT);
+				}
+			}
+		}
+
+		// Handle power ports
+		if (building.power_port) {
+			if (building.power_port.input_offset) {
+				const inputX = gridX + building.power_port.input_offset.x;
+				const inputY = gridY + building.power_port.input_offset.y;
+				powerPorts.set(`${inputX},${inputY}`, PORT.INPUT);
+			}
+
+			if (building.power_port.output_offset) {
+				const outputX = gridX + building.power_port.output_offset.x;
+				const outputY = gridY + building.power_port.output_offset.y;
+				powerPorts.set(`${outputX},${outputY}`, PORT.OUTPUT);
+			}
+		}
+
+		// Handle logic ports
+		if (building.logic_port && building.logic_port.length > 0) {
+			for (const port of building.logic_port) {
+				const portX = gridX + port.offset.x;
+				const portY = gridY + port.offset.y;
+				const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
+				logicPorts.set(`${portX},${portY}`, portType);
+			}
+		}
 	}
 
 	$effect(() => {
