@@ -31,28 +31,15 @@
 	} from '$lib/universal/connections.svelte';
 	import { createSharedBlueprint } from 'src/api/blueprint';
 
-	function onActionClick(action: ACTION) {
-		globalState.currentAction = action;
-		if (action == ACTION.CUT) {
-			globalState.currentOverlays = OVERLAY.PLUMBING;
-			globalState.selectedBuilding = null;
-		}
+	interface Props {
+		shareable?: boolean;
 	}
 
-	function getActionButtonClass(action: ACTION) {
-		const isActive = globalState.currentAction === action;
-		return cn(
-			'hover:cursor-pointer h-9 px-4 py-2 rounded-md',
-			isActive
-				? 'bg-orange-primary hover:bg-orange-primary text-white'
-				: 'bg-dark-secondary hover:bg-dark-active text-white'
-		);
-	}
+	let isSharing = $state(false);
+	let shareError = $state('');
+	let shareUrl = $state('');
 
-	let isSharing = false;
-	let shareError = '';
-	let shareUrl = '';
-	let lastCompressedData: { buildings: any; connections: any } | null = null;
+	let { shareable = true }: Props = $props();
 
 	async function handleShareUrl() {
 		try {
@@ -79,12 +66,6 @@
 				other: compressBuildingConnectionData(otherConnection)
 			};
 
-			// Store the compressed data for testing
-			lastCompressedData = {
-				buildings: compressedBuildings,
-				connections: compressedConnections
-			};
-
 			// Create blueprint via API
 			const response = await createSharedBlueprint({
 				name: 'Shared Blueprint',
@@ -106,35 +87,22 @@
 		}
 	}
 
-	// TODO: Remove when move to sveltekit
-	function handleTestDecompression() {
-		if (!lastCompressedData) {
-			console.warn('No compressed data available. Click "Get shared url" first.');
-			return;
+	function onActionClick(action: ACTION) {
+		globalState.currentAction = action;
+		if (action == ACTION.CUT) {
+			globalState.currentOverlays = OVERLAY.PLUMBING;
+			globalState.selectedBuilding = null;
 		}
+	}
 
-		// Decompress buildings
-		const decompressedBuildings = decompressBuildingData({
-			buildings: lastCompressedData.buildings,
-			timestamp: Date.now()
-		});
-
-		console.log('Decompressed buildings:', decompressedBuildings);
-
-		// Decompress connections
-		if (lastCompressedData.connections) {
-			const decompressedConnections = {
-				liquidPipes: decompressBuildingConnectionData(lastCompressedData.connections.liquidPipes),
-				gasPipes: decompressBuildingConnectionData(lastCompressedData.connections.gasPipes),
-				wires: decompressBuildingConnectionData(lastCompressedData.connections.wires),
-				logicWires: decompressBuildingConnectionData(lastCompressedData.connections.logicWires),
-				tiles: decompressBuildingConnectionData(lastCompressedData.connections.tiles),
-				conveyor: decompressBuildingConnectionData(lastCompressedData.connections.conveyor),
-				other: decompressBuildingConnectionData(lastCompressedData.connections.other)
-			};
-
-			console.log('Decompressed connections:', decompressedConnections);
-		}
+	function getActionButtonClass(action: ACTION) {
+		const isActive = globalState.currentAction === action;
+		return cn(
+			'hover:cursor-pointer h-9 px-4 py-2 rounded-md',
+			isActive
+				? 'bg-orange-primary hover:bg-orange-primary text-white'
+				: 'bg-dark-secondary hover:bg-dark-active text-white'
+		);
 	}
 </script>
 
@@ -230,13 +198,15 @@
 			</div>
 		{/if}
 
-		<Button
-			class="hover:bg-dark-active bg-red-500 hover:cursor-pointer disabled:opacity-50"
-			onclick={handleShareUrl}
-			disabled={isSharing}
-		>
-			{isSharing ? 'Creating share link...' : 'Get shared url'}
-		</Button>
+		{#if shareable}
+			<Button
+				class="hover:bg-dark-active bg-red-500 hover:cursor-pointer disabled:opacity-50"
+				onclick={handleShareUrl}
+				disabled={isSharing}
+			>
+				{isSharing ? 'Creating share link...' : 'Get shared url'}
+			</Button>
+		{/if}
 		{#if shareError}
 			<small class="text-red-500">{shareError}</small>
 		{/if}

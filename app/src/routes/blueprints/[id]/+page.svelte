@@ -7,6 +7,8 @@
 	import { innerHeight, innerWidth } from 'svelte/reactivity/window';
 	import type { PageProps } from './$types';
 
+	let { data }: PageProps = $props();
+
 	$effect(() => {
 		globalState.initWindowWidth = Number(innerWidth);
 		globalState.initWindowHeight = Number(innerHeight);
@@ -19,9 +21,9 @@
 
 	<!-- <Category /> -->
 	<Overlays />
-	<!-- <Tools /> -->
+	<Tools shareable={false} />
 
-	<Buildings />
+	<Buildings savedBuildings={data.buildings} savedConnections={data.connections} />
 	<!-- <MousePopup content="Hello" /> -->
 </main>
 

@@ -31,37 +31,28 @@
 	import { drawBuilding } from 'src/lib/core/drawBuilding';
 	import { dragDrawBuilding, updateGridTexture } from 'src/lib/core/connectBuilding';
 	import { previewBuilding } from 'src/lib/core/previewBuilding';
-	import {
-		calculateBuildingOffset,
-		calculateBuildingGridPositions
-	} from 'src/lib/core/positionBuilding';
+	import { calculateBuildingOffset, getBuildingBounds } from 'src/lib/core/positionBuilding';
 	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from 'src/utils/pixi';
-	import type { PlacementState } from 'src/interface/building';
+	import type { NodeData, PlacementState } from 'src/interface/building';
 	import MousePopup from 'src/components/common/MousePopup.svelte';
 	import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
 	import { getConnectionListType } from 'src/utils/helper';
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
 	import { listBuilding } from 'src/api/building';
-	import { getOverlayInfo } from 'src/lib/utils';
-	import { decompress } from 'compress-json';
-	import type { CompressedCanvasData, SimplifiedBuilding } from 'src/interface/compressData';
 
-	// Props
 	interface Props {
-		savedBuildings?: PlacedBuildings[] | CompressedCanvasData;
+		savedBuildings?: PlacedBuildings[];
+		savedConnections?: Record<string, Map<string, NodeData>>;
 	}
 
-	let { savedBuildings }: Props = $props();
+	let { savedBuildings, savedConnections }: Props = $props();
 
 	let canvasElement = $state<HTMLCanvasElement | null>(null);
 	let isPanning = $state(false);
 	// Don't use $state for currentPlacementState to avoid reactivity issues
 	let currentPlacement: PlacementState | null = null;
 	let lastPanPosition = $state({ x: 0, y: 0 });
-	// let constructBuilding: null | IBuilding | Partial<IBuilding> = $state(
-	//     globalState.selectedBuilding,
-	// );
 
 	async function initPixiApp(app: PIXI.Application) {
 		if (!app || !canvasElement) return;
@@ -199,9 +190,11 @@
 			e.preventDefault();
 		});
 
-		// Load saved buildings after initialization
 		if (savedBuildings) {
 			loadSavedBuildings(buildContainer).catch(console.error);
+		}
+		if (savedConnections) {
+			loadSavedConnections();
 		}
 	}
 
@@ -209,25 +202,7 @@
 	async function loadSavedBuildings(container: PIXI.Container) {
 		if (!savedBuildings || !globalState.pixiApp || !container) return;
 
-		let buildingsToLoad: PlacedBuildings[] = [];
-
-		// Check if data is compressed
-		if ('buildings' in savedBuildings) {
-			// Decompress the data
-			const decompressed = decompress(savedBuildings.buildings) as SimplifiedBuilding[];
-			buildingsToLoad = decompressed.map((b) => ({
-				display_name: b.d,
-				top_left: { x: b.tl[0], y: b.tl[1] },
-				bottom_right: { x: b.br[0], y: b.br[1] },
-				scene_layer: b.sl,
-				object_layer: b.ol,
-				tile_layer: b.tl2,
-				view_mode: b.vm,
-				category: b.c
-			}));
-		} else if (Array.isArray(savedBuildings)) {
-			buildingsToLoad = savedBuildings;
-		}
+		const buildingsToLoad: PlacedBuildings[] = savedBuildings;
 
 		// Get unique building names to fetch from API
 		const uniqueNames = [...new Set(buildingsToLoad.map((b) => b.display_name))];
@@ -263,9 +238,10 @@
 				continue;
 			}
 
-			// Calculate grid position from saved top_left
-			const gridX = savedBuilding.top_left.x;
-			const gridY = savedBuilding.top_left.y;
+			// Reconstruct original grid position from saved top_left
+			const bound = getBuildingBounds(buildingData);
+			const gridX = savedBuilding.top_left.x - bound.minX;
+			const gridY = savedBuilding.top_left.y + bound.maxY;
 
 			// Create and place the building sprite
 			const buildingSprite = PIXI.Sprite.from(buildingData.name);
@@ -285,6 +261,35 @@
 		}
 	}
 
+	// Load saved connections into global state
+	function loadSavedConnections() {
+		if (!savedConnections) return;
+
+		// Map connection types to their corresponding global stores
+		const connectionMap = {
+			liquidPipes: liquidPipesConnection,
+			gasPipes: gasPipesConnection,
+			wires: wiresConnection,
+			logicWires: logicWiresConnection,
+			conveyor: conveyorConnection
+		};
+
+		// Iterate through each connection type and populate the global stores
+		for (const [connectionType, connectionData] of Object.entries(savedConnections)) {
+			const globalStore = connectionMap[connectionType as keyof typeof connectionMap];
+
+			if (globalStore && connectionData) {
+				// Clear existing connections
+				globalStore.clear();
+
+				// Populate with saved connections
+				connectionData.forEach((nodeData: NodeData, key: string) => {
+					globalStore.set(key, nodeData);
+				});
+			}
+		}
+	}
+
 	// Reconstruct port connections for a building
 	function reconstructBuildingPorts(building: IBuilding, gridX: number, gridY: number) {
 		// Handle conduit ports (liquid/gas)
@@ -295,7 +300,7 @@
 				building.conduit.input_offset
 			) {
 				const inputX = gridX + building.conduit.input_offset.x;
-				const inputY = gridY + building.conduit.input_offset.y;
+				const inputY = gridY - building.conduit.input_offset.y; // Correct: minus for y-axis flip
 				const key = `${inputX},${inputY}`;
 
 				if (building.conduit.input_type === CONDUIT_TYPE.LIQUID) {
@@ -311,7 +316,7 @@
 				building.conduit.output_offset
 			) {
 				const outputX = gridX + building.conduit.output_offset.x;
-				const outputY = gridY + building.conduit.output_offset.y;
+				const outputY = gridY - building.conduit.output_offset.y; // Correct: minus for y-axis flip
 				const key = `${outputX},${outputY}`;
 
 				if (building.conduit.output_type === CONDUIT_TYPE.LIQUID) {
@@ -326,13 +331,13 @@
 		if (building.power_port) {
 			if (building.power_port.input_offset) {
 				const inputX = gridX + building.power_port.input_offset.x;
-				const inputY = gridY + building.power_port.input_offset.y;
+				const inputY = gridY - building.power_port.input_offset.y; // Correct: minus for y-axis flip
 				powerPorts.set(`${inputX},${inputY}`, PORT.INPUT);
 			}
 
 			if (building.power_port.output_offset) {
 				const outputX = gridX + building.power_port.output_offset.x;
-				const outputY = gridY + building.power_port.output_offset.y;
+				const outputY = gridY - building.power_port.output_offset.y; // Correct: minus for y-axis flip
 				powerPorts.set(`${outputX},${outputY}`, PORT.OUTPUT);
 			}
 		}
@@ -341,7 +346,7 @@
 		if (building.logic_port && building.logic_port.length > 0) {
 			for (const port of building.logic_port) {
 				const portX = gridX + port.offset.x;
-				const portY = gridY + port.offset.y;
+				const portY = gridY - port.offset.y; // Correct: minus for y-axis flip
 				const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
 				logicPorts.set(`${portX},${portY}`, portType);
 			}

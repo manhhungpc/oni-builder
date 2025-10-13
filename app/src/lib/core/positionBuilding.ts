@@ -86,4 +86,4 @@ function getBuildingOccupiedTiles(building: IBuilding, gridX: number, gridY: num
     }));
 }
 
-export { calculateBuildingGridPositions, calculateBuildingOffset, getBuildingOccupiedTiles };
+export { calculateBuildingGridPositions, calculateBuildingOffset, getBuildingOccupiedTiles, getBuildingBounds };

@@ -94,9 +94,7 @@ router.get(
                     shareId,
                 },
                 data: {
-                    viewCount: {
-                        increment: 1,
-                    },
+                    lastViewAt: new Date(Date.now()),
                 },
             });
 
@@ -110,7 +108,6 @@ router.get(
                     connections: blueprint.connections,
                     createdAt: blueprint.createdAt,
                     updatedAt: blueprint.updatedAt,
-                    viewCount: blueprint.viewCount + 1,
                 },
             });
         } catch (error) {

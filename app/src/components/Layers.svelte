@@ -39,7 +39,7 @@
 			await Assets.load(
 				portSpriteAlias.map((alias) => ({
 					alias,
-					src: `src/assets/ports/${alias}.png`
+					src: `../../src/assets/ports/${alias}.png`
 				}))
 			);
 		} catch (error) {
@@ -76,7 +76,7 @@
 	$effect(() => {
 		// Skip SSR
 		if (typeof window === 'undefined') return;
-		
+
 		const buildContainer = globalState.buildContainer;
 		const currentOverlay = globalState.currentOverlays;
 
