@@ -160,7 +160,7 @@
 						<ScissorsLineDashed />
 					</Tooltip.Trigger>
 					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Select building / View properties</p>
+						<p>Cut connection</p>
 					</Tooltip.Content>
 				</Tooltip.Root>
 			</Tooltip.Provider>
@@ -174,7 +174,7 @@
 						<OctagonMinus />
 					</Tooltip.Trigger>
 					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Select building / View properties</p>
+						<p>Delete building</p>
 					</Tooltip.Content>
 				</Tooltip.Root>
 			</Tooltip.Provider>

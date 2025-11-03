@@ -5,7 +5,7 @@
 -   [x] 3. ~~Calculate the sprite display of logic wire, power wire, pipes~~
 -   [x] 4. ~~Calculate the position, scale, offset (in a grid) of logic wires, power wires, pipes~~
 -   [x] 5. ~~Check for collision of logic port, power port, conduit (gas input/output, liquid input/output) of the building~~
--   [ ] 6. Add overlay functionality to display buildings in each overlay
+-   [x] 6. ~~Add overlay functionality to display buildings in each overlay~~
 -   [ ] 7. Update the "Tools" card for different config: Pan speed, check valid foundation, show water/gas flow, power consumption, ...
 -   [x] 8. ~~Cut tools (for pipes, wires, conveyor connect) implementation~~
 -   [ ] 9. Delete building implementation

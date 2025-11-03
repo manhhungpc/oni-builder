@@ -49,27 +49,14 @@ npm run dev
 
 The app will run on http://localhost:5170
 
-### With docker
-
-⚠️ WARNING: Docker with this project is unstable !!! (for now)
+### With docker for backend and database
 
 ```bash
 # Start all services
-docker-compose up --build
-
-# Start services in detached mode
-docker-compose up -d
+docker-compose up
 
 # Stop all services
 docker-compose down
-
-# Rebuild specific service
-docker-compose build server
-docker-compose build app
-
-# Run commands in containers
-docker-compose exec server npm run db:seed
-docker-compose exec app npm run build
 ```
 
 ## Resources
