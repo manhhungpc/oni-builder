@@ -8,9 +8,11 @@
 -   [x] 6. ~~Add overlay functionality to display buildings in each overlay~~
 -   [ ] 7. Update the "Tools" card for different config: Pan speed, check valid foundation, show water/gas flow, power consumption, ...
 -   [x] 8. ~~Cut tools (for pipes, wires, conveyor connect) implementation~~
--   [ ] 9. Delete building implementation
--   [ ] 10. Rethinking the logic of connect special building (pipes, wires, conveyor), it should automatically update the texture in a grid, when 1 of the connect with it is changed
--   [ ] 11. Add tutorial button
+-   [ ] 9. Delete building, adjust zoom, adjust opacity of background building
+-   [ ] 10. Fill element, spawn special world trait (volcano, vent, ...)
+-   [ ] 11. Add option to not override the current conduit in a grid when drag build
+-   [ ] 12. Rethinking the logic of connect special building (pipes, wires, conveyor), it should automatically update the texture in a grid, when 1 of the connect with it is changed
+-   [ ] 13. Add tutorial button
 
 ### Check for collision rules:
 

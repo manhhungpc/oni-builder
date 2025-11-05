@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Sprite, Container, Assets } from 'pixi.js';
-	import { globalState } from 'src/lib/universal/globalState.svelte';
-	import { PORT, CELL_SIZE } from 'src/lib/constant';
-	import { gridToWorld } from 'src/lib/helpers/gridTransform';
-	import { OVERLAY } from 'src/lib/constant';
+	import { blueprint } from '$lib/state/blueprint.svelte';
+	import { appConfig } from '$lib/state/config.svelte';
+	import { PORT, CELL_SIZE } from '$lib/constant';
+	import { gridToWorld } from '$lib/utils/grid/transform';
+	import { OVERLAY } from '$lib/constant';
 	import type { SvelteMap } from 'svelte/reactivity';
 	import type { NodeData } from 'src/interface/building';
 	import { onMount } from 'svelte';
@@ -77,8 +78,8 @@
 		// Skip SSR
 		if (typeof window === 'undefined') return;
 
-		const buildContainer = globalState.buildContainer;
-		const currentOverlay = globalState.currentOverlays;
+		const buildContainer = blueprint.buildContainer;
+		const currentOverlay = appConfig.selectedOverlay;
 
 		if (!buildContainer) return;
 

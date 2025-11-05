@@ -1,18 +1,10 @@
 <script lang="ts">
 	import Buildings from 'src/components/Buildings.svelte';
-	import Category from 'src/components/ui/Category.svelte';
-	import Tools from 'src/components/ui/Tools.svelte';
-	import Overlays from 'src/components/ui/Overlays.svelte';
-	import { globalState } from '$lib/universal/globalState.svelte';
-	import { innerHeight, innerWidth } from 'svelte/reactivity/window';
+	import Tools from 'src/components/widgets/Tools.svelte';
+	import Overlays from 'src/components/widgets/Overlays.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-
-	$effect(() => {
-		globalState.initWindowWidth = Number(innerWidth);
-		globalState.initWindowHeight = Number(innerHeight);
-	});
 </script>
 
 <main>

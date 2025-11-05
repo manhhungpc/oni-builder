@@ -1,13 +1,13 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { OVERLAY, PORT } from 'src/lib/constant';
+import { OVERLAY, PORT } from '$lib/constant';
 import {
 	liquidPorts,
 	gasPorts,
 	powerPorts,
 	logicPorts,
 	conveyorPorts
-} from 'src/lib/universal/ports.svelte';
+} from '$lib/state/ports.svelte';
 import type { OverlayInfo } from 'src/interface/building';
 
 export function cn(...inputs: ClassValue[]) {

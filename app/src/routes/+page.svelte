@@ -1,23 +1,15 @@
 <script lang="ts">
 	import Buildings from 'src/components/Buildings.svelte';
-	import Category from 'src/components/ui/Category.svelte';
-	import Tools from 'src/components/ui/Tools.svelte';
-	import Overlays from 'src/components/ui/Overlays.svelte';
-	import { globalState } from '$lib/universal/globalState.svelte';
-	import { innerHeight, innerWidth } from 'svelte/reactivity/window';
-	import type { PageProps } from './$types';
-
-	$effect(() => {
-		globalState.initWindowWidth = Number(innerWidth);
-		globalState.initWindowHeight = Number(innerHeight);
-	});
+	import BuildCategory from 'src/components/widgets/BuildCategory.svelte';
+	import Tools from 'src/components/widgets/Tools.svelte';
+	import Overlays from 'src/components/widgets/Overlays.svelte';
 </script>
 
 <main>
 	<!-- <h1>Construction - Oxygen not Included</h1> -->
 	<h1>Mode: Build</h1>
 
-	<Category />
+	<BuildCategory />
 	<Overlays />
 	<Tools />
 

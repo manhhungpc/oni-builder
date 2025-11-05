@@ -1,9 +1,9 @@
 import type { IBuilding, Position } from 'src/interface/building';
 import type { PlacedBuildings } from 'src/interface';
-import { calculateBuildingGridPositions } from './positionBuilding';
+import { calculateBuildingGridPositions } from './positioning';
 import type { NodeData } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
-import { BUILD_RULE } from 'src/lib/constant';
+import { BUILD_RULE } from '$lib/constant';
 
 interface CollisionCheckParams {
     gridX: number;

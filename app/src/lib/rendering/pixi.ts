@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { Assets, Sprite, Container, Application } from 'pixi.js';
-import { CELL_SIZE } from 'src/lib/constant';
+import { CELL_SIZE } from '$lib/constant';
 import type { AssetConfig } from 'src/interface';
 import type { IBuilding } from 'src/interface/building';
 import type { PlacementState } from 'src/interface/building';
-import { getAliasFromUrl } from 'src/utils/helper';
+import { getAliasFromUrl } from '$lib/utils/helpers';
 
 export const drawInfiniteGrid = (
     container: PIXI.Container | null,

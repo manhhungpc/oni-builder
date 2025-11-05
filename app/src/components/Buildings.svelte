@@ -1,13 +1,7 @@
 <script lang="ts">
 	import * as PIXI from 'pixi.js';
-	import {
-		globalState,
-		mousePosition,
-		gridPosition,
-		message,
-		appConfig,
-		placedBuildings
-	} from '$lib/universal/globalState.svelte';
+	import { blueprint } from '$lib/state/blueprint.svelte';
+	import { appConfig, mousePosition, message } from '$lib/state/config.svelte';
 	import Layers from 'src/components/Layers.svelte';
 	import {
 		liquidPorts,
@@ -15,31 +9,25 @@
 		conveyorPorts,
 		powerPorts,
 		logicPorts
-	} from 'src/lib/universal/ports.svelte';
-	import {
-		liquidPipesConnection,
-		gasPipesConnection,
-		conveyorConnection,
-		wiresConnection,
-		logicWiresConnection
-	} from 'src/lib/universal/connections.svelte';
-	import { OVERLAY } from 'src/lib/constant';
-	import { Camera } from 'src/utils/camera';
-	import { Renderer } from 'src/utils/renderer';
-	import { Controller } from 'src/utils/controller';
-	import { ACTION, CELL_SIZE, MOUSE_CLICK, CONDUIT_TYPE, PORT } from 'src/lib/constant';
-	import { drawBuilding } from 'src/lib/core/drawBuilding';
-	import { dragDrawBuilding, updateGridTexture } from 'src/lib/core/connectBuilding';
-	import { previewBuilding } from 'src/lib/core/previewBuilding';
-	import { calculateBuildingOffset, getBuildingBounds } from 'src/lib/core/positionBuilding';
-	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from 'src/utils/pixi';
+	} from '$lib/state/ports.svelte';
+	import { ConduitType } from '$lib/state/blueprint.svelte';
+	import { OVERLAY } from '$lib/constant';
+	import { Camera } from '$lib/rendering/camera';
+	import { Renderer } from '$lib/rendering/renderer';
+	import { Controller } from '$lib/core/controller';
+	import { ACTION, CELL_SIZE, MOUSE_CLICK, CONDUIT_TYPE, PORT } from '$lib/constant';
+	import { drawBuilding } from '$lib/core/drawBuilding';
+	import { dragDrawBuilding, updateGridTexture } from '$lib/core/connectConduit';
+	import { previewBuilding } from '$lib/core/preview';
+	import { calculateBuildingOffset, getBuildingBounds } from '$lib/core/positioning';
+	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from '$lib/rendering/pixi';
 	import type { NodeData, PlacementState } from 'src/interface/building';
-	import MousePopup from 'src/components/common/MousePopup.svelte';
-	import { worldToGrid, gridToWorld } from 'src/lib/helpers/gridTransform';
-	import { getConnectionListType } from 'src/utils/helper';
+	import MousePopup from '$lib/ui/components/MousePopup.svelte';
+	import { worldToGrid, gridToWorld } from '$lib/utils/grid/transform';
+	import { getConduitList } from '$lib/utils/helpers';
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
-	import { listBuilding } from 'src/api/building';
+	import { listBuilding } from '$lib/api/buildings.api';
 
 	interface Props {
 		savedBuildings?: PlacedBuildings[];
@@ -64,7 +52,7 @@
 			backgroundColor: '#2c2c2c'
 		});
 
-		globalState.pixiApp = app;
+		blueprint.pixiApp = app;
 
 		const mainContainer = new PIXI.Container({ label: 'Main' });
 		const buildContainer = new PIXI.Container({ label: 'Building grid' });
@@ -87,8 +75,8 @@
 		const controller = new Controller();
 
 		// Store camera and buildContainer in global stores
-		globalState.camera = camera;
-		globalState.buildContainer = buildContainer;
+		blueprint.camera = camera;
+		blueprint.buildContainer = buildContainer;
 
 		gridRenderer.draw();
 
@@ -140,10 +128,8 @@
 			mousePosition.y = event.global.y;
 
 			const { gridX, gridY } = worldToGrid(currentHoverPosition);
-			gridPosition.x = gridX;
-			gridPosition.y = gridY;
 
-			if (globalState.currentAction === ACTION.CUT && !isPanning) {
+			if (appConfig.selectedAction === ACTION.CUT && !isPanning) {
 				hoverHighlight.clear();
 
 				const worldPos = gridToWorld(gridX, gridY);
@@ -200,7 +186,7 @@
 
 	// Load saved buildings onto the canvas
 	async function loadSavedBuildings(container: PIXI.Container) {
-		if (!savedBuildings || !globalState.pixiApp || !container) return;
+		if (!savedBuildings || !blueprint.pixiApp || !container) return;
 
 		const buildingsToLoad: PlacedBuildings[] = savedBuildings;
 
@@ -254,7 +240,7 @@
 			container.addChild(buildingSprite);
 
 			// Add to placedBuildings array
-			placedBuildings.push(savedBuilding);
+			blueprint.placedBuildings.push(savedBuilding);
 
 			// Reconstruct ports
 			reconstructBuildingPorts(buildingData, gridX, gridY);
@@ -267,11 +253,11 @@
 
 		// Map connection types to their corresponding global stores
 		const connectionMap = {
-			liquidPipes: liquidPipesConnection,
-			gasPipes: gasPipesConnection,
-			wires: wiresConnection,
-			logicWires: logicWiresConnection,
-			conveyor: conveyorConnection
+			liquidPipes: blueprint.placedConduits[ConduitType.LIQUID],
+			gasPipes: blueprint.placedConduits[ConduitType.GAS],
+			wires: blueprint.placedConduits[ConduitType.WIRE],
+			logicWires: blueprint.placedConduits[ConduitType.LOGIC_WIRE],
+			conveyor: blueprint.placedConduits[ConduitType.CONVEYOR]
 		};
 
 		// Iterate through each connection type and populate the global stores
@@ -368,9 +354,9 @@
 		return () => {
 			isPanning = false;
 
-			if (globalState.pixiApp) {
-				globalState.pixiApp.destroy(true, { children: true, texture: true });
-				globalState.pixiApp = null;
+			if (blueprint.pixiApp) {
+				blueprint.pixiApp.destroy(true, { children: true, texture: true });
+				// blueprint.pixiApp = null;
 				console.log('Pixi cleared');
 			}
 		};
@@ -378,11 +364,11 @@
 
 	// Handle building placement and preview
 	$effect(() => {
-		const app = globalState.pixiApp;
-		const camera = globalState.camera;
-		const selectedBuilding = globalState.selectedBuilding;
-		const container = globalState.buildContainer;
-		if (!selectedBuilding || !app || !camera || !container) {
+		const app = blueprint.pixiApp;
+		const camera = blueprint.camera;
+		const selectedToBuild = appConfig.selectedToBuild;
+		const container = blueprint.buildContainer;
+		if (!selectedToBuild || !app || !camera || !container) {
 			if (currentPlacement && app && container) {
 				cleanupAttachSprite(currentPlacement, container, app);
 				currentPlacement = null;
@@ -395,17 +381,17 @@
 			cleanupAttachSprite(currentPlacement, container, app);
 		}
 
-		const sprite = createPlacementSprite(selectedBuilding, container, {
+		const sprite = createPlacementSprite(selectedToBuild, container, {
 			zIndex: 999
 		});
 
-		const offset = calculateBuildingOffset(selectedBuilding);
+		const offset = calculateBuildingOffset(selectedToBuild);
 
-		const previewState = previewBuilding(sprite, selectedBuilding, camera, offset);
+		const previewState = previewBuilding(sprite, selectedToBuild, camera, offset);
 
-		const placementState = drawBuilding(sprite, selectedBuilding, container, camera, {
+		const placementState = drawBuilding(sprite, selectedToBuild, container, camera, {
 			onCancel: () => {
-				globalState.selectedBuilding = null;
+				appConfig.selectedToBuild = null;
 			}
 		});
 
@@ -421,7 +407,7 @@
 			app.stage.on('pointermove', previewState.mouseMoveHandler);
 		}
 		if (placementState.clickHandler) {
-			if (selectedBuilding.is_drag_build || selectedBuilding.special_texture.length > 0)
+			if (appConfig.selectedToBuild?.is_drag_build || selectedToBuild.special_texture.length > 0)
 				return () => {
 					if (currentPlacement && app && container) {
 						cleanupAttachSprite(currentPlacement, container, app);
@@ -444,9 +430,9 @@
 	let selectedBuilding: IBuilding | Partial<IBuilding> | null = $state(null);
 	// $inspect(selectedBuilding);
 	$effect(() => {
-		const app = globalState.pixiApp;
-		const camera = globalState.camera;
-		selectedBuilding = globalState.selectedBuilding;
+		const app = blueprint.pixiApp;
+		const camera = blueprint.camera;
+		selectedBuilding = appConfig.selectedToBuild;
 
 		if (!app || !camera) {
 			return;
@@ -454,34 +440,38 @@
 
 		// Only handle drag-to-build buildings or when in CUT mode
 		if (
-			globalState.currentAction !== ACTION.CUT &&
+			appConfig.selectedAction !== ACTION.CUT &&
 			(!selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)
 		) {
 			return;
 		}
 
-		let connectionList = getConnectionListType();
+		let conduitList = getConduitList();
 
-		if (globalState.currentAction == ACTION.CUT) {
-			connectionList = getConnectionListType(globalState.currentOverlays);
+		if (appConfig.selectedAction == ACTION.CUT) {
+			conduitList = getConduitList(appConfig.selectedOverlay);
+		}
+
+		if (!conduitList) {
+			throw new Error('Unknow conduit list');
 		}
 
 		// Get drag handlers
-		const dragHandlers = dragDrawBuilding(camera, connectionList, selectedBuilding, {
+		const dragHandlers = dragDrawBuilding(camera, conduitList, selectedBuilding, {
 			onConnect: (fromGrid, toGrid) => {
-				if (globalState.currentAction == ACTION.BUILD) {
-					updateGridTexture(selectedBuilding, fromGrid, connectionList);
-					updateGridTexture(selectedBuilding, toGrid, connectionList);
-				} else if (globalState.currentAction == ACTION.CUT) {
+				if (appConfig.selectedAction == ACTION.BUILD) {
+					updateGridTexture(selectedBuilding, fromGrid, conduitList);
+					updateGridTexture(selectedBuilding, toGrid, conduitList);
+				} else if (appConfig.selectedAction == ACTION.CUT) {
 					const key = `${fromGrid.x},${fromGrid.y}`;
-					const nodeData = connectionList.get(key);
+					const nodeData = conduitList.get(key);
 					if (nodeData && nodeData.metadata) {
 						const cutBuilding = {
 							name: nodeData.metadata.name,
 							display_name: nodeData.metadata.displayName
 						};
-						updateGridTexture(cutBuilding, fromGrid, connectionList);
-						updateGridTexture(cutBuilding, toGrid, connectionList);
+						updateGridTexture(cutBuilding, fromGrid, conduitList);
+						updateGridTexture(cutBuilding, toGrid, conduitList);
 					}
 				}
 			}
@@ -523,34 +513,34 @@
 	<Layers
 		overlayType={OVERLAY.POWER}
 		ports={powerPorts}
-		connections={wiresConnection}
+		connections={blueprint.placedConduits[ConduitType.WIRE]}
 		containerLabel="Power Wires"
 	/>
 	<Layers
 		overlayType={OVERLAY.PLUMBING}
 		ports={liquidPorts}
-		connections={liquidPipesConnection}
+		connections={blueprint.placedConduits[ConduitType.LIQUID]}
 		containerLabel="Liquid Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.VENTILATION}
 		ports={gasPorts}
-		connections={gasPipesConnection}
+		connections={blueprint.placedConduits[ConduitType.GAS]}
 		containerLabel="Gas Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.AUTOMATION}
 		ports={logicPorts}
-		connections={logicWiresConnection}
+		connections={blueprint.placedConduits[ConduitType.LOGIC_WIRE]}
 		containerLabel="Automation"
 	/>
 	<Layers
 		overlayType={OVERLAY.SHIPPING}
 		ports={conveyorPorts}
-		connections={conveyorConnection}
+		connections={blueprint.placedConduits[ConduitType.CONVEYOR]}
 		containerLabel="Conveyor"
 	/>
-	{#if message.popup && !globalState.isValidPlacement}
+	{#if message.popup && !blueprint.isValidPlacement}
 		<MousePopup content={message.popup} {mousePosition} />
 	{/if}
 </div>

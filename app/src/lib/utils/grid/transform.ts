@@ -1,4 +1,4 @@
-import { CELL_SIZE } from '../constant';
+import { CELL_SIZE } from '$lib/constant';
 
 export function worldToGrid(worldPos: { x: number; y: number }): { gridX: number; gridY: number } {
     return {

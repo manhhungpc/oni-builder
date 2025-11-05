@@ -7,7 +7,7 @@
 	"aliases": {
 		"components": "$lib/ui",
 		"utils": "$lib/utils",
-		"ui": "$lib/ui/common",
+		"ui": "$lib/ui/primitives",
 		"hooks": "$lib/hooks",
 		"lib": "$lib"
 	},

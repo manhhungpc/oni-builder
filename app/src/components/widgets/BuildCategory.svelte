@@ -1,12 +1,13 @@
 <!-- Category for buildings - https://oxygennotincluded.wiki.gg/wiki/Building -->
 <script lang="ts">
-	import { globalState } from '$lib/universal/globalState.svelte';
+	import { blueprint } from '$lib/state/blueprint.svelte';
 	import type { IBuilding } from 'src/interface/building';
-	import { loadSprites, cleanupAttachSprite } from 'src/utils/pixi';
+	import { loadSprites, cleanupAttachSprite } from '$lib/rendering/pixi';
 	import type { PlacementState } from 'src/interface/building';
-	import { listBuilding } from 'src/api/building';
-	import { debounce } from 'src/utils/helper';
+	import { listBuilding } from '$lib/api/buildings.api';
+	import { debounce } from '$lib/utils/helpers';
 	import { ACTION, CATEGORY } from '$lib/constant';
+	import { appConfig } from 'src/lib/state/config.svelte';
 
 	const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
 	const categories = [
@@ -56,17 +57,17 @@
 	}
 
 	function onSelectToBuild(building: IBuilding) {
-		if (!globalState.pixiApp || !globalState.camera || !globalState.buildContainer) {
+		if (!blueprint.pixiApp || !blueprint.camera || !blueprint.buildContainer) {
 			console.error('Global app state not initialized');
 			return;
 		}
 
-		globalState.selectedBuilding = building;
-		globalState.currentAction = ACTION.BUILD;
+		appConfig.selectedToBuild = building;
+		appConfig.selectedAction = ACTION.BUILD;
 
-		// Update currentOverlays to match the building's view mode if it exists
+		// Update overlay to match the building's view mode if it exists
 		if (building.view_mode !== undefined && building.view_mode !== null) {
-			globalState.currentOverlays = building.view_mode;
+			appConfig.selectedOverlay = building.view_mode;
 		}
 	}
 
@@ -80,7 +81,7 @@
 		window.addEventListener('close-building-modal', handleCloseBuildingModal);
 
 		return () => {
-			cleanupAttachSprite(placementState, globalState.buildContainer, globalState.pixiApp);
+			cleanupAttachSprite(placementState, blueprint.buildContainer, blueprint.pixiApp);
 			window.removeEventListener('close-building-modal', handleCloseBuildingModal);
 		};
 	});
@@ -103,7 +104,7 @@
 	<!-- Invisible overlay to detect clicks outside -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	{#if !globalState.selectedBuilding}
+	{#if !appConfig.selectedToBuild}
 		<div
 			class="fixed inset-0 z-40 h-full w-full"
 			onclick={() => {

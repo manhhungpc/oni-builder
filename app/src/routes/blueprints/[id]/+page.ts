@@ -1,10 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { getBlueprintByShareId } from 'src/api/blueprint';
+import { getBlueprintByShareId } from '$lib/api/blueprints.api';
 import {
 	decompressBuildingData,
 	decompressBuildingConnectionData
-} from 'src/lib/core/compressData';
+} from '$lib/compression/compressData';
 
 export const load: PageLoad = async ({ params }) => {
 	console.log(params.id);

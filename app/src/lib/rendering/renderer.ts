@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
-import { CELL_SIZE } from "src/lib/constant";
-import type { Camera } from "src/utils/camera";
+import { CELL_SIZE } from "$lib/constant";
+import type { Camera } from "./camera";
 
 export class Renderer {
     private container: PIXI.Container;
