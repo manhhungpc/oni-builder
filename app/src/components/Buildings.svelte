@@ -76,6 +76,7 @@
 
 		// Store camera and buildContainer in global stores
 		blueprint.camera = camera;
+		blueprint.renderer = gridRenderer;
 		blueprint.buildContainer = buildContainer;
 
 		gridRenderer.draw();
@@ -163,8 +164,13 @@
 		app.stage.on('wheel', (event: WheelEvent) => {
 			event.preventDefault();
 
-			const scaleFactor = event.deltaY > 0 ? 1 - camera.ZOOM_STEP : 1 + camera.ZOOM_STEP;
-			camera.zoomAt(event.offsetX, event.offsetY, scaleFactor);
+			const scale = event.deltaY > 0 ? -camera.ZOOM_STEP : +camera.ZOOM_STEP;
+			camera.zoomAt(event.offsetX, event.offsetY, scale);
+
+			const updatedZoomLevel = appConfig.zoomLevel + scale * 100;
+			if (updatedZoomLevel > 0 && updatedZoomLevel <= 200) {
+				appConfig.zoomLevel = updatedZoomLevel;
+			}
 			gridRenderer.draw();
 		});
 

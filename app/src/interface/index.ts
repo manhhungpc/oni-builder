@@ -18,6 +18,7 @@ export interface GlobalState {
 
 export interface AppConfig {
 	panSpeed: number;
+	zoomLevel: number;
 	selectedAction: ACTION;
 	selectedOverlay: OVERLAY;
 	selectedToBuild: null | IBuilding;

@@ -1,9 +1,9 @@
-import { Container, type Application, type Renderer } from 'pixi.js';
+import { Container, type Application, type Renderer as PixiRenderer } from 'pixi.js';
 import type { PlacedBuildings } from 'src/interface';
-import type { IBuilding, NodeData } from 'src/interface/building';
-import { ACTION } from 'src/lib/constant';
+import type { NodeData } from 'src/interface/building';
 import { SvelteMap } from 'svelte/reactivity';
 import type { Camera } from '$lib/rendering/camera';
+import type { Renderer as AppRenderer } from '$lib/rendering/renderer';
 
 export enum ConduitType {
 	LIQUID = 'liquid',
@@ -15,15 +15,12 @@ export enum ConduitType {
 }
 
 class BlueprintState {
-	pixiApp = $state<Application<Renderer> | null>(null);
+	pixiApp = $state<Application<PixiRenderer> | null>(null);
 	camera = $state<Camera>();
+	renderer = $state<AppRenderer>();
 	buildContainer = $state<Container | null>(null);
 	isValidPlacement = $state(false);
 
-	// selectedAction = $state(ACTION.SELECT);
-	// selectedOverlay = $state(0);
-
-	// selectedBuilding = $state<null | IBuilding>(null);
 	placedBuildings = $state<PlacedBuildings[]>([]);
 	placedConduits = {
 		[ConduitType.LIQUID]: new SvelteMap<string, NodeData>(),

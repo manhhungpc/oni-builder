@@ -21,6 +21,8 @@
 	} from '$lib/compression/compressData';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
 	import { createSharedBlueprint } from '$lib/api/blueprints.api';
+	import ZoomIn from '@lucide/svelte/icons/zoom-in';
+	import ZoomOut from '@lucide/svelte/icons/zoom-out';
 
 	interface Props {
 		shareable?: boolean;
@@ -96,6 +98,20 @@
 				: 'bg-dark-secondary hover:bg-dark-active text-white'
 		);
 	}
+
+	function changeZoomLevel(scale: number) {
+		const mouseX = window.innerWidth / 2;
+		const mouseY = window.innerHeight / 2;
+
+		const updatedZoomLevel = appConfig.zoomLevel + scale * 100;
+		if (updatedZoomLevel <= 0 || updatedZoomLevel > 200) return;
+
+		if (blueprint.camera && blueprint.renderer) {
+			appConfig.zoomLevel = updatedZoomLevel;
+			blueprint.camera.zoomAt(mouseX, mouseY, scale);
+			blueprint.renderer.draw();
+		}
+	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -115,6 +131,26 @@
 				<p>{appConfig.panSpeed}</p>
 			</span>
 			<Slider type="single" bind:value={appConfig.panSpeed} min={1} max={20} step={1} />
+		</div>
+		<div class="flex items-center justify-between">
+			<p>Zoom level:</p>
+			<span class="flex items-center gap-1">
+				<Button
+					size="icon"
+					class=" h-8 w-8 bg-transparent text-white"
+					onclick={() => changeZoomLevel(-0.1)}
+				>
+					<ZoomOut />
+				</Button>
+				<p>{appConfig.zoomLevel}%</p>
+				<Button
+					size="icon"
+					class=" h-8 w-8 bg-transparent text-white"
+					onclick={() => changeZoomLevel(+0.1)}
+				>
+					<ZoomIn />
+				</Button>
+			</span>
 		</div>
 
 		<div class="flex items-center justify-between">

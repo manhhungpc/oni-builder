@@ -3,6 +3,7 @@ import { ACTION, OVERLAY } from 'src/lib/constant';
 
 export const appConfig = $state<AppConfig>({
 	panSpeed: 1,
+	zoomLevel: 100,
 	selectedAction: ACTION.SELECT,
 	selectedOverlay: OVERLAY.BUILDING,
 	selectedToBuild: null
