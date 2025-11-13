@@ -5,13 +5,13 @@ import type { IBuilding, Position } from 'src/interface/building';
 import type { Camera } from '$lib/rendering/camera';
 import type { SvelteMap } from 'svelte/reactivity';
 import { CELL_SIZE, MOUSE_CLICK, ACTION } from '$lib/constant';
-import type { DragDrawHandlers, NodeData } from 'src/interface/building';
+import type { DragDrawHandlers, ConduitNode } from 'src/interface/building';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
 
 function dragDrawBuilding(
 	camera: Camera,
-	connectionList: SvelteMap<string, NodeData>,
+	connectionList: SvelteMap<string, ConduitNode>,
 	building: Partial<IBuilding> | IBuilding | null,
 	options?: {
 		onConnect?: (from: Position, to: Position) => void;
@@ -82,7 +82,7 @@ function dragDrawBuilding(
 function updateGridTexture(
 	building: IBuilding | Partial<IBuilding> | null,
 	gridPos: Position,
-	connectionList: SvelteMap<string, NodeData>
+	connectionList: SvelteMap<string, ConduitNode>
 ): void {
 	const key = `${gridPos.x},${gridPos.y}`;
 	const nodeData = connectionList.get(key);

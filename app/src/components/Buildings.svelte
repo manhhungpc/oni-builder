@@ -12,8 +12,6 @@
 	} from '$lib/state/ports.svelte';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
 	import { OVERLAY } from '$lib/constant';
-	import { Camera } from '$lib/rendering/camera';
-	import { Renderer } from '$lib/rendering/renderer';
 	import { Controller } from '$lib/core/controller';
 	import { ACTION, CELL_SIZE, MOUSE_CLICK, CONDUIT_TYPE, PORT } from '$lib/constant';
 	import { drawBuilding } from '$lib/core/drawBuilding';
@@ -21,7 +19,7 @@
 	import { previewBuilding } from '$lib/core/preview';
 	import { calculateBuildingOffset, getBuildingBounds } from '$lib/core/positioning';
 	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from '$lib/rendering/pixi';
-	import type { NodeData, PlacementState } from 'src/interface/building';
+	import type { ConduitNode, PlacementState } from 'src/interface/building';
 	import MousePopup from '$lib/ui/components/MousePopup.svelte';
 	import { worldToGrid, gridToWorld } from '$lib/utils/grid/transform';
 	import { getConduitList } from '$lib/utils/helpers';
@@ -31,7 +29,7 @@
 
 	interface Props {
 		savedBuildings?: PlacedBuildings[];
-		savedConnections?: Record<string, Map<string, NodeData>>;
+		savedConnections?: Record<string, Map<string, ConduitNode>>;
 	}
 
 	let { savedBuildings, savedConnections }: Props = $props();
@@ -45,41 +43,16 @@
 	async function initPixiApp(app: PIXI.Application) {
 		if (!app || !canvasElement) return;
 
-		await app.init({
-			canvas: canvasElement,
-			resizeTo: window,
-			resolution: window.devicePixelRatio || 1,
-			backgroundColor: '#2c2c2c'
-		});
+		// Initialize PIXI app through centralized state management
+		await blueprint.initPixiApp(app, canvasElement);
 
-		blueprint.pixiApp = app;
+		const camera = blueprint.camera;
+		const gridRenderer = blueprint.gridRenderer;
+		const buildContainer = blueprint.buildContainer;
 
-		const mainContainer = new PIXI.Container({ label: 'Main' });
-		const buildContainer = new PIXI.Container({ label: 'Building grid' });
-		buildContainer.sortableChildren = true; // Enable zIndex sorting
+		if (!camera || !gridRenderer || !buildContainer) return;
 
-		app.stage.addChild(mainContainer);
-		mainContainer.addChild(buildContainer);
-
-		// Create hover highlight graphics
-		const hoverHighlight = new PIXI.Graphics();
-		hoverHighlight.zIndex = 1;
-		buildContainer.addChild(hoverHighlight);
-
-		app.stage.eventMode = 'static';
-		app.stage.hitArea = app.screen;
-
-		// Setup camera and grid systems
-		const camera = new Camera(buildContainer);
-		const gridRenderer = new Renderer(buildContainer, camera, app.screen.width, app.screen.height);
 		const controller = new Controller();
-
-		// Store camera and buildContainer in global stores
-		blueprint.camera = camera;
-		blueprint.renderer = gridRenderer;
-		blueprint.buildContainer = buildContainer;
-
-		gridRenderer.draw();
 
 		app.ticker.add(() => {
 			const moveSpeed = appConfig.panSpeed + 4;
@@ -124,22 +97,8 @@
 
 		// Mouse move for drawing and panning
 		app.stage.on('pointermove', (event: PIXI.FederatedPointerEvent) => {
-			const currentHoverPosition = camera.screenToWorld(event.global.x, event.global.y);
 			mousePosition.x = event.global.x;
 			mousePosition.y = event.global.y;
-
-			const { gridX, gridY } = worldToGrid(currentHoverPosition);
-
-			if (appConfig.selectedAction === ACTION.CUT && !isPanning) {
-				hoverHighlight.clear();
-
-				const worldPos = gridToWorld(gridX, gridY);
-				hoverHighlight.rect(worldPos.x, worldPos.y, CELL_SIZE, CELL_SIZE);
-				hoverHighlight.fill({ color: 0xff0000, alpha: 0.3 });
-				hoverHighlight.visible = true;
-			} else {
-				hoverHighlight.visible = false;
-			}
 
 			if (isPanning) {
 				const deltaX = event.global.x - lastPanPosition.x;
@@ -275,7 +234,7 @@
 				globalStore.clear();
 
 				// Populate with saved connections
-				connectionData.forEach((nodeData: NodeData, key: string) => {
+				connectionData.forEach((nodeData: ConduitNode, key: string) => {
 					globalStore.set(key, nodeData);
 				});
 			}

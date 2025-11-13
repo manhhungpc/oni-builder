@@ -1,7 +1,7 @@
 import { blueprint, ConduitType } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
 import { CATEGORY } from '$lib/constant';
-import type { NodeData } from 'src/interface/building';
+import type { ConduitNode } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 import { OVERLAY } from '$lib/constant';
 
@@ -29,7 +29,7 @@ export function getAliasFromUrl(url: string) {
 	return filename.split('.').slice(0, -1).join('.');
 }
 
-export function getConduitList(overlays?: OVERLAY): SvelteMap<string, NodeData> | null {
+export function getConduitList(overlays?: OVERLAY): SvelteMap<string, ConduitNode> | null {
 	const type = overlays ?? appConfig.selectedToBuild?.category;
 
 	switch (type) {

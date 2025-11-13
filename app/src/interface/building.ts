@@ -81,12 +81,12 @@ export interface DragDrawHandlers {
     endDrag: () => void;
 }
 
-export interface NodeData {
+export interface ConduitNode {
     connects: string[];
-    metadata: NodeMetadata;
+    metadata: ConduitMetadata;
 }
 
-export interface NodeMetadata {
+export interface ConduitMetadata {
     name?: string;
     displayName?: string;
     sprite?: Sprite;

@@ -31,5 +31,4 @@ export interface SimplifiedBuilding {
 	ol: number;
 	tl2: number;
 	vm: number;
-	c: string;
 }

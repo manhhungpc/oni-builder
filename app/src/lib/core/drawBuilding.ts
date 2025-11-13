@@ -65,13 +65,13 @@ function placeOnGridHandler(
 
 			blueprint.placedBuildings.push({
 				display_name: buildingData.display_name,
-				category: buildingData.category || '',
 				object_layer: buildingData.object_layer,
 				scene_layer: buildingData.scene_layer,
 				tile_layer: buildingData.tile_layer,
 				view_mode: buildingData.view_mode ?? 0,
 				top_left: buildingWorldPosition.topLeft,
-				bottom_right: buildingWorldPosition.bottomRight
+				bottom_right: buildingWorldPosition.bottomRight,
+				sprite: buildingSprite
 			});
 
 			// Get port positions and permanently draw to grid

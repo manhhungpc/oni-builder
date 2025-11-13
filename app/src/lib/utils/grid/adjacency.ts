@@ -1,5 +1,5 @@
 import type { Position } from 'src/interface/building';
-import type { NodeData, NodeMetadata } from 'src/interface/building';
+import type { ConduitNode, ConduitMetadata } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 
 // Helper functions for node keys
@@ -12,7 +12,7 @@ function parseNodeKey(key: string): Position {
     return { x, y };
 }
 
-function addNode(connectionList: SvelteMap<string, NodeData>, node: Position): void {
+function addNode(connectionList: SvelteMap<string, ConduitNode>, node: Position): void {
     const key = nodeKey(node);
     if (!connectionList.has(key)) {
         connectionList.set(key, {
@@ -23,7 +23,7 @@ function addNode(connectionList: SvelteMap<string, NodeData>, node: Position): v
 }
 
 function addConnection(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     node1: Position,
     node2: Position
 ): void {
@@ -46,7 +46,7 @@ function addConnection(
     }
 }
 
-function removeNode(connectionList: SvelteMap<string, NodeData>, node: Position): void {
+function removeNode(connectionList: SvelteMap<string, ConduitNode>, node: Position): void {
     const keyToRemove = nodeKey(node);
 
     // Remove references to this node from all other nodes
@@ -62,7 +62,7 @@ function removeNode(connectionList: SvelteMap<string, NodeData>, node: Position)
 }
 
 function removeConnection(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     node1: Position,
     node2: Position
 ): boolean {
@@ -93,9 +93,9 @@ function removeConnection(
 }
 
 function updateNodeMetadata(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     node: Position,
-    metadata: NodeMetadata
+    metadata: ConduitMetadata
 ): void {
     const key = nodeKey(node);
     const nodeValue = connectionList.get(key);
@@ -106,9 +106,9 @@ function updateNodeMetadata(
 
 // Get node metadata
 function getNodeMetadata(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     node: Position
-): NodeMetadata {
+): ConduitMetadata {
     const key = nodeKey(node);
     const nodeValue = connectionList.get(key);
     return nodeValue?.metadata || {};
@@ -116,7 +116,7 @@ function getNodeMetadata(
 
 // Get all connections for a node
 function getNodeConnections(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     node: Position
 ): Position[] {
     const key = nodeKey(node);
@@ -128,20 +128,20 @@ function getNodeConnections(
 }
 
 // Utility functions
-function clearAdjacencyMap(connectionList: SvelteMap<string, NodeData>): void {
+function clearAdjacencyMap(connectionList: SvelteMap<string, ConduitNode>): void {
     connectionList.clear();
 }
 
-function getSize(connectionList: SvelteMap<string, NodeData>): number {
+function getSize(connectionList: SvelteMap<string, ConduitNode>): number {
     return connectionList.size;
 }
 
-function hasNode(connectionList: SvelteMap<string, NodeData>, node: Position): boolean {
+function hasNode(connectionList: SvelteMap<string, ConduitNode>, node: Position): boolean {
     return connectionList.has(nodeKey(node));
 }
 
 function hasConnection(
-    connectionList: SvelteMap<string, NodeData>,
+    connectionList: SvelteMap<string, ConduitNode>,
     from: Position,
     to: Position
 ): boolean {

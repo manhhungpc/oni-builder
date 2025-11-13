@@ -1,4 +1,4 @@
-import type { Application, Container, Renderer } from 'pixi.js';
+import type { Application, Container, Renderer, Sprite } from 'pixi.js';
 import { OVERLAY } from 'src/lib/constant';
 import type { Camera } from '$lib/rendering/camera';
 import type { IBuilding, Position } from 'src/interface/building';
@@ -46,7 +46,7 @@ export interface PlacedBuildings {
 	object_layer: number;
 	tile_layer: number;
 	view_mode: number;
-	category: string; // For display overlays
+	sprite?: Sprite;
 }
 
 export interface BuildingBounds {

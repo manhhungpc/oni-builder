@@ -6,13 +6,14 @@
 	import { gridToWorld } from '$lib/utils/grid/transform';
 	import { OVERLAY } from '$lib/constant';
 	import type { SvelteMap } from 'svelte/reactivity';
-	import type { NodeData } from 'src/interface/building';
+	import type { ConduitNode } from 'src/interface/building';
 	import { onMount } from 'svelte';
+	import type { PlacedBuildings } from 'src/interface';
 
 	interface Props {
 		overlayType: OVERLAY;
 		ports: Map<string, PORT>;
-		connections: SvelteMap<string, NodeData>;
+		connections: SvelteMap<string, ConduitNode>;
 		containerLabel?: string;
 	}
 
@@ -94,9 +95,25 @@
 		const isActiveOverlay = currentOverlay === overlayType;
 		overlayContainer.visible = isActiveOverlay;
 
-		connections.forEach((nodeData: NodeData) => {
+		blueprint.gridRenderer?.draw(currentOverlay != OVERLAY.BUILDING);
+		// if (currentOverlay != OVERLAY.BUILDING) {
+		// }
+
+		connections.forEach((nodeData: ConduitNode) => {
 			if (nodeData.metadata.sprite) {
 				nodeData.metadata.sprite.alpha = isActiveOverlay ? FULL_OPACITY : DEFAULT_OPACITY;
+				nodeData.metadata.sprite.zIndex = isActiveOverlay ? 99 : 1;
+			}
+		});
+
+		blueprint.placedBuildings.map((building: PlacedBuildings) => {
+			if (!building.sprite) {
+				return;
+			}
+			if (building.view_mode == appConfig.selectedOverlay) {
+				building.sprite.zIndex = 99;
+			} else {
+				building.sprite.zIndex = building.scene_layer;
 			}
 		});
 
