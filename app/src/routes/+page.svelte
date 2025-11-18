@@ -3,10 +3,13 @@
 	import BuildCategory from 'src/components/widgets/BuildCategory.svelte';
 	import Tools from 'src/components/widgets/Tools.svelte';
 	import Overlays from 'src/components/widgets/Overlays.svelte';
+	import { page } from '$app/state';
+
+	$inspect(page.data);
+	$inspect(page.data.user);
 </script>
 
 <main>
-	<!-- <h1>Construction - Oxygen not Included</h1> -->
 	<h1>Mode: Build</h1>
 
 	<BuildCategory />
@@ -14,7 +17,6 @@
 	<Tools />
 
 	<Buildings />
-	<!-- <MousePopup content="Hello" /> -->
 </main>
 
 <style>

@@ -14,7 +14,6 @@ function compressBuildingData(buildings: PlacedBuildings[]): Compressed {
 		br: [building.bottom_right.x, building.bottom_right.y],
 		sl: building.scene_layer,
 		ol: building.object_layer,
-		tl2: building.tile_layer,
 		vm: building.view_mode
 	}));
 
@@ -44,7 +43,6 @@ function decompressBuildingData(compressedData: CompressedCanvasData): PlacedBui
 				},
 				scene_layer: building.sl,
 				object_layer: building.ol,
-				tile_layer: building.tl2,
 				view_mode: building.vm
 			})
 		);

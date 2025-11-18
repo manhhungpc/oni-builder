@@ -44,7 +44,6 @@ export interface PlacedBuildings {
 	bottom_right: Position;
 	scene_layer: number;
 	object_layer: number;
-	tile_layer: number;
 	view_mode: number;
 	sprite?: Sprite;
 }

@@ -12,6 +12,7 @@
 	import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
 	import Copy from '@lucide/svelte/icons/copy';
 	import PaintBucket from '@lucide/svelte/icons/paint-bucket';
+	import Menu from '@lucide/svelte/icons/menu';
 	import { ACTION } from '$lib/constant';
 	import { OVERLAY } from '$lib/constant';
 	import { cn } from '$lib/utils';
@@ -23,10 +24,26 @@
 	import { createSharedBlueprint } from '$lib/api/blueprints.api';
 	import ZoomIn from '@lucide/svelte/icons/zoom-in';
 	import ZoomOut from '@lucide/svelte/icons/zoom-out';
+	import Sidebar from 'src/lib/ui/components/Sidebar.svelte';
+	import { loginWithGoogle } from 'src/lib/api/users.api';
 
 	interface Props {
 		shareable?: boolean;
 	}
+
+	const sidebar = [
+		{
+			text: 'Login with Google',
+			path: '',
+			icon: '',
+			action: () => loginWithGoogle()
+		},
+		{
+			text: 'Browse others build',
+			path: '',
+			action: () => loginWithGoogle()
+		}
+	];
 
 	let isSharing = $state(false);
 	let shareError = $state('');
@@ -124,7 +141,28 @@
 	}}
 >
 	<div class="flex flex-col gap-5">
-		<div class="text-xl">Mode: <b>{appConfig.selectedAction}</b></div>
+		<div class="flex justify-between">
+			<div class="text-xl">Mode: <b>{appConfig.selectedAction}</b></div>
+			<Sidebar>
+				{#snippet trigger()}
+					<Button size="icon" class="h-8 w-8 bg-transparent text-white" onclick={() => {}}>
+						<Menu />
+					</Button>
+				{/snippet}
+
+				{#snippet header()}
+					<h1 class="text-xl">Ellie Sticker Bomber</h1>
+				{/snippet}
+
+				{#snippet content()}
+					{#each sidebar as item}
+						<Button class="flex w-full items-center justify-center" onclick={item.action}>
+							{item.text}
+						</Button>
+					{/each}
+				{/snippet}
+			</Sidebar>
+		</div>
 		<div>
 			<span class="mb-2 flex justify-between">
 				<p>Pan speed:</p>
@@ -231,12 +269,14 @@
 		{#if shareUrl}
 			<div class="bg-dark-secondary flex flex-col gap-2 rounded p-2">
 				<small class="text-gray-400">Share URL:</small>
-				<p class="cursor-pointer select-text break-all text-xs text-blue-400">
-					{shareUrl}
-				</p>
-				<Button size="icon" onclick={() => navigator.clipboard.writeText(shareUrl)}>
-					<Copy />
-				</Button>
+				<div class="flex w-56 flex-row items-center gap-1">
+					<p class="select-text truncate text-xs text-blue-400">
+						{shareUrl}
+					</p>
+					<Button size="icon" onclick={() => navigator.clipboard.writeText(shareUrl)}>
+						<Copy />
+					</Button>
+				</div>
 			</div>
 		{/if}
 

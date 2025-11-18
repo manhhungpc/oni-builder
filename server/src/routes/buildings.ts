@@ -25,11 +25,17 @@ router.get(
                 where.OR = [
                     {
                         search_term: {
-                            has: search as string, // Exact match in array
+                            hasSome: [search as string], // Array contains any of these values
                         },
                     },
                     {
                         display_name: {
+                            contains: search as string,
+                            mode: 'insensitive',
+                        },
+                    },
+                    {
+                        name: {
                             contains: search as string,
                             mode: 'insensitive',
                         },

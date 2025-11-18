@@ -29,6 +29,5 @@ export interface SimplifiedBuilding {
 	br: [number, number];
 	sl: number;
 	ol: number;
-	tl2: number;
 	vm: number;
 }

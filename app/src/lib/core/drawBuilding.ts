@@ -67,7 +67,6 @@ function placeOnGridHandler(
 				display_name: buildingData.display_name,
 				object_layer: buildingData.object_layer,
 				scene_layer: buildingData.scene_layer,
-				tile_layer: buildingData.tile_layer,
 				view_mode: buildingData.view_mode ?? 0,
 				top_left: buildingWorldPosition.topLeft,
 				bottom_right: buildingWorldPosition.bottomRight,

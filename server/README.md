@@ -31,12 +31,6 @@ If `--file` and `--folder` argument in the same command, onlym`--file` argument 
 
 > **Note: On Windows, command with arguments must be run in `Git Bash` command line, or else it won't work**
 
-### Prerequisites
+### Commands
 
-Before seeding:
-
-1. Ensure MongoDB is running
-2. Run `npm install` to install dependencies
-3. Run `npx prisma generate` to generate Prisma client
-4. Run `npx prisma db push` to sync the schema (especially important for the unique constraint on name)
-5. Set up your `.env` file with `DATABASE_URL`
+Ngork: `ngrok http 3003 --config "/path/to/ngrok-personal.yml"`
