@@ -6,23 +6,27 @@
 		trigger: any;
 		header?: any;
 		content: any;
+		footer?: any;
 	}
 
-	let { trigger, header, content }: Props = $props();
+	let { trigger, header, content, footer }: Props = $props();
 </script>
 
-<Drawer.Root direction="right" class="border-0">
+<Drawer.Root direction="right">
 	<Drawer.Trigger>
 		{@render trigger()}
 	</Drawer.Trigger>
 	<Drawer.Content>
-		<Drawer.Header class="bg-dark-primary flex flex-row items-center justify-between">
+		<Drawer.Header class=" flex flex-row items-center justify-between ">
 			{@render header?.()}
 			<Drawer.Close class="ml-auto"><X /></Drawer.Close>
 		</Drawer.Header>
-		<div class="bg-dark-primary h-full p-4 text-white">
+		<div class="border-dark-active mx-4 h-full border-b text-white">
 			{@render content()}
 		</div>
+		<Drawer.Footer>
+			{@render footer?.()}
+		</Drawer.Footer>
 	</Drawer.Content>
 </Drawer.Root>
 

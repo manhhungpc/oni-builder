@@ -4,9 +4,6 @@
 	import Tools from 'src/components/widgets/Tools.svelte';
 	import Overlays from 'src/components/widgets/Overlays.svelte';
 	import { page } from '$app/state';
-
-	$inspect(page.data);
-	$inspect(page.data.user);
 </script>
 
 <main>

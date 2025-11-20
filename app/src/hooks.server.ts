@@ -3,7 +3,6 @@ import type { Handle } from '@sveltejs/kit';
 export const handle: Handle = async ({ event, resolve }) => {
 	// Get the JWT token from cookies
 	const token = event.cookies.get('jwt_esb');
-	console.log('🐧 ~ handle ~ token:', token);
 
 	if (token) {
 		try {

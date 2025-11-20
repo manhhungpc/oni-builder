@@ -25,7 +25,14 @@
 	import ZoomIn from '@lucide/svelte/icons/zoom-in';
 	import ZoomOut from '@lucide/svelte/icons/zoom-out';
 	import Sidebar from 'src/lib/ui/components/Sidebar.svelte';
-	import { loginWithGoogle } from 'src/lib/api/users.api';
+	import { loginWithGoogle, logout } from 'src/lib/api/users.api';
+	import { page } from '$app/state';
+	import type { Component } from 'svelte';
+	import GoogleLogo from '$lib/assets/google-logo.svg';
+	import Hammer from '@lucide/svelte/icons/hammer';
+	import Users from '@lucide/svelte/icons/users';
+	import { goto } from '$app/navigation';
+	import Guide from 'src/lib/ui/components/Guide.svelte';
 
 	interface Props {
 		shareable?: boolean;
@@ -33,15 +40,15 @@
 
 	const sidebar = [
 		{
-			text: 'Login with Google',
-			path: '',
-			icon: '',
+			text: page.data.user ? 'My collection' : 'Login with Google',
+			class: page.data.user && 'bg-orange-primary hover:bg-orange-6',
+			icon: page.data.user ? Hammer : GoogleLogo,
 			action: () => loginWithGoogle()
 		},
 		{
 			text: 'Browse others build',
-			path: '',
-			action: () => loginWithGoogle()
+			icon: Users,
+			action: () => goto('/blueprints')
 		}
 	];
 
@@ -134,7 +141,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
-	class="bg-dark-primary fixed right-2 top-20 z-20 min-w-64 rounded-md border border-red-500 p-4"
+	class="bg-dark-primary border-orange-primary fixed right-2 top-20 z-20 min-w-64 rounded-md border p-4"
 	onclick={() => {
 		// Dispatch custom event to close building modal
 		window.dispatchEvent(new CustomEvent('close-building-modal'));
@@ -143,25 +150,7 @@
 	<div class="flex flex-col gap-5">
 		<div class="flex justify-between">
 			<div class="text-xl">Mode: <b>{appConfig.selectedAction}</b></div>
-			<Sidebar>
-				{#snippet trigger()}
-					<Button size="icon" class="h-8 w-8 bg-transparent text-white" onclick={() => {}}>
-						<Menu />
-					</Button>
-				{/snippet}
-
-				{#snippet header()}
-					<h1 class="text-xl">Ellie Sticker Bomber</h1>
-				{/snippet}
-
-				{#snippet content()}
-					{#each sidebar as item}
-						<Button class="flex w-full items-center justify-center" onclick={item.action}>
-							{item.text}
-						</Button>
-					{/each}
-				{/snippet}
-			</Sidebar>
+			{@render tool_sidebar()}
 		</div>
 		<div>
 			<span class="mb-2 flex justify-between">
@@ -191,7 +180,7 @@
 			</span>
 		</div>
 
-		<div class="flex items-center justify-between">
+		<!-- <div class="flex items-center justify-between">
 			<p>Enable foundation check</p>
 			<Switch disabled class="disabled:!cursor-not-allowed" />
 		</div>
@@ -199,65 +188,17 @@
 		<div class="flex items-center justify-between">
 			<p>Show liquid/gas flow</p>
 			<Switch disabled class="disabled:!cursor-not-allowed" />
-		</div>
+		</div> -->
 
 		<div class="flex gap-2">
-			<Tooltip.Provider delayDuration={0}>
-				<Tooltip.Root>
-					<Tooltip.Trigger
-						size="icon"
-						class={getActionButtonClass(ACTION.SELECT)}
-						onclick={() => onActionClick(ACTION.SELECT)}
-					>
-						<MousePointer2 />
-					</Tooltip.Trigger>
-					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Select building / View properties</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-			<Tooltip.Provider delayDuration={0}>
-				<Tooltip.Root>
-					<Tooltip.Trigger
-						size="icon"
-						class={getActionButtonClass(ACTION.FILL)}
-						onclick={() => onActionClick(ACTION.FILL)}
-					>
-						<PaintBucket />
-					</Tooltip.Trigger>
-					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Fill element</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-			<Tooltip.Provider delayDuration={0}>
-				<Tooltip.Root>
-					<Tooltip.Trigger
-						size="icon"
-						class={getActionButtonClass(ACTION.CUT)}
-						onclick={() => onActionClick(ACTION.CUT)}
-					>
-						<ScissorsLineDashed />
-					</Tooltip.Trigger>
-					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Cut connection</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-			<Tooltip.Provider delayDuration={0}>
-				<Tooltip.Root>
-					<Tooltip.Trigger
-						size="icon"
-						class={getActionButtonClass(ACTION.DELETE)}
-						onclick={() => onActionClick(ACTION.DELETE)}
-					>
-						<OctagonMinus />
-					</Tooltip.Trigger>
-					<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
-						<p>Delete building</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
+			{@render button_with_tooltip(
+				ACTION.SELECT,
+				MousePointer2,
+				'Select building / View properties'
+			)}
+			<!-- {@render button_with_tooltip(ACTION.FILL, PaintBucket, 'Fill element')} -->
+			{@render button_with_tooltip(ACTION.CUT, ScissorsLineDashed, 'Cut pipes connection')}
+			{@render button_with_tooltip(ACTION.DELETE, OctagonMinus, 'Delete building')}
 		</div>
 		{#if appConfig.selectedAction == ACTION.CUT}
 			<small class="text-yellow-4 flex items-center gap-2">
@@ -282,7 +223,7 @@
 
 		{#if shareable}
 			<Button
-				class="hover:bg-dark-active bg-red-500 hover:cursor-pointer disabled:opacity-50"
+				class="bg-orange-primary hover:bg-orange-6 hover:cursor-pointer disabled:opacity-50"
 				onclick={handleShareUrl}
 				disabled={isSharing}
 			>
@@ -294,3 +235,72 @@
 		{/if}
 	</div>
 </div>
+
+{#snippet button_with_tooltip(action: ACTION, IconComponent: Component, tooltipText: string)}
+	<Tooltip.Provider delayDuration={0}>
+		<Tooltip.Root>
+			<Tooltip.Trigger
+				size="icon"
+				class={getActionButtonClass(action)}
+				onclick={() => onActionClick(action)}
+			>
+				<IconComponent />
+			</Tooltip.Trigger>
+			<Tooltip.Content class="bg-white text-black" arrowClasses="bg-white">
+				<p>{tooltipText}</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
+{/snippet}
+
+{#snippet tool_sidebar()}
+	<Sidebar>
+		{#snippet trigger()}
+			<Button size="icon" class="border-orange-6 h-8 w-8 border bg-transparent text-white">
+				<Menu />
+			</Button>
+		{/snippet}
+
+		{#snippet header()}
+			<h1 class=" text-xl">Ellie Sticker Bomber</h1>
+		{/snippet}
+
+		{#snippet content()}
+			{#if page.data.user}
+				<div class="flex items-start justify-between gap-3">
+					<div class="mb-4 flex flex-col justify-center">
+						<span class="text-gray-primary text-xs">Welcome,</span>
+						<span class="text-lg font-bold text-white">{page.data.user.name}</span>
+					</div>
+					<img src={page.data.user.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
+				</div>
+			{/if}
+			{#each sidebar as item}
+				<Button
+					class={cn(
+						'bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center',
+						item.class
+					)}
+					onclick={item.action}
+				>
+					{#if typeof item.icon === 'string'}
+						<img src={item.icon} alt="icon" class="h-4 w-4" />
+					{:else if item.icon}
+						<item.icon />
+					{/if}
+					<p>{item.text}</p>
+				</Button>
+			{/each}
+			<Guide />
+		{/snippet}
+
+		{#snippet footer()}
+			<Button
+				class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
+				onclick={() => logout()}
+			>
+				Log out
+			</Button>
+		{/snippet}
+	</Sidebar>
+{/snippet}
