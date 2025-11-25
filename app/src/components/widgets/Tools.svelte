@@ -19,7 +19,7 @@
 	import {
 		compressBuildingData,
 		compressBuildingConnectionData
-	} from '$lib/compression/compressData';
+	} from '$lib/blueprint-data/compress';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
 	import { createSharedBlueprint } from '$lib/api/blueprints.api';
 	import ZoomIn from '@lucide/svelte/icons/zoom-in';
@@ -107,9 +107,9 @@
 
 	function onActionClick(action: ACTION) {
 		appConfig.selectedAction = action;
+		appConfig.selectedToBuild = null;
 		if (action == ACTION.CUT) {
 			appConfig.selectedOverlay = OVERLAY.PLUMBING;
-			appConfig.selectedToBuild = null;
 		}
 	}
 

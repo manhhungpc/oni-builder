@@ -4,6 +4,7 @@ import type { ConduitNode } from 'src/interface/building';
 import { SvelteMap } from 'svelte/reactivity';
 import { Camera } from '$lib/rendering/camera';
 import { Renderer as AppRenderer } from '$lib/rendering/renderer';
+import { CONDUIT_TYPE, PORT } from '$lib/constant';
 
 export enum ConduitType {
 	LIQUID = 'liquid',
@@ -78,6 +79,42 @@ class BlueprintState {
 
 		// Initial grid render
 		gridRenderer.draw();
+	}
+
+	getPortsByConduitType(conduitType: CONDUIT_TYPE): Map<string, PORT> {
+		const allPorts = new Map<string, PORT>();
+
+		for (const building of this.placedBuildings) {
+			if (building.ports) {
+				for (const port of building.ports) {
+					if (port.type === conduitType) {
+						// Convert relative offset to absolute grid position
+						const absX = building.top_left.x + port.offset.x;
+						const absY = building.top_left.y + port.offset.y;
+						const absoluteKey = `${absX},${absY}`;
+						allPorts.set(absoluteKey, port.direction);
+					}
+				}
+			}
+		}
+
+		return allPorts;
+	}
+
+	removeBuilding(building: PlacedBuildings) {
+		building.sprite?.destroy();
+
+		if (building.ports) {
+			for (const port of building.ports) {
+				port.sprite?.destroy();
+			}
+		}
+
+		// Remove from array
+		const index = this.placedBuildings.indexOf(building);
+		if (index > -1) {
+			this.placedBuildings.splice(index, 1);
+		}
 	}
 }
 

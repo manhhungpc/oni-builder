@@ -4,7 +4,7 @@ import { getBlueprintByShareId } from '$lib/api/blueprints.api';
 import {
 	decompressBuildingData,
 	decompressBuildingConnectionData
-} from '$lib/compression/compressData';
+} from '$lib/blueprint-data/compress';
 
 export const load: PageLoad = async ({ params }) => {
 	console.log(params.id);

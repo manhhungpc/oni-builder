@@ -2,7 +2,7 @@ import type { Application, Container, Renderer, Sprite } from 'pixi.js';
 import { OVERLAY } from 'src/lib/constant';
 import type { Camera } from '$lib/rendering/camera';
 import type { IBuilding, Position } from 'src/interface/building';
-import type { ACTION } from 'src/lib/constant';
+import type { ACTION, CONDUIT_TYPE, PORT } from 'src/lib/constant';
 
 export interface GlobalState {
 	pixiApp: null | Application<Renderer>;
@@ -46,6 +46,12 @@ export interface PlacedBuildings {
 	object_layer: number;
 	view_mode: number;
 	sprite?: Sprite;
+	ports?: Array<{
+		offset: Position;
+		type: CONDUIT_TYPE;
+		direction: PORT;
+		sprite?: Sprite;
+	}>;
 }
 
 export interface BuildingBounds {

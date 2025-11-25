@@ -3,29 +3,24 @@
 	import { blueprint } from '$lib/state/blueprint.svelte';
 	import { appConfig, mousePosition, message } from '$lib/state/config.svelte';
 	import Layers from 'src/components/Layers.svelte';
-	import {
-		liquidPorts,
-		gasPorts,
-		conveyorPorts,
-		powerPorts,
-		logicPorts
-	} from '$lib/state/ports.svelte';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
-	import { OVERLAY } from '$lib/constant';
+	import { OVERLAY, CONDUIT_TYPE } from '$lib/constant';
 	import { Controller } from '$lib/core/controller';
-	import { ACTION, CELL_SIZE, MOUSE_CLICK, CONDUIT_TYPE, PORT } from '$lib/constant';
+	import { ACTION, CELL_SIZE, MOUSE_CLICK } from '$lib/constant';
 	import { drawBuilding } from '$lib/core/drawBuilding';
 	import { dragDrawBuilding, updateGridTexture } from '$lib/core/connectConduit';
 	import { previewBuilding } from '$lib/core/preview';
-	import { calculateBuildingOffset, getBuildingBounds } from '$lib/core/positioning';
-	import { createPlacementSprite, cleanupAttachSprite, loadSprites } from '$lib/rendering/pixi';
+	import { calculateBuildingOffset } from '$lib/core/positioning';
+	import { createPlacementSprite, cleanupAttachSprite } from '$lib/rendering/pixi';
 	import type { ConduitNode, PlacementState } from 'src/interface/building';
 	import MousePopup from '$lib/ui/components/MousePopup.svelte';
-	import { worldToGrid, gridToWorld } from '$lib/utils/grid/transform';
+	import { worldToGrid } from '$lib/utils/grid/transform';
 	import { getConduitList } from '$lib/utils/helpers';
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
-	import { listBuilding } from '$lib/api/buildings.api';
+	import { loadSavedBuildings, loadSavedConnections } from '$lib/blueprint-data/loader';
+	import type { Camera } from 'src/lib/rendering/camera';
+	import { checkBuildingBoundary, createDeleteHighlight } from 'src/lib/utils';
 
 	interface Props {
 		savedBuildings?: PlacedBuildings[];
@@ -88,6 +83,17 @@
 				const { gridX, gridY } = worldToGrid(clickedPosition);
 
 				console.log(`Grid Position: (${gridX}, ${gridY})`);
+				console.log(blueprint.placedBuildings);
+				if (appConfig.selectedAction === ACTION.DELETE) {
+					for (let placedBuilding of blueprint.placedBuildings) {
+						const isDeleting = checkBuildingBoundary({ x: gridX, y: gridY }, placedBuilding);
+						if (isDeleting) {
+							// Use the new method that handles building and port sprite cleanup
+							blueprint.removeBuilding(placedBuilding);
+							break;
+						}
+					}
+				}
 			}
 			if (event.button === MOUSE_CLICK.RIGHT) {
 				isPanning = true;
@@ -108,6 +114,10 @@
 				gridRenderer.draw();
 
 				lastPanPosition = { x: event.global.x, y: event.global.y };
+			} else {
+				// if (appConfig.selectedAction === ACTION.DELETE) {
+				createDeleteHighlight(event);
+				// }
 			}
 		});
 
@@ -142,165 +152,10 @@
 		});
 
 		if (savedBuildings) {
-			loadSavedBuildings(buildContainer).catch(console.error);
+			loadSavedBuildings(buildContainer, savedBuildings).catch(console.error);
 		}
 		if (savedConnections) {
-			loadSavedConnections();
-		}
-	}
-
-	// Load saved buildings onto the canvas
-	async function loadSavedBuildings(container: PIXI.Container) {
-		if (!savedBuildings || !blueprint.pixiApp || !container) return;
-
-		const buildingsToLoad: PlacedBuildings[] = savedBuildings;
-
-		// Get unique building names to fetch from API
-		const uniqueNames = [...new Set(buildingsToLoad.map((b) => b.display_name))];
-
-		// Create a map of building display_name to full building data
-		const buildingDataMap = new Map<string, IBuilding>();
-
-		// Fetch building data for each unique building type
-		for (const displayName of uniqueNames) {
-			try {
-				const buildings = await listBuilding({ search: displayName });
-				const building = buildings.find((b) => b.display_name === displayName);
-				if (building) {
-					buildingDataMap.set(displayName, building);
-				}
-			} catch (error) {
-				console.error(`Failed to fetch building data for ${displayName}:`, error);
-			}
-		}
-
-		// Load sprites for all buildings
-		const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
-		const buildingsToLoadSprites = Array.from(buildingDataMap.values());
-		if (buildingsToLoadSprites.length > 0) {
-			await loadSprites(buildingsToLoadSprites, BASE_IMG_PATH);
-		}
-
-		// Place each building on the canvas
-		for (const savedBuilding of buildingsToLoad) {
-			const buildingData = buildingDataMap.get(savedBuilding.display_name);
-			if (!buildingData) {
-				console.warn(`Building data not found for ${savedBuilding.display_name}`);
-				continue;
-			}
-
-			// Reconstruct original grid position from saved top_left
-			const bound = getBuildingBounds(buildingData);
-			const gridX = savedBuilding.top_left.x - bound.minX;
-			const gridY = savedBuilding.top_left.y + bound.maxY;
-
-			// Create and place the building sprite
-			const buildingSprite = PIXI.Sprite.from(buildingData.name);
-			const offset = calculateBuildingOffset(buildingData);
-
-			buildingSprite.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
-			buildingSprite.width = buildingData.width * CELL_SIZE;
-			buildingSprite.height = buildingData.height * CELL_SIZE;
-			buildingSprite.zIndex = savedBuilding.scene_layer;
-			container.addChild(buildingSprite);
-
-			// Add to placedBuildings array
-			blueprint.placedBuildings.push(savedBuilding);
-
-			// Reconstruct ports
-			reconstructBuildingPorts(buildingData, gridX, gridY);
-		}
-	}
-
-	// Load saved connections into global state
-	function loadSavedConnections() {
-		if (!savedConnections) return;
-
-		// Map connection types to their corresponding global stores
-		const connectionMap = {
-			liquidPipes: blueprint.placedConduits[ConduitType.LIQUID],
-			gasPipes: blueprint.placedConduits[ConduitType.GAS],
-			wires: blueprint.placedConduits[ConduitType.WIRE],
-			logicWires: blueprint.placedConduits[ConduitType.LOGIC_WIRE],
-			conveyor: blueprint.placedConduits[ConduitType.CONVEYOR]
-		};
-
-		// Iterate through each connection type and populate the global stores
-		for (const [connectionType, connectionData] of Object.entries(savedConnections)) {
-			const globalStore = connectionMap[connectionType as keyof typeof connectionMap];
-
-			if (globalStore && connectionData) {
-				// Clear existing connections
-				globalStore.clear();
-
-				// Populate with saved connections
-				connectionData.forEach((nodeData: ConduitNode, key: string) => {
-					globalStore.set(key, nodeData);
-				});
-			}
-		}
-	}
-
-	// Reconstruct port connections for a building
-	function reconstructBuildingPorts(building: IBuilding, gridX: number, gridY: number) {
-		// Handle conduit ports (liquid/gas)
-		if (building.conduit) {
-			if (
-				building.conduit.input_type !== undefined &&
-				building.conduit.input_type !== null &&
-				building.conduit.input_offset
-			) {
-				const inputX = gridX + building.conduit.input_offset.x;
-				const inputY = gridY - building.conduit.input_offset.y; // Correct: minus for y-axis flip
-				const key = `${inputX},${inputY}`;
-
-				if (building.conduit.input_type === CONDUIT_TYPE.LIQUID) {
-					liquidPorts.set(key, PORT.INPUT);
-				} else if (building.conduit.input_type === CONDUIT_TYPE.GAS) {
-					gasPorts.set(key, PORT.INPUT);
-				}
-			}
-
-			if (
-				building.conduit.output_type !== undefined &&
-				building.conduit.output_type !== null &&
-				building.conduit.output_offset
-			) {
-				const outputX = gridX + building.conduit.output_offset.x;
-				const outputY = gridY - building.conduit.output_offset.y; // Correct: minus for y-axis flip
-				const key = `${outputX},${outputY}`;
-
-				if (building.conduit.output_type === CONDUIT_TYPE.LIQUID) {
-					liquidPorts.set(key, PORT.OUTPUT);
-				} else if (building.conduit.output_type === CONDUIT_TYPE.GAS) {
-					gasPorts.set(key, PORT.OUTPUT);
-				}
-			}
-		}
-
-		// Handle power ports
-		if (building.power_port) {
-			if (building.power_port.input_offset) {
-				const inputX = gridX + building.power_port.input_offset.x;
-				const inputY = gridY - building.power_port.input_offset.y; // Correct: minus for y-axis flip
-				powerPorts.set(`${inputX},${inputY}`, PORT.INPUT);
-			}
-
-			if (building.power_port.output_offset) {
-				const outputX = gridX + building.power_port.output_offset.x;
-				const outputY = gridY - building.power_port.output_offset.y; // Correct: minus for y-axis flip
-				powerPorts.set(`${outputX},${outputY}`, PORT.OUTPUT);
-			}
-		}
-
-		// Handle logic ports
-		if (building.logic_port && building.logic_port.length > 0) {
-			for (const port of building.logic_port) {
-				const portX = gridX + port.offset.x;
-				const portY = gridY - port.offset.y; // Correct: minus for y-axis flip
-				const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
-				logicPorts.set(`${portX},${portY}`, portType);
-			}
+			loadSavedConnections(savedConnections);
 		}
 	}
 
@@ -477,31 +332,31 @@
 	<canvas bind:this={canvasElement}></canvas>
 	<Layers
 		overlayType={OVERLAY.POWER}
-		ports={powerPorts}
+		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
 		connections={blueprint.placedConduits[ConduitType.WIRE]}
 		containerLabel="Power Wires"
 	/>
 	<Layers
 		overlayType={OVERLAY.PLUMBING}
-		ports={liquidPorts}
+		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
 		connections={blueprint.placedConduits[ConduitType.LIQUID]}
 		containerLabel="Liquid Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.VENTILATION}
-		ports={gasPorts}
+		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.GAS)}
 		connections={blueprint.placedConduits[ConduitType.GAS]}
 		containerLabel="Gas Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.AUTOMATION}
-		ports={logicPorts}
+		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
 		connections={blueprint.placedConduits[ConduitType.LOGIC_WIRE]}
 		containerLabel="Automation"
 	/>
 	<Layers
 		overlayType={OVERLAY.SHIPPING}
-		ports={conveyorPorts}
+		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.CONVEYOR)}
 		connections={blueprint.placedConduits[ConduitType.CONVEYOR]}
 		containerLabel="Conveyor"
 	/>
