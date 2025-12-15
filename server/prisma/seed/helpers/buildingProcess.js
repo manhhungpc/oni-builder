@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { extractSpriteSheet, getSpriteInfo } = require('./spriteExtractor');
+const { extractSpriteSheet, getSpriteInfo } = require('./conduitSpriteExtractor');
 const dataReader = require('./dataReader');
 const { extractAdditionalBuildingData, extractLogicPortData } = require('./extraDataExtractor');
 
@@ -53,8 +53,7 @@ async function processBuildingData(buildingData, categoryData) {
     return {
         name: buildingData.PrefabID || buildingData.name,
         display_name: getDisplayName(buildingData.Name),
-        display_image: process.env.UI_IMAGE_PATH + buildingData.PrefabID + '.png',
-        texture_name: textureData.textureName,
+        texture_name: buildingData.TextureName,
         special_texture,
         width: buildingData.WidthInCells,
         height: buildingData.HeightInCells,
