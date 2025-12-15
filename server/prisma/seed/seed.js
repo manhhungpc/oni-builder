@@ -23,7 +23,7 @@ async function main() {
 
         // Get the project root (parent of server directory)
         const projectRoot = path.join(__dirname, '../../..');
-        let targetPath = path.join(projectRoot, 'data/database_base/building.json');
+        let targetPath = path.join(projectRoot, 'data/database_base/building_2025.json');
 
         if (folderArgIndex !== -1 && args[folderArgIndex + 1]) {
             targetPath = path.join(projectRoot, args[folderArgIndex + 1]);
@@ -67,7 +67,10 @@ async function seedFromFile(jsonFilePath) {
         for (const buildingData of jsonData.buildingDefs) {
             if (buildingData.Deprecated) continue;
             console.log(`[Seed] Processing: ${buildingData.PrefabID}`);
-            const processedData = await processBuildingData(buildingData, jsonData.buildingAndSubcategoryDataPairs);
+            const processedData = await processBuildingData(
+                buildingData,
+                jsonData.buildingAndSubcategoryDataPairs
+            );
             buildingsToInsert.push(processedData);
         }
 
@@ -82,15 +85,18 @@ async function seedFromFile(jsonFilePath) {
                         where: { name: building.name },
                         data: building,
                     });
-                    console.log(`✓ Updated building: ${building.display_name}`);
+                    console.log(`Updated building: ${building.display_name}`);
                 } else {
                     await prisma.building.create({
                         data: building,
                     });
-                    console.log(`✓ Created building: ${building.display_name}`);
+                    console.log(`Created building: ${building.display_name}`);
                 }
             } catch (error) {
-                console.error(`✗ Failed to process building: ${building.display_name}`, error.message);
+                console.error(
+                    `Failed to process building: ${building.display_name}`,
+                    error.message
+                );
                 // throw new Error(error);
             }
         }

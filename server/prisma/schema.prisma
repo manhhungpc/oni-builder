@@ -11,29 +11,28 @@ model Building {
   id                 String   @id @default(uuid())
   name               String   @unique
   display_name       String
-  display_image      String
   texture_name       String
   special_texture    String[] // For things like "pipes", "wires" that has different texture when draw on canvas
   width              Int
   height             Int
-  placement_offset   Json     // JSONB
+  placement_offset   Json // JSONB
   scene_layer        Int      @default(0)
   object_layer       Int      @default(0)
   tile_layer         Int      @default(0)
   search_term        String[]
-  is_drag_build      Boolean  // "DragBuild" field
-  is_need_foundation Boolean  // "ContinuouslyCheckFoundation" field
+  is_drag_build      Boolean // "DragBuild" field
+  is_need_foundation Boolean // "ContinuouslyCheckFoundation" field
   is_foundation      Boolean
-  category           String?  // "buildingAndSubcategoryDataPairs"
+  category           String? // "buildingAndSubcategoryDataPairs"
   type               String?
   view_mode          Int?
   build_rule         Int
 
   // Store as JSONB instead of separate tables
-  materials          Json     // JSONB: Material[]
-  conduit            Json?    // JSONB: Conduit | null
-  logic_port         Json     // JSONB: LogicPort[]
-  power_port         Json?    // JSONB: PowerPort | null
+  materials  Json // JSONB: Material[]
+  conduit    Json? // JSONB: Conduit | null
+  logic_port Json // JSONB: LogicPort[]
+  power_port Json? // JSONB: PowerPort | null
 
   // Indexes for query optimization
   @@index([category])
@@ -57,8 +56,8 @@ model Blueprint {
   id          String    @id @default(uuid())
   shareId     String    @unique
   name        String
-  buildings   Json      // JSONB - compressed building data
-  connections Json?     // JSONB - compressed connection data (optional)
+  buildings   Json // JSONB - compressed building data
+  connections Json? // JSONB - compressed connection data (optional)
   lastViewAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

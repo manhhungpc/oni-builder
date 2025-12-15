@@ -9,7 +9,9 @@
 	import { ACTION, CATEGORY } from '$lib/constant';
 	import { appConfig } from 'src/lib/state/config.svelte';
 
-	const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
+	// const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
+	const BASE_IMG_PATH = import.meta.env.VITE_API_URL;
+
 	const categories = [
 		{ id: CATEGORY.BASE, name: 'Base', icon: 'icon_category_base.png' },
 		{ id: CATEGORY.OXYGEN, name: 'Oxygen', icon: 'icon_category_oxygen.png' },
@@ -132,7 +134,7 @@
 				>
 					<div class="h-14 w-14">
 						<img
-							src={building.display_image}
+							src={BASE_IMG_PATH + '/ui_images/' + building.name + '.png'}
 							alt={building.display_name}
 							class="h-full w-full object-contain"
 						/>

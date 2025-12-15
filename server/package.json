@@ -6,9 +6,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
     "db:seed": "node prisma/seed/seed.js",
+    "db:migrate:dev": "npx prisma migrate dev",
+    "db:migrate:deploy": "npx prisma migrate deploy",
     "swagger-autogen": "node swagger.js"
   },
   "keywords": [],

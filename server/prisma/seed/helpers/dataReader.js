@@ -9,7 +9,7 @@ class DataReader {
 
     loadData() {
         const dataFiles = {
-            building: 'data/database_base/building.json',
+            building: 'data/database_base/building_2025.json',
             building_2020: 'data/database_base/database_2020.json',
             uvSprite: 'data/database_base/uvSprite.json',
             uiSpriteInfo: 'data/database_base/uiSpriteInfo.json',
