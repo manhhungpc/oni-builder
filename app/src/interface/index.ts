@@ -50,6 +50,7 @@ export interface PlacedBuildings {
 		offset: Position;
 		type: CONDUIT_TYPE;
 		direction: PORT;
+		category: number;
 		sprite?: Sprite;
 	}>;
 }

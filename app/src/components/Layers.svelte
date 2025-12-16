@@ -49,26 +49,26 @@
 		}
 	}
 
-	function getPortSpriteAlias() {
-		if (
-			overlayType == OVERLAY.PLUMBING ||
-			overlayType == OVERLAY.VENTILATION ||
-			overlayType == OVERLAY.SHIPPING
-		) {
-			portSpriteInput = 'conduit_input';
-			portSpriteOutput = 'conduit_output';
-		}
+	// function getPortSpriteAlias() {
+	// 	if (
+	// 		overlayType == OVERLAY.PLUMBING ||
+	// 		overlayType == OVERLAY.VENTILATION ||
+	// 		overlayType == OVERLAY.SHIPPING
+	// 	) {
+	// 		portSpriteInput = 'conduit_input';
+	// 		portSpriteOutput = 'conduit_output';
+	// 	}
 
-		if (overlayType == OVERLAY.POWER) {
-			portSpriteInput = 'power_port';
-			portSpriteOutput = 'power_port';
-		}
+	// 	if (overlayType == OVERLAY.POWER) {
+	// 		portSpriteInput = 'power_port';
+	// 		portSpriteOutput = 'power_port';
+	// 	}
 
-		if (overlayType == OVERLAY.AUTOMATION) {
-			portSpriteInput = 'logic_input';
-			portSpriteOutput = 'logic_output';
-		}
-	}
+	// 	if (overlayType == OVERLAY.AUTOMATION) {
+	// 		portSpriteInput = 'logic_input';
+	// 		portSpriteOutput = 'logic_output';
+	// 	}
+	// }
 
 	// Load sprites only in the browser
 	onMount(() => {
@@ -102,7 +102,7 @@
 		connections.forEach((nodeData: ConduitNode) => {
 			if (nodeData.metadata.sprite) {
 				nodeData.metadata.sprite.alpha = isActiveOverlay ? FULL_OPACITY : DEFAULT_OPACITY;
-				nodeData.metadata.sprite.zIndex = isActiveOverlay ? 99 : 1;
+				nodeData.metadata.sprite.zIndex = isActiveOverlay ? 100 : 1;
 			}
 		});
 
@@ -115,10 +115,19 @@
 			} else {
 				building.sprite.zIndex = building.scene_layer;
 			}
+
+			// Update port visibility based on current overlay
+			if (building.ports) {
+				for (const port of building.ports) {
+					if (port.sprite) {
+						port.sprite.visible = port.category == currentOverlay;
+					}
+				}
+			}
 		});
 
 		// Draw port sprites for each port
-		getPortSpriteAlias();
+		// getPortSpriteAlias();
 		ports.forEach((portType, gridKey) => {
 			const [gridX, gridY] = gridKey.split(',').map(Number);
 
@@ -137,7 +146,7 @@
 				portSprite.y = worldPos.y + CELL_SIZE / 4;
 
 				if (overlayContainer) {
-					overlayContainer.addChild(portSprite);
+					// overlayContainer.addChild(portSprite);
 				}
 			} catch (error) {
 				console.warn(`Failed to create sprite for ${spriteName}:`, error);

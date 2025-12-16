@@ -11,8 +11,7 @@ const sharp = require('sharp');
 
 const BUILDING_2025_PATH = path.join(__dirname, '../database_base/building_2025.json');
 const BUILDING_UV_DIR = path.join(__dirname, '../uv_images');
-const TEXTURE_OUTPUT_DIR = path.join(__dirname, '../building_uv');
-const DISPLAY_OUTPUT_DIR = path.join(__dirname, '../building_ui');
+const TEXTURE_OUTPUT_DIR = path.join(__dirname, '../draw_images');
 const PADDING = 20;
 
 // ============================================================================

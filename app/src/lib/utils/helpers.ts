@@ -22,9 +22,9 @@ export function debounce<T extends (...args: any[]) => any>(
 	};
 }
 
-export function getAliasFromUrl(url: string) {
+export function getAliasFromPath(path: string) {
 	// Get file name (alias) from special_texture in Building
-	const filename = url.split('/').pop();
+	const filename = path.split('/').pop();
 	if (!filename) return '';
 	return filename.split('.').slice(0, -1).join('.');
 }

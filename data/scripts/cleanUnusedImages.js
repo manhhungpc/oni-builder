@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths
-const buildingUvDir = path.join(__dirname, '..', 'building_uv');
+const drawImagesDir = path.join(__dirname, '..', 'draw_images');
 const uiImageDir = path.join(__dirname, '..', 'ui_images');
 const buildingJsonPath = path.join(__dirname, '..', 'database_base', 'building_2025.json');
 
@@ -14,7 +14,7 @@ function extractBlockTileAtlasName(atlas) {
     return null;
 }
 
-// Read the building JSON and extract texture names for building_uv
+// Read the building JSON and extract texture names for /draw_images
 function getUsedUvTextureNames() {
     const jsonData = JSON.parse(fs.readFileSync(buildingJsonPath, 'utf8'));
     const textureNames = new Set();
@@ -135,7 +135,7 @@ function printUsage() {
     console.log('Usage: node cleanUnusedImages.js [options] [target]');
     console.log('');
     console.log('Targets:');
-    console.log('  --uv       Clean building_uv directory (default)');
+    console.log('  --uv       Clean draw_images directory (default)');
     console.log('  --ui       Clean ui_images directory');
     console.log('  --all      Clean both directories');
     console.log('');
@@ -167,7 +167,7 @@ if (!executeMode) {
 }
 
 if (cleanUv) {
-    cleanUnusedImages(buildingUvDir, getUsedUvTextureNames, 'building_uv', !executeMode);
+    cleanUnusedImages(drawImagesDir, getUsedUvTextureNames, 'draw_images', !executeMode);
 }
 
 if (cleanUi) {

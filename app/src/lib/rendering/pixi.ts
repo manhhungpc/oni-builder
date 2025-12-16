@@ -4,7 +4,7 @@ import { CELL_SIZE } from '$lib/constant';
 import type { AssetConfig } from 'src/interface';
 import type { IBuilding } from 'src/interface/building';
 import type { PlacementState } from 'src/interface/building';
-import { getAliasFromUrl } from '$lib/utils/helpers';
+import { getAliasFromPath } from '$lib/utils/helpers';
 
 export const drawInfiniteGrid = (
 	container: PIXI.Container | null,
@@ -60,17 +60,24 @@ export async function loadSprites(buildings: IBuilding[], baseImgPath?: string):
 		});
 
 		if (building.special_texture.length > 0) {
-			for (const urlTexture of building.special_texture) {
-				const alias = getAliasFromUrl(urlTexture);
+			for (const texturePath of building.special_texture) {
+				const alias = getAliasFromPath(texturePath);
 				assetsToLoad.push({
 					alias: alias,
-					src: urlTexture
+					src: baseImgPath + '/' + texturePath
 				});
 			}
 		}
 	}
 
-	await Assets.load(assetsToLoad);
+	// Load in parallel but handle individual failures
+	const loadAll = await Promise.allSettled(assetsToLoad.map((asset) => Assets.load(asset)));
+
+	loadAll.forEach((result, i) => {
+		if (result.status === 'rejected') {
+			console.warn(`Failed to load: ${assetsToLoad[i].src}`);
+		}
+	});
 }
 
 export function cleanupAttachSprite(
@@ -116,7 +123,11 @@ export function createPlacementSprite(
 	if (building.special_texture.length > 0) {
 		const defaultTextureUrl = building.special_texture.find((url) => url.endsWith('_None.png'));
 
-		const aliasName = getAliasFromUrl(defaultTextureUrl ?? '');
+		if (!defaultTextureUrl) {
+			throw new Error('No default texture found');
+		}
+
+		const aliasName = getAliasFromPath(defaultTextureUrl);
 		sprite = Sprite.from(aliasName);
 	} else {
 		sprite = Sprite.from(building.name);

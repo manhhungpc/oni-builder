@@ -42,7 +42,7 @@ app.use(passport.session());
 // Serve static files from the data directory
 app.use('/conduit_images', express.static(path.join(__dirname, '../../data/conduit_images')));
 app.use('/ui_images', express.static(path.join(__dirname, '../../data/ui_images')));
-app.use('/draw_images', express.static(path.join(__dirname, '../../data/building_uv')));
+app.use('/draw_images', express.static(path.join(__dirname, '../../data/draw_images')));
 
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
