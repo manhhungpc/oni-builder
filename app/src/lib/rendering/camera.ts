@@ -8,10 +8,10 @@ export interface CameraState {
 
 export class Camera {
 	private container: PIXI.Container;
-	private state: CameraState = { x: 0, y: 0, zoom: 1.5 };
+	private state: CameraState = { x: 0, y: 0, zoom: 0.5 };
 
-	readonly MIN_ZOOM = 0.5;
-	readonly MAX_ZOOM = 2.5;
+	readonly MIN_ZOOM = 0.1;
+	readonly MAX_ZOOM = 1.5;
 	readonly ZOOM_STEP = 0.1;
 
 	constructor(container: PIXI.Container) {

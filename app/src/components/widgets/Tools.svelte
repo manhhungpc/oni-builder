@@ -128,7 +128,7 @@
 		const mouseY = window.innerHeight / 2;
 
 		const updatedZoomLevel = appConfig.zoomLevel + scale * 100;
-		if (updatedZoomLevel <= 0 || updatedZoomLevel > 200) return;
+		if (updatedZoomLevel <= 50 || updatedZoomLevel > 150) return;
 
 		if (blueprint.camera && blueprint.gridRenderer) {
 			appConfig.zoomLevel = updatedZoomLevel;

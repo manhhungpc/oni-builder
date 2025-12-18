@@ -126,33 +126,6 @@
 			}
 		});
 
-		// Draw port sprites for each port
-		// getPortSpriteAlias();
-		ports.forEach((portType, gridKey) => {
-			const [gridX, gridY] = gridKey.split(',').map(Number);
-
-			const worldPos = gridToWorld(gridX, gridY);
-
-			const spriteName = portType === PORT.INPUT ? portSpriteInput : portSpriteOutput;
-
-			try {
-				const portSprite = Sprite.from(spriteName);
-
-				portSprite.width = CELL_SIZE / 2;
-				portSprite.height = CELL_SIZE / 2;
-
-				// Position the sprite centered in the grid cell
-				portSprite.x = worldPos.x + CELL_SIZE / 4;
-				portSprite.y = worldPos.y + CELL_SIZE / 4;
-
-				if (overlayContainer) {
-					// overlayContainer.addChild(portSprite);
-				}
-			} catch (error) {
-				console.warn(`Failed to create sprite for ${spriteName}:`, error);
-			}
-		});
-
 		return () => {
 			if (overlayContainer && buildContainer) {
 				buildContainer.removeChild(overlayContainer);

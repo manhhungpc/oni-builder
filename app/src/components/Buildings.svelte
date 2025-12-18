@@ -137,7 +137,7 @@
 			camera.zoomAt(event.offsetX, event.offsetY, scale);
 
 			const updatedZoomLevel = appConfig.zoomLevel + scale * 100;
-			if (updatedZoomLevel > 0 && updatedZoomLevel <= 200) {
+			if (updatedZoomLevel > 50 && updatedZoomLevel <= 150) {
 				appConfig.zoomLevel = updatedZoomLevel;
 			}
 			gridRenderer.draw();

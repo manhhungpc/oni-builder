@@ -1,4 +1,4 @@
-export const CELL_SIZE = 40;
+export const CELL_SIZE = 100;
 
 export const MOUSE_CLICK = {
 	LEFT: 0,

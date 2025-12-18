@@ -62,11 +62,18 @@ function placeOnGridHandler(
 			// Create permanent building
 			const placedBuildingContainer = new Container({ label: buildingData.name });
 			const buildingSprite = Sprite.from(buildingData.name);
-			buildingSprite.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
-			buildingSprite.width = buildingData.width * CELL_SIZE;
-			buildingSprite.height = buildingData.height * CELL_SIZE;
+
+			// Center sprite on building grid area (no scaling)
+			const gridCenterX = (gridX + offset.x + buildingData.width / 2) * CELL_SIZE;
+			const gridCenterY = (gridY + offset.y + buildingData.height / 2) * CELL_SIZE;
+
+			buildingSprite.position.set(
+				gridCenterX - buildingSprite.width / 2,
+				gridCenterY - buildingSprite.height / 2
+			);
 			buildingSprite.zIndex = buildingData.scene_layer;
 
+			placedBuildingContainer.zIndex = 100; // Problem here
 			placedBuildingContainer.addChild(buildingSprite);
 
 			const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY);
@@ -85,14 +92,8 @@ function placeOnGridHandler(
 					port.x * CELL_SIZE + CELL_SIZE / 4,
 					port.y * CELL_SIZE + CELL_SIZE / 4
 				);
-				console.log(
-					'🐧 ~ placeOnGridHandler',
-					appConfig.selectedOverlay,
-					port.category,
-					port.category == appConfig.selectedOverlay
-				);
 
-				portSprite.zIndex = 100;
+				portSprite.zIndex = 101;
 				portSprite.visible = port.category == appConfig.selectedOverlay;
 				placedBuildingContainer.addChild(portSprite);
 

@@ -6,50 +6,6 @@ import type { IBuilding } from 'src/interface/building';
 import type { PlacementState } from 'src/interface/building';
 import { getAliasFromPath } from '$lib/utils/helpers';
 
-export const drawInfiniteGrid = (
-	container: PIXI.Container | null,
-	zoom: number,
-	offsetX: number,
-	offsetY: number,
-	viewWidth: number,
-	viewHeight: number
-) => {
-	if (!container) return;
-
-	container.removeChildren(); // Clear existing grid lines
-
-	const gridLines = new PIXI.Graphics();
-
-	const cellSizeScaled = CELL_SIZE * zoom;
-
-	// Only draw grid lines if they're not too dense
-	if (cellSizeScaled > 2) {
-		// Calculate visible grid bounds
-		const startCol = Math.floor(-offsetX / CELL_SIZE) - 1;
-		const endCol = Math.ceil((-offsetX + viewWidth / zoom) / CELL_SIZE) + 1;
-		const startRow = Math.floor(-offsetY / CELL_SIZE) - 1;
-		const endRow = Math.ceil((-offsetY + viewHeight / zoom) / CELL_SIZE) + 1;
-
-		// Draw vertical lines
-		for (let col = startCol; col <= endCol; col++) {
-			const x = col * CELL_SIZE;
-			gridLines.moveTo(x, startRow * CELL_SIZE);
-			gridLines.lineTo(x, endRow * CELL_SIZE);
-			gridLines.stroke({ width: 1 / zoom, color: 0x888888, alpha: 0.5 });
-		}
-
-		// Draw horizontal lines
-		for (let row = startRow; row <= endRow; row++) {
-			const y = row * CELL_SIZE;
-			gridLines.moveTo(startCol * CELL_SIZE, y);
-			gridLines.lineTo(endCol * CELL_SIZE, y);
-			gridLines.stroke({ width: 1 / zoom, color: 0x888888, alpha: 0.5 });
-		}
-	}
-
-	container.addChild(gridLines);
-};
-
 export async function loadSprites(buildings: IBuilding[], baseImgPath?: string): Promise<void> {
 	const assetsToLoad: AssetConfig[] = [];
 
