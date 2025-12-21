@@ -17,14 +17,12 @@ type PortPosition = { x: number; y: number; type: PORT; category: OVERLAY };
 function drawBuilding(
 	sprite: Sprite,
 	building: IBuilding,
-	container: Container,
-	camera: Camera,
 	options?: {
 		onPlace?: (gridX: number, gridY: number) => void;
 		onCancel?: () => void;
 	}
 ): PlacementState {
-	const clickHandler = placeOnGridHandler(building, camera, container, {
+	const clickHandler = placeOnGridHandler(building, {
 		onPlace: options?.onPlace,
 		onCancel: options?.onCancel
 	});
@@ -37,22 +35,22 @@ function drawBuilding(
 
 function placeOnGridHandler(
 	buildingData: IBuilding,
-	camera: Camera,
-	container: Container,
 	options: {
 		onPlace?: (gridX: number, gridY: number) => void;
 		onCancel?: () => void;
 	}
 ): (event: FederatedPointerEvent) => void {
+	const container = blueprint.buildContainer;
 	return (event: FederatedPointerEvent) => {
 		const offset = calculateBuildingOffset(buildingData);
 
 		if (event.button === MOUSE_CLICK.LEFT) {
 			// Check if placement is valid
-			if (!blueprint.isValidPlacement) {
+			if (!blueprint.isValidPlacement || !blueprint.camera) {
+				console.error('Error in draw building to canvas');
 				return;
 			}
-			const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+			const worldPos = blueprint.camera.screenToWorld(event.global.x, event.global.y);
 			const { gridX, gridY } = worldToGrid(worldPos);
 
 			if (buildingData.view_mode) {
@@ -60,21 +58,20 @@ function placeOnGridHandler(
 			}
 
 			// Create permanent building
-			const placedBuildingContainer = new Container({ label: buildingData.name });
 			const buildingSprite = Sprite.from(buildingData.name);
 
 			// Center sprite on building grid area (no scaling)
 			const gridCenterX = (gridX + offset.x + buildingData.width / 2) * CELL_SIZE;
 			const gridCenterY = (gridY + offset.y + buildingData.height / 2) * CELL_SIZE;
 
+			buildingSprite.label = buildingData.name;
 			buildingSprite.position.set(
 				gridCenterX - buildingSprite.width / 2,
 				gridCenterY - buildingSprite.height / 2
 			);
 			buildingSprite.zIndex = buildingData.scene_layer;
 
-			placedBuildingContainer.zIndex = 100; // Problem here
-			placedBuildingContainer.addChild(buildingSprite);
+			container?.addChild(buildingSprite);
 
 			const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY);
 
@@ -86,6 +83,7 @@ function placeOnGridHandler(
 					port.type === PORT.INPUT ? portSpriteInput : portSpriteOutput
 				);
 
+				portSprite.label = buildingData.name + '_port_' + port.type;
 				portSprite.width = CELL_SIZE / 2;
 				portSprite.height = CELL_SIZE / 2;
 				portSprite.position.set(
@@ -95,7 +93,8 @@ function placeOnGridHandler(
 
 				portSprite.zIndex = 101;
 				portSprite.visible = port.category == appConfig.selectedOverlay;
-				placedBuildingContainer.addChild(portSprite);
+
+				container?.addChild(portSprite);
 
 				portsData.push({
 					type: CONDUIT_TYPE.LIQUID,
@@ -109,7 +108,6 @@ function placeOnGridHandler(
 				});
 			}
 
-			container.addChild(placedBuildingContainer);
 			blueprint.placedBuildings.push({
 				display_name: buildingData.display_name,
 				object_layer: buildingData.object_layer,

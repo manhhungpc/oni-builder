@@ -8,10 +8,10 @@ import { CELL_SIZE, MOUSE_CLICK, ACTION } from '$lib/constant';
 import type { DragDrawHandlers, ConduitNode } from 'src/interface/building';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
+import { getConduitList } from 'src/lib/utils/helpers';
 
-function dragDrawBuilding(
-	camera: Camera,
-	connectionList: SvelteMap<string, ConduitNode>,
+function dragDrawConduit(
+	// connectionList: SvelteMap<string, ConduitNode>,
 	building: Partial<IBuilding> | IBuilding | null,
 	options?: {
 		onConnect?: (from: Position, to: Position) => void;
@@ -21,10 +21,15 @@ function dragDrawBuilding(
 	let isDragging = false;
 	let startGrid: Position | null = null;
 
-	function startDrag(event: FederatedPointerEvent) {
-		if (event.button !== MOUSE_CLICK.LEFT) return;
+	const connectionList = getConduitList();
 
-		const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+	function startDrag(event: FederatedPointerEvent) {
+		if (event.button !== MOUSE_CLICK.LEFT || !blueprint.camera || !connectionList) {
+			console.error('Error when start drag build conduit');
+			return;
+		}
+
+		const worldPos = blueprint.camera.screenToWorld(event.global.x, event.global.y);
 		const { gridX, gridY } = worldToGrid(worldPos);
 
 		startGrid = { x: gridX, y: gridY };
@@ -34,14 +39,22 @@ function dragDrawBuilding(
 
 		// addNode(connectionList, startGrid);
 		if (building) {
-			updateGridTexture(building, startGrid, connectionList);
+			updateConduitTexture(building, startGrid, connectionList);
 		}
 	}
 
 	function moveDrag(event: FederatedPointerEvent) {
-		if (!isDragging || !startGrid) return;
+		if (!isDragging || !startGrid) {
+			// Just move the cursor, so skip and not log any errors
+			return;
+		}
 
-		const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+		if (!blueprint.camera || !connectionList) {
+			console.error('Error when dragging build conduit');
+			return;
+		}
+
+		const worldPos = blueprint.camera.screenToWorld(event.global.x, event.global.y);
 		const { gridX, gridY } = worldToGrid(worldPos);
 
 		const endPos = gridToWorld(gridX, gridY);
@@ -79,7 +92,7 @@ function dragDrawBuilding(
 	};
 }
 
-function updateGridTexture(
+function updateConduitTexture(
 	building: IBuilding | Partial<IBuilding> | null,
 	gridPos: Position,
 	connectionList: SvelteMap<string, ConduitNode>
@@ -104,6 +117,7 @@ function updateGridTexture(
 		nodeData.metadata.sprite.texture = updatedSprite;
 	} else {
 		const newSprite = Sprite.from(textureAlias);
+		newSprite.label = building.name;
 
 		const worldPos = gridToWorld(gridPos.x, gridPos.y);
 		newSprite.x = worldPos.x;
@@ -157,4 +171,4 @@ function calculateConnectPattern(gridPos: Position, connections: string[]): stri
 	return pattern;
 }
 
-export { dragDrawBuilding, updateGridTexture };
+export { dragDrawConduit, updateConduitTexture };

@@ -20,7 +20,7 @@ export class Renderer {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 
-		this.gridGraphics = new PIXI.Graphics();
+		this.gridGraphics = new PIXI.Graphics({ label: 'Inifinity Grid' });
 		this.container.addChild(this.gridGraphics);
 	}
 

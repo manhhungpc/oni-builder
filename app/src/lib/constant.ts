@@ -1,5 +1,9 @@
 export const CELL_SIZE = 100;
 
+export const HIGHLIGHT_BUILDING_LAYER = 998;
+export const HIGHLIGHT_CONDUIT_LAYER = 999;
+export const HIGHLIGHT_PORT_LAYER = 1000;
+
 export const MOUSE_CLICK = {
 	LEFT: 0,
 	RIGHT: 2

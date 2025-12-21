@@ -1,10 +1,10 @@
-import * as PIXI from 'pixi.js';
-import { Assets, Sprite, Container, Application } from 'pixi.js';
+import { Assets, Sprite, Application } from 'pixi.js';
 import { CELL_SIZE } from '$lib/constant';
 import type { AssetConfig } from 'src/interface';
 import type { IBuilding } from 'src/interface/building';
 import type { PlacementState } from 'src/interface/building';
 import { getAliasFromPath } from '$lib/utils/helpers';
+import { blueprint } from 'src/lib/state/blueprint.svelte';
 
 export async function loadSprites(buildings: IBuilding[], baseImgPath?: string): Promise<void> {
 	const assetsToLoad: AssetConfig[] = [];
@@ -36,12 +36,9 @@ export async function loadSprites(buildings: IBuilding[], baseImgPath?: string):
 	});
 }
 
-export function cleanupAttachSprite(
-	placementState: PlacementState,
-	container: Container | null,
-	app: Application | null
-): void {
+export function cleanupAttachSprite(placementState: PlacementState, app: Application | null): void {
 	// Remove and destroy preview container if it exists
+	const container = blueprint.buildContainer;
 	if (placementState.previewContainer && container) {
 		container.removeChild(placementState.previewContainer);
 		placementState.previewContainer.destroy({ children: true });
@@ -69,7 +66,6 @@ export function cleanupAttachSprite(
 // Create a placement sprite with grid snapping
 export function createPlacementSprite(
 	building: IBuilding,
-	container: Container,
 	options: {
 		zIndex: number;
 	}
@@ -77,6 +73,7 @@ export function createPlacementSprite(
 	let sprite: Sprite;
 
 	if (building.special_texture.length > 0) {
+		// Sprite for conduit
 		const defaultTextureUrl = building.special_texture.find((url) => url.endsWith('_None.png'));
 
 		if (!defaultTextureUrl) {
@@ -85,17 +82,22 @@ export function createPlacementSprite(
 
 		const aliasName = getAliasFromPath(defaultTextureUrl);
 		sprite = Sprite.from(aliasName);
+		sprite.position.set(
+			(building.width * CELL_SIZE - sprite.width) / 2,
+			(building.height * CELL_SIZE - sprite.height) / 2
+		);
 	} else {
+		// Sprite for building
 		sprite = Sprite.from(building.name);
+		sprite.position.set(
+			(building.width * CELL_SIZE - sprite.width) / 2,
+			(building.height * CELL_SIZE - sprite.height) / 2
+		);
 	}
 
 	sprite.zIndex = options.zIndex;
 
-	// Scale to grid size
-	sprite.width = building.width * CELL_SIZE;
-	sprite.height = building.height * CELL_SIZE;
-
-	container.addChild(sprite);
+	blueprint.buildContainer?.addChild(sprite);
 
 	return sprite;
 }

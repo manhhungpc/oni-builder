@@ -15,7 +15,6 @@ import { OVERLAY } from '$lib/constant';
 function previewBuilding(
 	sprite: Sprite,
 	currentBuilding: IBuilding,
-	camera: Camera,
 	offset: Position
 ): PreviewState {
 	// Create a parent container to hold both the sprite and port container
@@ -63,7 +62,6 @@ function previewBuilding(
 
 	const previewHandler = gridSnapPreviewHandler(
 		previewContainer,
-		camera,
 		offset,
 		currentBuilding,
 		buildingPorts
@@ -112,13 +110,17 @@ function checkPortOverlap(
 
 function gridSnapPreviewHandler(
 	container: Container,
-	camera: Camera,
 	offset: Position,
 	currentBuilding: IBuilding,
 	buildingPorts: Array<{ x: number; y: number; type: PORT; category: OVERLAY }>
 ): (event: FederatedPointerEvent) => void {
 	return (event: FederatedPointerEvent) => {
-		const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+		if (!blueprint.camera) {
+			console.error('Error in preview handler');
+			return;
+		}
+
+		const worldPos = blueprint.camera.screenToWorld(event.global.x, event.global.y);
 
 		// Snap to grid
 		const { gridX, gridY } = worldToGrid(worldPos);

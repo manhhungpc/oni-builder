@@ -55,7 +55,7 @@ class BlueprintState {
 
 		// Setup container hierarchy
 		const mainContainer = new PIXI.Container({ label: 'Main' });
-		const buildContainer = new PIXI.Container({ label: 'Building grid' });
+		const buildContainer = new PIXI.Container({ label: 'Building' });
 		buildContainer.sortableChildren = true; // Enable zIndex sorting
 
 		app.stage.addChild(mainContainer);

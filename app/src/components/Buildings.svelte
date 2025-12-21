@@ -4,11 +4,11 @@
 	import { appConfig, mousePosition, message } from '$lib/state/config.svelte';
 	import Layers from 'src/components/Layers.svelte';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
-	import { OVERLAY, CONDUIT_TYPE } from '$lib/constant';
+	import { OVERLAY } from '$lib/constant';
 	import { Controller } from '$lib/core/controller';
-	import { ACTION, CELL_SIZE, MOUSE_CLICK } from '$lib/constant';
+	import { ACTION, MOUSE_CLICK } from '$lib/constant';
 	import { drawBuilding } from '$lib/core/drawBuilding';
-	import { dragDrawBuilding, updateGridTexture } from '$lib/core/connectConduit';
+	import { dragDrawConduit, updateConduitTexture } from '$lib/core/connectConduit';
 	import { previewBuilding } from '$lib/core/preview';
 	import { calculateBuildingOffset } from '$lib/core/positioning';
 	import { createPlacementSprite, cleanupAttachSprite } from '$lib/rendering/pixi';
@@ -19,7 +19,6 @@
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
 	import { loadSavedBuildings, loadSavedConnections } from '$lib/blueprint-data/loader';
-	import type { Camera } from 'src/lib/rendering/camera';
 	import { checkBuildingBoundary, createDeleteHighlight } from 'src/lib/utils';
 
 	interface Props {
@@ -185,12 +184,10 @@
 	// Handle building placement and preview
 	$effect(() => {
 		const app = blueprint.pixiApp;
-		const camera = blueprint.camera;
 		const selectedToBuild = appConfig.selectedToBuild;
-		const container = blueprint.buildContainer;
-		if (!selectedToBuild || !app || !camera || !container) {
-			if (currentPlacement && app && container) {
-				cleanupAttachSprite(currentPlacement, container, app);
+		if (!selectedToBuild || !app) {
+			if (currentPlacement && app) {
+				cleanupAttachSprite(currentPlacement, app);
 				currentPlacement = null;
 			}
 			return;
@@ -198,18 +195,18 @@
 
 		// Clean up previous placement state if exists
 		if (currentPlacement) {
-			cleanupAttachSprite(currentPlacement, container, app);
+			cleanupAttachSprite(currentPlacement, app);
 		}
 
-		const sprite = createPlacementSprite(selectedToBuild, container, {
+		const sprite = createPlacementSprite(selectedToBuild, {
 			zIndex: 999
 		});
 
 		const offset = calculateBuildingOffset(selectedToBuild);
 
-		const previewState = previewBuilding(sprite, selectedToBuild, camera, offset);
+		const previewState = previewBuilding(sprite, selectedToBuild, offset);
 
-		const placementState = drawBuilding(sprite, selectedToBuild, container, camera, {
+		const placementState = drawBuilding(sprite, selectedToBuild, {
 			onCancel: () => {
 				appConfig.selectedToBuild = null;
 			}
@@ -229,8 +226,8 @@
 		if (placementState.clickHandler) {
 			if (appConfig.selectedToBuild?.is_drag_build || selectedToBuild.special_texture.length > 0)
 				return () => {
-					if (currentPlacement && app && container) {
-						cleanupAttachSprite(currentPlacement, container, app);
+					if (currentPlacement && app) {
+						cleanupAttachSprite(currentPlacement, app);
 						currentPlacement = null;
 					}
 				};
@@ -239,8 +236,8 @@
 		}
 
 		return () => {
-			if (currentPlacement && app && container) {
-				cleanupAttachSprite(currentPlacement, container, app);
+			if (currentPlacement && app) {
+				cleanupAttachSprite(currentPlacement, app);
 				currentPlacement = null;
 			}
 		};
@@ -248,13 +245,11 @@
 
 	// Handle special building with "is_drag_build" is true and "special_texture" is not empty array
 	let selectedBuilding: IBuilding | Partial<IBuilding> | null = $state(null);
-	// $inspect(selectedBuilding);
 	$effect(() => {
 		const app = blueprint.pixiApp;
-		const camera = blueprint.camera;
 		selectedBuilding = appConfig.selectedToBuild;
 
-		if (!app || !camera) {
+		if (!app) {
 			return;
 		}
 
@@ -277,11 +272,11 @@
 		}
 
 		// Get drag handlers
-		const dragHandlers = dragDrawBuilding(camera, conduitList, selectedBuilding, {
+		const dragHandlers = dragDrawConduit(selectedBuilding, {
 			onConnect: (fromGrid, toGrid) => {
 				if (appConfig.selectedAction == ACTION.BUILD) {
-					updateGridTexture(selectedBuilding, fromGrid, conduitList);
-					updateGridTexture(selectedBuilding, toGrid, conduitList);
+					updateConduitTexture(selectedBuilding, fromGrid, conduitList);
+					updateConduitTexture(selectedBuilding, toGrid, conduitList);
 				} else if (appConfig.selectedAction == ACTION.CUT) {
 					const key = `${fromGrid.x},${fromGrid.y}`;
 					const nodeData = conduitList.get(key);
@@ -290,8 +285,8 @@
 							name: nodeData.metadata.name,
 							display_name: nodeData.metadata.displayName
 						};
-						updateGridTexture(cutBuilding, fromGrid, conduitList);
-						updateGridTexture(cutBuilding, toGrid, conduitList);
+						updateConduitTexture(cutBuilding, fromGrid, conduitList);
+						updateConduitTexture(cutBuilding, toGrid, conduitList);
 					}
 				}
 			}
@@ -330,35 +325,22 @@
 		<p>Loading Canvas...</p>
 	{/if}
 	<canvas bind:this={canvasElement}></canvas>
-	<Layers
-		overlayType={OVERLAY.POWER}
-		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
-		connections={blueprint.placedConduits[ConduitType.WIRE]}
-		containerLabel="Power Wires"
-	/>
+	<Layers overlayType={OVERLAY.POWER} connections={blueprint.placedConduits[ConduitType.WIRE]} />
 	<Layers
 		overlayType={OVERLAY.PLUMBING}
-		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
 		connections={blueprint.placedConduits[ConduitType.LIQUID]}
-		containerLabel="Liquid Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.VENTILATION}
-		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.GAS)}
 		connections={blueprint.placedConduits[ConduitType.GAS]}
-		containerLabel="Gas Pipes"
 	/>
 	<Layers
 		overlayType={OVERLAY.AUTOMATION}
-		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID)}
 		connections={blueprint.placedConduits[ConduitType.LOGIC_WIRE]}
-		containerLabel="Automation"
 	/>
 	<Layers
 		overlayType={OVERLAY.SHIPPING}
-		ports={blueprint.getPortsByConduitType(CONDUIT_TYPE.CONVEYOR)}
 		connections={blueprint.placedConduits[ConduitType.CONVEYOR]}
-		containerLabel="Conveyor"
 	/>
 	{#if message.popup && !blueprint.isValidPlacement}
 		<MousePopup content={message.popup} {mousePosition} />
