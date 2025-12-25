@@ -9,7 +9,6 @@
 	import { ACTION, CATEGORY } from '$lib/constant';
 	import { appConfig } from 'src/lib/state/config.svelte';
 
-	// const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
 	const BASE_IMG_PATH = import.meta.env.VITE_API_URL;
 
 	const categories = [
@@ -83,7 +82,7 @@
 		window.addEventListener('close-building-modal', handleCloseBuildingModal);
 
 		return () => {
-			cleanupAttachSprite(placementState, blueprint.buildContainer, blueprint.pixiApp);
+			cleanupAttachSprite(placementState, blueprint.pixiApp);
 			window.removeEventListener('close-building-modal', handleCloseBuildingModal);
 		};
 	});

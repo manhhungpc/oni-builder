@@ -6,7 +6,10 @@ import type { PlacementState } from 'src/interface/building';
 import { getAliasFromPath } from '$lib/utils/helpers';
 import { blueprint } from 'src/lib/state/blueprint.svelte';
 
-export async function loadSprites(buildings: IBuilding[], baseImgPath?: string): Promise<void> {
+export async function loadSprites(
+	buildings: IBuilding[],
+	baseImgPath = import.meta.env.VITE_API_URL
+): Promise<void> {
 	const assetsToLoad: AssetConfig[] = [];
 
 	for (const building of buildings) {

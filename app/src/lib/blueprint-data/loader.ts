@@ -1,35 +1,21 @@
 import * as PIXI from 'pixi.js';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { ConduitType } from '$lib/state/blueprint.svelte';
-import { CONDUIT_TYPE, PORT, CELL_SIZE } from '$lib/constant';
+import { PORT, CELL_SIZE } from '$lib/constant';
 import { calculateBuildingOffset, getBuildingBounds } from '$lib/core/positioning';
 import { loadSprites } from '$lib/rendering/pixi';
 import type { ConduitNode } from 'src/interface/building';
 import type { IBuilding } from 'src/interface/building';
 import type { PlacedBuildings } from 'src/interface';
 import { listBuilding } from '$lib/api/buildings.api';
+import { getPortSpriteAlias } from '$lib/utils';
+import { appConfig } from 'src/lib/state/config.svelte';
+import { updateConduitTexture } from '$lib/core/connectConduit';
 
-/**
- * Load saved buildings onto the canvas
- * @param container - The PIXI container to add buildings to
- * @param savedBuildings - Array of saved building data
- */
-export async function loadSavedBuildings(
-	container: PIXI.Container,
-	savedBuildings?: PlacedBuildings[]
-) {
-	if (!savedBuildings || !blueprint.pixiApp || !container) return;
-
-	const buildingsToLoad: PlacedBuildings[] = savedBuildings;
-
-	// Get unique building names to fetch from API
-	const uniqueNames = [...new Set(buildingsToLoad.map((b) => b.display_name))];
-
-	// Create a map of building display_name to full building data
+async function fetchAndLoadSprites(displayNames: string[]): Promise<Map<string, IBuilding>> {
 	const buildingDataMap = new Map<string, IBuilding>();
 
-	// Fetch building data for each unique building type
-	for (const displayName of uniqueNames) {
+	for (const displayName of displayNames) {
 		try {
 			const buildings = await listBuilding({ search: displayName });
 			const building = buildings.find((b) => b.display_name === displayName);
@@ -37,19 +23,29 @@ export async function loadSavedBuildings(
 				buildingDataMap.set(displayName, building);
 			}
 		} catch (error) {
-			console.error(`Failed to fetch building data for ${displayName}:`, error);
+			console.error(`Failed to fetch data for ${displayName}:`, error);
 		}
 	}
 
-	// Load sprites for all buildings
-	const BASE_IMG_PATH = import.meta.env.VITE_IMAGE_BASE_PATH;
-	const buildingsToLoadSprites = Array.from(buildingDataMap.values());
-	if (buildingsToLoadSprites.length > 0) {
-		await loadSprites(buildingsToLoadSprites, BASE_IMG_PATH);
+	const buildingsToLoad = Array.from(buildingDataMap.values());
+	if (buildingsToLoad.length > 0) {
+		await loadSprites(buildingsToLoad);
 	}
 
+	return buildingDataMap;
+}
+
+export async function loadSavedBuildings(
+	container: PIXI.Container,
+	savedBuildings?: PlacedBuildings[]
+) {
+	if (!savedBuildings || !blueprint.pixiApp || !container) return;
+
+	const uniqueNames = [...new Set(savedBuildings.map((b) => b.display_name))];
+	const buildingDataMap = await fetchAndLoadSprites(uniqueNames);
+
 	// Place each building on the canvas
-	for (const savedBuilding of buildingsToLoad) {
+	for (const savedBuilding of savedBuildings) {
 		const buildingData = buildingDataMap.get(savedBuilding.display_name);
 		if (!buildingData) {
 			console.warn(`Building data not found for ${savedBuilding.display_name}`);
@@ -71,188 +67,79 @@ export async function loadSavedBuildings(
 		buildingSprite.zIndex = savedBuilding.scene_layer;
 		container.addChild(buildingSprite);
 
-		// Add to placedBuildings array with ports info
 		savedBuilding.sprite = buildingSprite;
-		blueprint.placedBuildings.push(savedBuilding);
 
-		// Reconstruct ports and attach sprites
-		reconstructBuildingPorts(buildingData, savedBuilding, buildingSprite);
+		// Create port sprites from decompressed port data
+		if (savedBuilding.ports) {
+			for (const port of savedBuilding.ports) {
+				const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(port.category);
+				const portSprite = PIXI.Sprite.from(
+					port.direction === PORT.INPUT ? portSpriteInput : portSpriteOutput
+				);
+
+				portSprite.label = savedBuilding.display_name + '_port_' + port.direction;
+				portSprite.width = CELL_SIZE / 2;
+				portSprite.height = CELL_SIZE / 2;
+				portSprite.position.set(
+					port.offset.x * CELL_SIZE + CELL_SIZE / 4,
+					port.offset.y * CELL_SIZE + CELL_SIZE / 4
+				);
+				portSprite.zIndex = 101;
+				portSprite.visible = port.category === appConfig.selectedOverlay;
+
+				container.addChild(portSprite);
+				port.sprite = portSprite;
+			}
+		}
+
+		blueprint.placedBuildings.push(savedBuilding);
 	}
 }
 
-/**
- * Load saved connections into global state
- * @param savedConnections - Record of connection data by type
- */
-export function loadSavedConnections(savedConnections?: Record<string, Map<string, ConduitNode>>) {
+export async function loadSavedConduits(
+	savedConnections?: Record<string, Map<string, ConduitNode>>
+) {
 	if (!savedConnections) return;
 
-	// Map connection types to their corresponding global stores
-	const connectionMap = {
-		liquidPipes: blueprint.placedConduits[ConduitType.LIQUID],
-		gasPipes: blueprint.placedConduits[ConduitType.GAS],
-		wires: blueprint.placedConduits[ConduitType.WIRE],
-		logicWires: blueprint.placedConduits[ConduitType.LOGIC_WIRE],
-		conveyor: blueprint.placedConduits[ConduitType.CONVEYOR]
-	};
-
-	// Iterate through each connection type and populate the global stores
-	for (const [connectionType, connectionData] of Object.entries(savedConnections)) {
-		const globalStore = connectionMap[connectionType as keyof typeof connectionMap];
-
-		if (globalStore && connectionData) {
-			// Clear existing connections
-			globalStore.clear();
-
-			// Populate with saved connections
-			connectionData.forEach((nodeData: ConduitNode, key: string) => {
-				globalStore.set(key, nodeData);
-			});
-		}
-	}
-}
-
-/**
- * Reconstruct port connections for a building and attach port sprites
- * @param building - Building data with port information
- * @param gridX - Grid X position of the building
- * @param gridY - Grid Y position of the building
- * @param placedBuilding - The placed building object to store port data
- * @param buildingSprite - The building sprite to attach port sprites to
- */
-export function reconstructBuildingPorts(
-	building: IBuilding,
-	placedBuilding: PlacedBuildings,
-	buildingSprite: PIXI.Sprite
-) {
-	// Initialize ports array if not exists
-	if (!placedBuilding.ports) {
-		placedBuilding.ports = [];
+	// Collect unique conduit names from all connections
+	const uniqueNames = new Set<string>();
+	for (const connectionData of Object.values(savedConnections)) {
+		if (!connectionData) continue;
+		connectionData.forEach((nodeData: ConduitNode) => {
+			if (nodeData.metadata?.displayName) {
+				uniqueNames.add(nodeData.metadata.displayName);
+			}
+		});
 	}
 
-	// Handle conduit ports (liquid/gas)
-	if (building.conduit) {
-		if (
-			building.conduit.input_type !== undefined &&
-			building.conduit.input_type !== null &&
-			building.conduit.input_offset
-		) {
-			const relX = building.conduit.input_offset.x;
-			const relY = -building.conduit.input_offset.y; // Correct: minus for y-axis flip
+	// Load conduit sprites
+	await fetchAndLoadSprites([...uniqueNames]);
 
-			// Create port sprite and attach to building
-			const portSprite = createPortSprite(building.conduit.input_type, PORT.INPUT);
-			portSprite.position.set(relX * CELL_SIZE, relY * CELL_SIZE);
-			buildingSprite.addChild(portSprite);
+	const connectionTypes = [
+		{ key: 'liquidPipes', savedData: blueprint.placedConduits[ConduitType.LIQUID] },
+		{ key: 'gasPipes', savedData: blueprint.placedConduits[ConduitType.GAS] },
+		{ key: 'wires', savedData: blueprint.placedConduits[ConduitType.WIRE] },
+		{ key: 'logicWires', savedData: blueprint.placedConduits[ConduitType.LOGIC_WIRE] },
+		{ key: 'conveyor', savedData: blueprint.placedConduits[ConduitType.CONVEYOR] }
+	];
 
-			placedBuilding.ports.push({
-				offset: { x: relX, y: relY },
-				type: building.conduit.input_type,
-				direction: PORT.INPUT,
-				sprite: portSprite
-			});
-		}
+	for (const { key, savedData } of connectionTypes) {
+		const connectionData = savedConnections[key];
+		if (!connectionData) continue;
 
-		if (
-			building.conduit.output_type !== undefined &&
-			building.conduit.output_type !== null &&
-			building.conduit.output_offset
-		) {
-			const relX = building.conduit.output_offset.x;
-			const relY = -building.conduit.output_offset.y;
+		savedData.clear();
 
-			const portSprite = createPortSprite(building.conduit.output_type, PORT.OUTPUT);
-			portSprite.position.set(relX * CELL_SIZE, relY * CELL_SIZE);
-			buildingSprite.addChild(portSprite);
+		connectionData.forEach((nodeData: ConduitNode, nodeKey: string) => {
+			savedData.set(nodeKey, nodeData);
 
-			placedBuilding.ports.push({
-				offset: { x: relX, y: relY },
-				type: building.conduit.output_type,
-				direction: PORT.OUTPUT,
-				sprite: portSprite
-			});
-		}
+			if (nodeData.metadata?.name && nodeData.metadata?.displayName) {
+				const [x, y] = nodeKey.split(',').map(Number);
+				updateConduitTexture(
+					{ name: nodeData.metadata.name, display_name: nodeData.metadata.displayName },
+					{ x, y },
+					savedData
+				);
+			}
+		});
 	}
-
-	// Handle power ports (power uses same sprite for input/output)
-	if (building.power_port) {
-		if (building.power_port.input_offset) {
-			const relX = building.power_port.input_offset.x;
-			const relY = -building.power_port.input_offset.y;
-
-			// Power port doesn't have input/output distinction in sprite
-			const portSprite = PIXI.Sprite.from('power_port');
-			portSprite.width = CELL_SIZE;
-			portSprite.height = CELL_SIZE;
-			portSprite.position.set(relX * CELL_SIZE, relY * CELL_SIZE);
-			buildingSprite.addChild(portSprite);
-
-			placedBuilding.ports.push({
-				offset: { x: relX, y: relY },
-				type: CONDUIT_TYPE.LIQUID, // Use LIQUID as placeholder for power
-				direction: PORT.INPUT,
-				sprite: portSprite
-			});
-		}
-
-		if (building.power_port.output_offset) {
-			const relX = building.power_port.output_offset.x;
-			const relY = -building.power_port.output_offset.y;
-
-			const portSprite = PIXI.Sprite.from('power_port');
-			portSprite.width = CELL_SIZE;
-			portSprite.height = CELL_SIZE;
-			portSprite.position.set(relX * CELL_SIZE, relY * CELL_SIZE);
-			buildingSprite.addChild(portSprite);
-
-			placedBuilding.ports.push({
-				offset: { x: relX, y: relY },
-				type: CONDUIT_TYPE.LIQUID, // Use LIQUID as placeholder for power
-				direction: PORT.OUTPUT,
-				sprite: portSprite
-			});
-		}
-	}
-
-	// Handle logic ports
-	if (building.logic_port && building.logic_port.length > 0) {
-		for (const port of building.logic_port) {
-			const relX = port.offset.x;
-			const relY = -port.offset.y;
-			const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
-			const spriteAlias = portType === PORT.INPUT ? 'logic_input' : 'logic_output';
-
-			const portSprite = PIXI.Sprite.from(spriteAlias);
-			portSprite.width = CELL_SIZE;
-			portSprite.height = CELL_SIZE;
-			portSprite.position.set(relX * CELL_SIZE, relY * CELL_SIZE);
-			buildingSprite.addChild(portSprite);
-
-			placedBuilding.ports.push({
-				offset: { x: relX, y: relY },
-				type: CONDUIT_TYPE.LIQUID, // Use LIQUID as placeholder for logic
-				direction: portType,
-				sprite: portSprite
-			});
-		}
-	}
-}
-
-/**
- * Helper function to create a port sprite based on conduit type and direction
- */
-function createPortSprite(conduitType: CONDUIT_TYPE, direction: PORT): PIXI.Sprite {
-	let spriteAlias = '';
-
-	if (conduitType === CONDUIT_TYPE.LIQUID || conduitType === CONDUIT_TYPE.GAS) {
-		spriteAlias = direction === PORT.INPUT ? 'conduit_input' : 'conduit_output';
-	} else if (conduitType === CONDUIT_TYPE.CONVEYOR) {
-		spriteAlias = direction === PORT.INPUT ? 'conduit_input' : 'conduit_output';
-	}
-
-	const sprite = PIXI.Sprite.from(spriteAlias);
-	sprite.width = CELL_SIZE;
-	sprite.height = CELL_SIZE;
-
-	return sprite;
 }

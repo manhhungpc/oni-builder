@@ -18,7 +18,7 @@
 	import { getConduitList } from '$lib/utils/helpers';
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
-	import { loadSavedBuildings, loadSavedConnections } from '$lib/blueprint-data/loader';
+	import { loadSavedBuildings, loadSavedConduits } from '$lib/blueprint-data/loader';
 	import { checkBuildingBoundary, createDeleteHighlight } from 'src/lib/utils';
 
 	interface Props {
@@ -154,7 +154,7 @@
 			loadSavedBuildings(buildContainer, savedBuildings).catch(console.error);
 		}
 		if (savedConnections) {
-			loadSavedConnections(savedConnections);
+			loadSavedConduits(savedConnections);
 		}
 	}
 

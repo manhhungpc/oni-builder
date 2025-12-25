@@ -14,20 +14,3 @@ export interface CompressedConnections {
 	conveyor?: Compressed | null;
 	other?: Compressed | null;
 }
-
-export interface SimplifiedNode {
-	c: string[];
-	m?: {
-		n?: string;
-		d?: string;
-	};
-}
-
-export interface SimplifiedBuilding {
-	d: string;
-	tl: [number, number];
-	br: [number, number];
-	sl: number;
-	ol: number;
-	vm: number;
-}
