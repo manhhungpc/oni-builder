@@ -47,7 +47,23 @@ async function processBuildingData(buildingData, categoryData) {
     let special_texture = [];
 
     if (type === 'pipes' || type === 'wires' || buildingData.name == 'SolidConduit') {
-        special_texture = await extractSpriteSheet(textureData.textureName, dataReader.uvSprite);
+        special_texture = await extractSpriteSheet(
+            textureData.textureName,
+            dataReader.uvSprite,
+            'conduit_images'
+        );
+    } else if (type === 'tiles' && buildingData.BlockTileAtlas) {
+        console.log('🐧 ~ processBuildingData ~ type:', type);
+        console.log(
+            '🐧 ~ processBuildingData ~ buildingData:',
+            buildingData.BlockTileAtlas.texture.name
+        );
+
+        special_texture = await extractSpriteSheet(
+            buildingData.BlockTileAtlas.texture.name,
+            dataReader.uvSprite,
+            'tile_images'
+        );
     }
 
     return {
@@ -62,7 +78,7 @@ async function processBuildingData(buildingData, categoryData) {
         object_layer: buildingData.ObjectLayer,
         tile_layer: buildingData.TileLayer,
         search_term: buildingData.SearchTerms,
-        is_drag_build: buildingData.DragBuild,
+        is_drag_build: buildingData.DragBuild || type === 'tiles',
         is_need_foundation: buildingData.ContinuouslyCheckFoundation,
         is_foundation: buildingData.IsFoundation,
         conduit,

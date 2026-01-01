@@ -82,7 +82,6 @@
 				const { gridX, gridY } = worldToGrid(clickedPosition);
 
 				console.log(`Grid Position: (${gridX}, ${gridY})`);
-				console.log(blueprint.placedBuildings);
 				if (appConfig.selectedAction === ACTION.DELETE) {
 					for (let placedBuilding of blueprint.placedBuildings) {
 						const isDeleting = checkBuildingBoundary({ x: gridX, y: gridY }, placedBuilding);

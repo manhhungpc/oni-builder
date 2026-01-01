@@ -88,16 +88,6 @@ router.get(
                 });
             }
 
-            // Increment view count
-            await prisma.blueprint.update({
-                where: {
-                    shareId,
-                },
-                data: {
-                    lastViewAt: new Date(Date.now()),
-                },
-            });
-
             res.json({
                 success: true,
                 data: {

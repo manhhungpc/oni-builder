@@ -20,10 +20,10 @@ const TEXTURE_DIRECTION = [
     'LRUD',
 ];
 
-async function extractSpriteSheet(textureName, uvSpriteData) {
+async function extractSpriteSheet(textureName, uvSpriteData, outputFolder) {
     const projectRoot = path.join(__dirname, '../../../..');
     const uvImagePath = path.join(projectRoot, 'data/uv_images');
-    const outputPath = path.join(projectRoot, 'data/conduit_images');
+    const outputPath = path.join(projectRoot, `data/${outputFolder}`);
 
     if (!fs.existsSync(outputPath)) {
         fs.mkdirSync(outputPath, { recursive: true });
@@ -33,7 +33,8 @@ async function extractSpriteSheet(textureName, uvSpriteData) {
     const spriteModifiers = uvSpriteData.spriteModifiers || [];
 
     const matchingSprites = sprites.filter(
-        (sprite) => sprite.textureName === `${textureName}_solid`
+        (sprite) =>
+            sprite.textureName === `${textureName}_solid` || sprite.textureName === textureName
     );
 
     if (matchingSprites.length === 0) {
@@ -62,7 +63,7 @@ async function extractSpriteSheet(textureName, uvSpriteData) {
                 sprite,
                 spriteModifiers,
                 textureFilePath,
-                outputPath
+                outputFolder
             );
             textures.push(...items);
         } catch (error) {
@@ -80,7 +81,9 @@ function getSpriteInfo(buildingIdName, uiSpriteInfo) {
     return sprites[buildingIdName] ?? {};
 }
 
-async function modifierSprite(sprite, spriteModifiers, textureFilePath, outputPath) {
+async function modifierSprite(sprite, spriteModifiers, textureFilePath, outputFolder) {
+    const projectRoot = path.join(__dirname, '../../../..');
+    const outputPath = path.join(projectRoot, `data/${outputFolder}`);
     const textures = [];
 
     // Find all matching modifiers for this sprite
@@ -89,28 +92,32 @@ async function modifierSprite(sprite, spriteModifiers, textureFilePath, outputPa
     );
 
     for (const matchModifier of matchingModifiers) {
-        // Check if modifier name ends with any TEXTURE_DIRECTION or _None
+        // Check if modifier name ends with any TEXTURE_DIRECTION or _None or _noConnection
         const endsWithDirection = TEXTURE_DIRECTION.some((direction) =>
             matchModifier.name.endsWith(`_${direction}`)
         );
         const endsWithNone = matchModifier.name.endsWith('_None');
+        const endsWithNoConnection = matchModifier.name.endsWith('_noConnection');
 
-        if (!endsWithDirection && !endsWithNone) {
+        if (!endsWithDirection && !endsWithNone && !endsWithNoConnection) {
             continue;
         }
 
-        const outputFilePath = path.join(outputPath, `${matchModifier.name}.png`);
-        textures.push('conduit_images/' + matchModifier.name + '.png');
+        // Strip '_solid' from tile texture names (MetalTile_solid_R -> MetalTile_R)
+        let outputName = matchModifier.name.replace('_solid', '');
+
+        const outputFilePath = path.join(outputPath, `${outputName}.png`);
+        textures.push(outputFolder + '/' + outputName + '.png');
 
         if (fs.existsSync(outputFilePath)) {
-            console.log(`File exists, skip: ${matchModifier.name}.png`);
+            console.log(`File exists, skip: ${outputName}.png`);
             continue;
         }
 
         const image = await sharpImage(textureFilePath, sprite, matchModifier);
         await image.toFile(outputFilePath);
 
-        console.log(`Extracted: ${matchModifier.name}.png (from sprite: ${sprite.name})`);
+        console.log(`Extracted: ${outputName}.png (from sprite: ${sprite.name})`);
     }
 
     return textures;

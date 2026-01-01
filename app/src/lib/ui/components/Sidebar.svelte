@@ -3,16 +3,17 @@
 	import X from '@lucide/svelte/icons/x';
 
 	interface Props {
+		open?: boolean;
 		trigger: any;
 		header?: any;
 		content: any;
 		footer?: any;
 	}
 
-	let { trigger, header, content, footer }: Props = $props();
+	let { trigger, header, content, footer, open = $bindable(false) }: Props = $props();
 </script>
 
-<Drawer.Root direction="right">
+<Drawer.Root direction="right" bind:open>
 	<Drawer.Trigger>
 		{@render trigger()}
 	</Drawer.Trigger>

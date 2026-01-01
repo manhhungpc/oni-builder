@@ -6,7 +6,8 @@ export const appConfig = $state<AppConfig>({
 	zoomLevel: 100,
 	selectedAction: ACTION.SELECT,
 	selectedOverlay: OVERLAY.BUILDING,
-	selectedToBuild: null
+	selectedToBuild: null,
+	sidebarOpen: false
 });
 
 export const mousePosition = $state<{ x: number; y: number }>({

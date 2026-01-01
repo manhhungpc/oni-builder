@@ -49,6 +49,6 @@ export function getConduitList(overlays?: OVERLAY): SvelteMap<string, ConduitNod
 		case CATEGORY.SHIPPING:
 			return blueprint.placedConduits[ConduitType.CONVEYOR];
 		default:
-			return null;
+			return blueprint.placedConduits[ConduitType.TILES];
 	}
 }

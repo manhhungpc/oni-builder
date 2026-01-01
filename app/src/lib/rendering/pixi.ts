@@ -77,7 +77,9 @@ export function createPlacementSprite(
 
 	if (building.special_texture.length > 0) {
 		// Sprite for conduit
-		const defaultTextureUrl = building.special_texture.find((url) => url.endsWith('_None.png'));
+		const defaultTextureUrl = building.special_texture.find(
+			(url) => url.endsWith('_None.png') || url.endsWith('_noConnection.png')
+		);
 
 		if (!defaultTextureUrl) {
 			throw new Error('No default texture found');

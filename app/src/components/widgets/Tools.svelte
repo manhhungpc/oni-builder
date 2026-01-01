@@ -7,7 +7,7 @@
 	import { blueprint } from '$lib/state/blueprint.svelte';
 	import { appConfig } from '$lib/state/config.svelte';
 	import ScissorsLineDashed from '@lucide/svelte/icons/scissors-line-dashed';
-	import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
+	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
 	import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
 	import Copy from '@lucide/svelte/icons/copy';
@@ -44,12 +44,12 @@
 			class: page.data.user && 'bg-orange-primary hover:bg-orange-6',
 			icon: page.data.user ? Hammer : GoogleLogo,
 			action: () => loginWithGoogle()
-		},
-		{
-			text: 'Browse others build',
-			icon: Users,
-			action: () => goto('/blueprints')
 		}
+		// {
+		// 	text: 'Browse others build',
+		// 	icon: Users,
+		// 	action: () => goto('/blueprints')
+		// }
 	];
 
 	let isSharing = $state(false);
@@ -198,7 +198,7 @@
 			)}
 			<!-- {@render button_with_tooltip(ACTION.FILL, PaintBucket, 'Fill element')} -->
 			{@render button_with_tooltip(ACTION.CUT, ScissorsLineDashed, 'Cut pipes connection')}
-			{@render button_with_tooltip(ACTION.DELETE, OctagonMinus, 'Delete building')}
+			{@render button_with_tooltip(ACTION.DELETE, Trash2, 'Delete building')}
 		</div>
 		{#if appConfig.selectedAction == ACTION.CUT}
 			<small class="text-yellow-4 flex items-center gap-2">
@@ -221,7 +221,7 @@
 			</div>
 		{/if}
 
-		{#if shareable}
+		{#if shareable && !shareUrl}
 			<Button
 				class="bg-orange-primary hover:bg-orange-6 hover:cursor-pointer disabled:opacity-50"
 				onclick={handleShareUrl}
@@ -254,7 +254,7 @@
 {/snippet}
 
 {#snippet tool_sidebar()}
-	<Sidebar>
+	<Sidebar bind:open={appConfig.sidebarOpen}>
 		{#snippet trigger()}
 			<Button size="icon" class="border-orange-6 h-8 w-8 border bg-transparent text-white">
 				<Menu />
@@ -295,12 +295,14 @@
 		{/snippet}
 
 		{#snippet footer()}
-			<Button
-				class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
-				onclick={() => logout()}
-			>
-				Log out
-			</Button>
+			{#if page.data.user}
+				<Button
+					class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
+					onclick={() => logout()}
+				>
+					Log out
+				</Button>
+			{/if}
 		{/snippet}
 	</Sidebar>
 {/snippet}

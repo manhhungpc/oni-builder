@@ -58,7 +58,7 @@ model Blueprint {
   name        String
   buildings   Json // JSONB - compressed building data
   connections Json? // JSONB - compressed connection data (optional)
-  lastViewAt  DateTime?
+  deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   userId      String?
