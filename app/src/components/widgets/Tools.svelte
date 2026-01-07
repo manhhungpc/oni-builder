@@ -13,6 +13,7 @@
 	import Copy from '@lucide/svelte/icons/copy';
 	import PaintBucket from '@lucide/svelte/icons/paint-bucket';
 	import Menu from '@lucide/svelte/icons/menu';
+	import Pencil from '@lucide/svelte/icons/pencil';
 	import { ACTION } from '$lib/constant';
 	import { OVERLAY } from '$lib/constant';
 	import { cn } from '$lib/utils';
@@ -21,36 +22,54 @@
 		compressBuildingConnectionData
 	} from '$lib/blueprint-data/compress';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
-	import { createSharedBlueprint } from '$lib/api/blueprints.api';
+	import {
+		createSharedBlueprint,
+		getMyBlueprints,
+		updateBlueprint,
+		type BlueprintSummary
+	} from '$lib/api/blueprints.api';
 	import ZoomIn from '@lucide/svelte/icons/zoom-in';
 	import ZoomOut from '@lucide/svelte/icons/zoom-out';
 	import Sidebar from 'src/lib/ui/components/Sidebar.svelte';
+	import ListItem from 'src/lib/ui/components/ListItem.svelte';
 	import { loginWithGoogle, logout } from 'src/lib/api/users.api';
 	import { page } from '$app/state';
 	import type { Component } from 'svelte';
 	import GoogleLogo from '$lib/assets/google-logo.svg';
-	import Hammer from '@lucide/svelte/icons/hammer';
-	import Users from '@lucide/svelte/icons/users';
-	import { goto } from '$app/navigation';
 	import Guide from 'src/lib/ui/components/Guide.svelte';
+	import { createLocalGuest, getLocalGuest } from 'src/lib/utils/helpers';
 
 	interface Props {
 		shareable?: boolean;
 	}
 
-	const sidebar = [
-		{
-			text: page.data.user ? 'My collection' : 'Login with Google',
-			class: page.data.user && 'bg-orange-primary hover:bg-orange-6',
-			icon: page.data.user ? Hammer : GoogleLogo,
-			action: () => loginWithGoogle()
+	// Blueprints list state
+	let myBlueprints = $state<BlueprintSummary[]>([]);
+	let blueprintsPage = $state(1);
+	let blueprintsTotalPages = $state(0);
+	let isLoadingBlueprints = $state(false);
+
+	async function loadMyBlueprints(pageNum: number = 1) {
+		if (!page.data.user) return;
+		isLoadingBlueprints = true;
+		try {
+			const response = await getMyBlueprints(pageNum, 10);
+			myBlueprints = response.data;
+			blueprintsPage = response.pagination.page;
+			blueprintsTotalPages = response.pagination.totalPages;
+		} catch (error) {
+			console.error('Failed to load blueprints:', error);
+		} finally {
+			isLoadingBlueprints = false;
 		}
-		// {
-		// 	text: 'Browse others build',
-		// 	icon: Users,
-		// 	action: () => goto('/blueprints')
-		// }
-	];
+	}
+
+	// Load blueprints when sidebar opens
+	$effect(() => {
+		if (appConfig.sidebarOpen && page.data.user) {
+			loadMyBlueprints(1);
+		}
+	});
 
 	let isSharing = $state(false);
 	let shareError = $state('');
@@ -84,11 +103,17 @@
 				conveyor: compressBuildingConnectionData(blueprint.placedConduits[ConduitType.CONVEYOR])
 			};
 
-			// Create blueprint via API
+			// Handle guest ID for anonymous users
+			let guestId = getLocalGuest();
+			if (!guestId) {
+				guestId = createLocalGuest();
+			}
+
 			const response = await createSharedBlueprint({
 				name: 'Shared Blueprint',
 				buildings: compressedBuildings,
-				connections: compressedConnections
+				connections: compressedConnections,
+				guestId
 			});
 
 			if (response.success && response.data.shareId) {
@@ -272,25 +297,73 @@
 						<span class="text-gray-primary text-xs">Welcome,</span>
 						<span class="text-lg font-bold text-white">{page.data.user.name}</span>
 					</div>
-					<img src={page.data.user.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
+					<img
+						src={page.data.user.avatar}
+						alt="avatar"
+						class="h-10 w-10 rounded-full"
+						referrerpolicy="no-referrer"
+					/>
 				</div>
-			{/if}
-			{#each sidebar as item}
-				<Button
-					class={cn(
-						'bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center',
-						item.class
-					)}
-					onclick={item.action}
-				>
-					{#if typeof item.icon === 'string'}
-						<img src={item.icon} alt="icon" class="h-4 w-4" />
-					{:else if item.icon}
-						<item.icon />
+
+				<div class="mb-4">
+					<h3 class="text-orange-4 mb-2 font-medium">My collection</h3>
+					{#if isLoadingBlueprints}
+						<p class="text-gray-primary text-sm">Loading...</p>
+					{:else if myBlueprints.length === 0}
+						<p class="text-gray-primary text-sm">No blueprints yet</p>
+					{:else}
+						<div class="flex flex-col gap-1">
+							{#each myBlueprints as bp}
+								<ListItem
+									name={bp.name}
+									date={bp.updatedAt}
+									href="/blueprints/{bp.shareId}"
+									onSave={async (newName) => {
+										try {
+											await updateBlueprint(bp.shareId, newName);
+											bp.name = newName;
+										} catch (error) {
+											console.error('Failed to rename blueprint:', error);
+										}
+									}}
+								/>
+							{/each}
+						</div>
+
+						{#if blueprintsTotalPages > 1}
+							<div class="mt-3 flex items-center justify-between">
+								<Button
+									size="sm"
+									class="bg-dark-secondary hover:bg-dark-active text-xs"
+									disabled={blueprintsPage <= 1}
+									onclick={() => loadMyBlueprints(blueprintsPage - 1)}
+								>
+									Prev
+								</Button>
+								<span class="text-gray-primary text-xs">
+									{blueprintsPage} / {blueprintsTotalPages}
+								</span>
+								<Button
+									size="sm"
+									class="bg-dark-secondary hover:bg-dark-active text-xs"
+									disabled={blueprintsPage >= blueprintsTotalPages}
+									onclick={() => loadMyBlueprints(blueprintsPage + 1)}
+								>
+									Next
+								</Button>
+							</div>
+						{/if}
 					{/if}
-					<p>{item.text}</p>
+				</div>
+			{:else}
+				<Button
+					class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
+					onclick={() => loginWithGoogle()}
+				>
+					<img src={GoogleLogo} alt="icon" class="h-4 w-4" />
+					<p>Login with Google</p>
 				</Button>
-			{/each}
+			{/if}
 			<Guide />
 		{/snippet}
 

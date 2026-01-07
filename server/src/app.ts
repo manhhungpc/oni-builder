@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Application } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import session from 'express-session';
@@ -47,9 +47,17 @@ app.use('/draw_images', express.static(path.join(__dirname, '../../data/draw_ima
 
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// API endpoints
 app.use('/api/buildings', buildingsRouter);
 app.use('/api/blueprints', blueprintsRouter);
 app.use('/api/users', usersRouter);
+
+// Global error handler
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        error: 'Internal server error',
+        details: err.message,
+    });
+});
 
 export default app;

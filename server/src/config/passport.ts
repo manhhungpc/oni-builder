@@ -26,17 +26,24 @@ passport.use(
         },
         async (accessToken, refreshToken, extraParams, profile, done) => {
             try {
+                // Auth0 may return avatar in different locations depending on the connection
+                const avatar =
+                    (profile as any).picture ||
+                    (profile as any)._json?.picture ||
+                    profile.photos?.[0]?.value ||
+                    null;
+
                 // Upsert user in database
                 const user = await prisma.user.upsert({
                     where: { email: profile.emails?.[0]?.value },
                     update: {
                         name: profile.displayName,
-                        avatar: profile.photos?.[0]?.value,
+                        avatar,
                     },
                     create: {
                         email: profile.emails?.[0]?.value as string,
                         name: profile.displayName,
-                        avatar: profile.photos?.[0]?.value,
+                        avatar,
                     },
                 });
 

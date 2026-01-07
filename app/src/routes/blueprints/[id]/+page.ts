@@ -7,7 +7,6 @@ import {
 } from '$lib/blueprint-data/compress';
 
 export const load: PageLoad = async ({ params }) => {
-	console.log(params.id);
 	const response = await getBlueprintByShareId(params.id);
 
 	if (!response.success || !response.data) {

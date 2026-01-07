@@ -4,6 +4,7 @@ import { CATEGORY } from '$lib/constant';
 import type { ConduitNode } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 import { OVERLAY } from '$lib/constant';
+import { browser } from '$app/environment';
 
 export function debounce<T extends (...args: any[]) => any>(
 	func: T,
@@ -51,4 +52,16 @@ export function getConduitList(overlays?: OVERLAY): SvelteMap<string, ConduitNod
 		default:
 			return blueprint.placedConduits[ConduitType.TILES];
 	}
+}
+
+export function createLocalGuest(): string {
+	const guestId = crypto.randomUUID();
+	localStorage.setItem('guest-id', guestId);
+	return guestId;
+}
+
+export function getLocalGuest(): string | null {
+	if (!browser) return null;
+
+	return localStorage.getItem('guest-id');
 }

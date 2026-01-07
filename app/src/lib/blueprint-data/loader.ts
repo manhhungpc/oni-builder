@@ -61,9 +61,15 @@ export async function loadSavedBuildings(
 		const buildingSprite = PIXI.Sprite.from(buildingData.name);
 		const offset = calculateBuildingOffset(buildingData);
 
-		buildingSprite.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
-		buildingSprite.width = buildingData.width * CELL_SIZE;
-		buildingSprite.height = buildingData.height * CELL_SIZE;
+		// Center sprite on building grid area (no scaling)
+		const gridCenterX = (gridX + offset.x + buildingData.width / 2) * CELL_SIZE;
+		const gridCenterY = (gridY + offset.y + buildingData.height / 2) * CELL_SIZE;
+
+		buildingSprite.label = buildingData.name;
+		buildingSprite.position.set(
+			gridCenterX - buildingSprite.width / 2,
+			gridCenterY - buildingSprite.height / 2
+		);
 		buildingSprite.zIndex = savedBuilding.scene_layer;
 		container.addChild(buildingSprite);
 
