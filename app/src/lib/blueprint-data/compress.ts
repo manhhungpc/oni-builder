@@ -1,6 +1,6 @@
 import { compress, decompress, type Compressed } from 'compress-json';
 import type { PlacedBuildings } from 'src/interface';
-import type { ConduitNode } from 'src/interface/building';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import type { CompressedCanvasData } from 'src/interface/compressData';
 
 function compressBuildingData(buildings: PlacedBuildings[]): Compressed {
@@ -73,9 +73,41 @@ function decompressBuildingData(compressedData: CompressedCanvasData): PlacedBui
 	}
 }
 
+function compressTileData(tiles: Map<string, GridNodeData>): Compressed {
+	const serializeTiles: { [key: string]: Omit<GridNodeData, 'sprite'> } = {};
+
+	tiles.forEach((tile, key) => {
+		const { sprite, ...tileWithoutSprite } = tile;
+		serializeTiles[key] = tileWithoutSprite;
+	});
+
+	return compress(serializeTiles);
+}
+
+function decompressTileData(compressedData: Compressed): Map<string, GridNodeData> {
+	try {
+		const decompressedData = decompress(compressedData) as { [key: string]: GridNodeData };
+		const tiles = new Map<string, GridNodeData>();
+
+		Object.entries(decompressedData).forEach(([key, tile]) => {
+			tiles.set(key, tile);
+		});
+
+		return tiles;
+	} catch (error) {
+		throw new Error(
+			`Failed to decompress tile data: ${
+				error instanceof Error ? error.message : 'Unknown error'
+			}`
+		);
+	}
+}
+
 export {
 	compressBuildingData,
 	decompressBuildingData,
 	compressBuildingConnectionData,
-	decompressBuildingConnectionData
+	decompressBuildingConnectionData,
+	compressTileData,
+	decompressTileData
 };

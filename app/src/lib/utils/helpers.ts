@@ -1,7 +1,7 @@
 import { blueprint, ConduitType } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
 import { CATEGORY } from '$lib/constant';
-import type { ConduitNode } from 'src/interface/building';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 import { OVERLAY } from '$lib/constant';
 import { browser } from '$app/environment';
@@ -50,8 +50,12 @@ export function getConduitList(overlays?: OVERLAY): SvelteMap<string, ConduitNod
 		case CATEGORY.SHIPPING:
 			return blueprint.placedConduits[ConduitType.CONVEYOR];
 		default:
-			return blueprint.placedConduits[ConduitType.TILES];
+			return null;
 	}
+}
+
+export function getTileList(): SvelteMap<string, GridNodeData> {
+	return blueprint.placedTiles;
 }
 
 export function createLocalGuest(): string {

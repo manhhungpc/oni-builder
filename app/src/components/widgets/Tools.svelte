@@ -19,7 +19,8 @@
 	import { cn } from '$lib/utils';
 	import {
 		compressBuildingData,
-		compressBuildingConnectionData
+		compressBuildingConnectionData,
+		compressTileData
 	} from '$lib/blueprint-data/compress';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
 	import {
@@ -99,7 +100,7 @@
 				logicWires: compressBuildingConnectionData(
 					blueprint.placedConduits[ConduitType.LOGIC_WIRE]
 				),
-				tiles: compressBuildingConnectionData(blueprint.placedConduits[ConduitType.TILES]),
+				tiles: compressTileData(blueprint.placedTiles),
 				conveyor: compressBuildingConnectionData(blueprint.placedConduits[ConduitType.CONVEYOR])
 			};
 

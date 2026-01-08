@@ -3,7 +3,8 @@ import type { PageLoad } from './$types';
 import { getBlueprintByShareId } from '$lib/api/blueprints.api';
 import {
 	decompressBuildingData,
-	decompressBuildingConnectionData
+	decompressBuildingConnectionData,
+	decompressTileData
 } from '$lib/blueprint-data/compress';
 
 export const load: PageLoad = async ({ params }) => {
@@ -21,7 +22,12 @@ export const load: PageLoad = async ({ params }) => {
 	if (response.data.connections) {
 		for (const [key, value] of Object.entries(response.data.connections)) {
 			if (value) {
-				decompressedConnections[key] = decompressBuildingConnectionData(value);
+				// Use different decompression for tiles vs conduits
+				if (key === 'tiles') {
+					decompressedConnections[key] = decompressTileData(value);
+				} else {
+					decompressedConnections[key] = decompressBuildingConnectionData(value);
+				}
 			}
 		}
 	}

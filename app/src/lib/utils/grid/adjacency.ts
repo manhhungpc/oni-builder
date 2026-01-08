@@ -1,5 +1,5 @@
 import type { Position } from 'src/interface/building';
-import type { ConduitNode, ConduitMetadata } from 'src/interface/building';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import type { SvelteMap } from 'svelte/reactivity';
 
 // Helper functions for node keys
@@ -95,7 +95,7 @@ function removeConnection(
 function updateNodeMetadata(
     connectionList: SvelteMap<string, ConduitNode>,
     node: Position,
-    metadata: ConduitMetadata
+    metadata: GridNodeData
 ): void {
     const key = nodeKey(node);
     const nodeValue = connectionList.get(key);
@@ -108,7 +108,7 @@ function updateNodeMetadata(
 function getNodeMetadata(
     connectionList: SvelteMap<string, ConduitNode>,
     node: Position
-): ConduitMetadata {
+): GridNodeData {
     const key = nodeKey(node);
     const nodeValue = connectionList.get(key);
     return nodeValue?.metadata || {};

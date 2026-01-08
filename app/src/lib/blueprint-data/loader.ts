@@ -4,13 +4,14 @@ import { ConduitType } from '$lib/state/blueprint.svelte';
 import { PORT, CELL_SIZE } from '$lib/constant';
 import { calculateBuildingOffset, getBuildingBounds } from '$lib/core/positioning';
 import { loadSprites } from '$lib/rendering/pixi';
-import type { ConduitNode } from 'src/interface/building';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import type { IBuilding } from 'src/interface/building';
 import type { PlacedBuildings } from 'src/interface';
 import { listBuilding } from '$lib/api/buildings.api';
 import { getPortSpriteAlias } from '$lib/utils';
 import { appConfig } from 'src/lib/state/config.svelte';
 import { updateConduitTexture } from '$lib/core/connectConduit';
+import { placeTile } from '$lib/core/connectTile';
 
 async function fetchAndLoadSprites(displayNames: string[]): Promise<Map<string, IBuilding>> {
 	const buildingDataMap = new Map<string, IBuilding>();
@@ -144,6 +145,27 @@ export async function loadSavedConduits(
 					{ name: nodeData.metadata.name, display_name: nodeData.metadata.displayName },
 					{ x, y },
 					savedData
+				);
+			}
+		});
+	}
+
+	// Load tiles separately (new format: GridNodeData with name, displayName directly)
+	const tilesData = savedConnections['tiles'];
+	if (tilesData) {
+		blueprint.placedTiles.clear();
+
+		tilesData.forEach((nodeData: GridNodeData, nodeKey: string) => {
+			// Handle both old format (with metadata wrapper) and new format
+			const name = nodeData.name || (nodeData as any).metadata?.name;
+			const displayName = nodeData.displayName || (nodeData as any).metadata?.displayName;
+
+			if (name && displayName) {
+				const [x, y] = nodeKey.split(',').map(Number);
+				placeTile(
+					{ name, display_name: displayName },
+					{ x, y },
+					blueprint.placedTiles
 				);
 			}
 		});

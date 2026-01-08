@@ -9,6 +9,8 @@
 	import { ACTION, MOUSE_CLICK } from '$lib/constant';
 	import { drawBuilding } from '$lib/core/drawBuilding';
 	import { dragDrawConduit, updateConduitTexture } from '$lib/core/connectConduit';
+	import { clickPlaceTile } from '$lib/core/connectTile';
+	import { BUILD_RULE } from '$lib/constant';
 	import { previewBuilding } from '$lib/core/preview';
 	import { calculateBuildingOffset } from '$lib/core/positioning';
 	import { createPlacementSprite, cleanupAttachSprite } from '$lib/rendering/pixi';
@@ -244,6 +246,8 @@
 
 	// Handle special building with "is_drag_build" is true and "special_texture" is not empty array
 	let selectedBuilding: IBuilding | Partial<IBuilding> | null = $state(null);
+
+	// Handle tile placement (build_rule === BUILD_RULE.Tile)
 	$effect(() => {
 		const app = blueprint.pixiApp;
 		selectedBuilding = appConfig.selectedToBuild;
@@ -252,10 +256,54 @@
 			return;
 		}
 
-		// Only handle drag-to-build buildings or when in CUT mode
+		const isTile = selectedBuilding?.build_rule === BUILD_RULE.Tile;
+		if (!isTile || !selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length) {
+			return;
+		}
+
+		const tileHandlers = clickPlaceTile(selectedBuilding);
+
+		const handlePointerDown = (event: PIXI.FederatedPointerEvent) => {
+			tileHandlers.startDrag(event);
+		};
+
+		const handlePointerMove = (event: PIXI.FederatedPointerEvent) => {
+			tileHandlers.moveDrag(event);
+		};
+
+		const handlePointerUp = () => {
+			tileHandlers.endDrag();
+		};
+
+		// Attach handlers
+		app.stage.on('pointerdown', handlePointerDown);
+		app.stage.on('pointermove', handlePointerMove);
+		app.stage.on('pointerup', handlePointerUp);
+
+		return () => {
+			app.stage?.removeEventListener('pointerdown', handlePointerDown);
+			app.stage?.removeEventListener('pointermove', handlePointerMove);
+			app.stage?.removeEventListener('pointerup', handlePointerUp);
+			tileHandlers.endDrag();
+		};
+	});
+
+	// Handle conduit placement (pipes, wires, etc.)
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		selectedBuilding = appConfig.selectedToBuild;
+
+		if (!app) {
+			return;
+		}
+
+		// Skip if it's a tile building
+		const isTile = selectedBuilding?.build_rule === BUILD_RULE.Tile;
+
+		// Only handle drag-to-build conduits or when in CUT mode
 		if (
 			appConfig.selectedAction !== ACTION.CUT &&
-			(!selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)
+			(isTile || !selectedBuilding?.is_drag_build || !selectedBuilding?.special_texture?.length)
 		) {
 			return;
 		}
@@ -307,13 +355,11 @@
 		app.stage.on('pointerdown', handlePointerDown);
 		app.stage.on('pointermove', handlePointerMove);
 		app.stage.on('pointerup', handlePointerUp);
-		// app.stage.on('pointerleave', handlePointerLeave);
 
 		return () => {
 			app.stage?.removeEventListener('pointerdown', handlePointerDown);
 			app.stage?.removeEventListener('pointermove', handlePointerMove);
 			app.stage?.removeEventListener('pointerup', handlePointerUp);
-			app.stage?.removeEventListener('pointerleave', handlePointerUp);
 			dragHandlers.endDrag();
 		};
 	});

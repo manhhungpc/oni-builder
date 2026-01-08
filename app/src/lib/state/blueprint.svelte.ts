@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import type { PlacedBuildings } from 'src/interface';
-import type { ConduitNode } from 'src/interface/building';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import { SvelteMap } from 'svelte/reactivity';
 import { Camera } from '$lib/rendering/camera';
 import { Renderer as AppRenderer } from '$lib/rendering/renderer';
@@ -11,8 +11,7 @@ export enum ConduitType {
 	GAS = 'gas',
 	WIRE = 'wire',
 	LOGIC_WIRE = 'logicWire',
-	CONVEYOR = 'conveyor',
-	TILES = 'tiles'
+	CONVEYOR = 'conveyor'
 }
 
 class BlueprintState {
@@ -28,9 +27,9 @@ class BlueprintState {
 		[ConduitType.GAS]: new SvelteMap<string, ConduitNode>(),
 		[ConduitType.WIRE]: new SvelteMap<string, ConduitNode>(),
 		[ConduitType.LOGIC_WIRE]: new SvelteMap<string, ConduitNode>(),
-		[ConduitType.CONVEYOR]: new SvelteMap<string, ConduitNode>(),
-		[ConduitType.TILES]: new SvelteMap<string, ConduitNode>()
+		[ConduitType.CONVEYOR]: new SvelteMap<string, ConduitNode>()
 	};
+	placedTiles = new SvelteMap<string, GridNodeData>();
 
 	addConduit(type: ConduitType, key: string, data: ConduitNode) {
 		this.placedConduits[type].set(key, data);

@@ -83,10 +83,10 @@ export interface DragDrawHandlers {
 
 export interface ConduitNode {
     connects: string[];
-    metadata: ConduitMetadata;
+    metadata: GridNodeData;
 }
 
-export interface ConduitMetadata {
+export interface GridNodeData {
     name?: string;
     displayName?: string;
     sprite?: Sprite;
