@@ -9,13 +9,13 @@ services:
         environment:
             POSTGRES_USER: admin
             POSTGRES_PASSWORD: root
-            POSTGRES_DB: construction-oni
+            POSTGRES_DB: oni-builder
         volumes:
             - postgres_data:/var/lib/postgresql/data
         networks:
             - oni-builders-network
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U admin -d construction-oni"]
+            test: ["CMD-SHELL", "pg_isready -U admin -d oni-builder"]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -30,7 +30,7 @@ services:
             - "3003:3003"
         environment:
             - NODE_ENV=development
-            - DATABASE_URL=postgresql://admin:root@postgres:5432/construction-oni?schema=public
+            - DATABASE_URL=postgresql://admin:root@postgres:5432/oni-builder?schema=public
         volumes:
             - .:/app
             - ../shared:/shared # Mount shared directory
