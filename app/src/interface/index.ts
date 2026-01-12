@@ -46,6 +46,8 @@ export interface PlacedBuildings {
 	scene_layer: number;
 	object_layer: number;
 	view_mode: number;
+	orientation: number; // 0, 90, 180, 270 for rotation OR 0/1 for flip
+	rotation_permit: number;
 	sprite?: Sprite;
 	ports?: Array<{
 		offset: Position;

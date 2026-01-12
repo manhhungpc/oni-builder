@@ -89,6 +89,7 @@ async function processBuildingData(buildingData, categoryData) {
         type,
         view_mode: extraData.view_mode,
         build_rule: buildingData.BuildLocationRule,
+        rotation_permit: buildingData.PermittedRotations,
     };
 }
 

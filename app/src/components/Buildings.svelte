@@ -5,9 +5,14 @@
 	import Layers from 'src/components/Layers.svelte';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
 	import { OVERLAY } from '$lib/constant';
-	import { Controller } from '$lib/core/controller';
+	import { Controller, getNextOrientation } from '$lib/core/controller';
 	import { ACTION, MOUSE_CLICK } from '$lib/constant';
-	import { drawBuilding } from '$lib/core/drawBuilding';
+	import {
+		drawBuilding,
+		applyOrientationTransform,
+		getPortPositions
+	} from '$lib/core/drawBuilding';
+	import { CELL_SIZE } from '$lib/constant';
 	import { dragDrawConduit, updateConduitTexture } from '$lib/core/connectConduit';
 	import { clickPlaceTile } from '$lib/core/connectTile';
 	import { BUILD_RULE } from '$lib/constant';
@@ -35,6 +40,8 @@
 	// Don't use $state for currentPlacementState to avoid reactivity issues
 	let currentPlacement: PlacementState | null = null;
 	let lastPanPosition = $state({ x: 0, y: 0 });
+	let currentOrientation = $state(0);
+	let previousPreview: IBuilding | null = $state(null);
 
 	async function initPixiApp(app: PIXI.Application) {
 		if (!app || !canvasElement) return;
@@ -49,6 +56,17 @@
 		if (!camera || !gridRenderer || !buildContainer) return;
 
 		const controller = new Controller();
+
+		controller.onRotate = () => {
+			const selectedBuilding = appConfig.selectedToBuild;
+			if (appConfig.selectedAction === ACTION.BUILD && selectedBuilding) {
+				const nextOrientation = getNextOrientation(
+					currentOrientation,
+					selectedBuilding.rotation_permit ?? 0
+				);
+				currentOrientation = nextOrientation;
+			}
+		};
 
 		app.ticker.add(() => {
 			const moveSpeed = appConfig.panSpeed + 4;
@@ -182,10 +200,19 @@
 		};
 	});
 
-	// Handle building placement and preview
+	// Handle building SELECTION (creates preview)
 	$effect(() => {
 		const app = blueprint.pixiApp;
 		const selectedToBuild = appConfig.selectedToBuild;
+
+		// Reset orientation when building changes
+		if (selectedToBuild !== previousPreview) {
+			previousPreview = selectedToBuild;
+			if (selectedToBuild) {
+				currentOrientation = 0;
+			}
+		}
+
 		if (!selectedToBuild || !app) {
 			if (currentPlacement && app) {
 				cleanupAttachSprite(currentPlacement, app);
@@ -205,9 +232,13 @@
 
 		const offset = calculateBuildingOffset(selectedToBuild);
 
-		const previewState = previewBuilding(sprite, selectedToBuild, offset);
+		const previewState = previewBuilding(sprite, selectedToBuild, {
+			offset,
+			orientation: 0
+		});
 
 		const placementState = drawBuilding(sprite, selectedToBuild, {
+			getOrientation: () => currentOrientation,
 			onCancel: () => {
 				appConfig.selectedToBuild = null;
 			}
@@ -242,6 +273,66 @@
 				currentPlacement = null;
 			}
 		};
+	});
+
+	// Handle ORIENTATION changes
+	$effect(() => {
+		const selectedToBuild = appConfig.selectedToBuild;
+
+		if (!currentPlacement?.sprite || !currentPlacement?.previewContainer || !selectedToBuild) {
+			return;
+		}
+
+		const sprite = currentPlacement.sprite;
+		const rotationPermit = selectedToBuild.rotation_permit ?? 0;
+		const offset = calculateBuildingOffset(selectedToBuild);
+
+		// Store original sprite dimensions for anchor calculations
+		const spriteWidth = sprite.texture.width;
+		const spriteHeight = sprite.texture.height;
+
+		// Reset sprite transform first
+		sprite.anchor.set(0, 0);
+		sprite.position.set(0, 0);
+		sprite.scale.set(1, 1);
+		sprite.angle = 0;
+
+		// Apply new rotation/flip transform
+		applyOrientationTransform(sprite, currentOrientation, rotationPermit);
+
+		// For rotation, adjust anchor to rotate around center
+		if ((rotationPermit === 1 || rotationPermit === 2) && currentOrientation !== 0) {
+			sprite.anchor.set(0.5, 0.5);
+			sprite.position.set(spriteWidth / 2, spriteHeight / 2);
+		}
+
+		// For flip, adjust anchor to flip around center of offset tile
+		if (rotationPermit === 3 && currentOrientation === 1) {
+			// Anchor at center of the origin tile (POI tile)
+			const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
+			const anchorX = originTileCenter / spriteWidth;
+			sprite.anchor.set(anchorX, 0);
+			sprite.position.set(originTileCenter, 0);
+		}
+
+		const portContainer = currentPlacement.previewContainer.children.find(
+			(child) => child.label === 'Port Preview'
+		);
+		if (portContainer && portContainer.children.length > 0) {
+			// Recalculate port positions with new orientation
+			const newBuildingPorts = getPortPositions(selectedToBuild, 0, 0, currentOrientation);
+			const currentPorts = newBuildingPorts.filter((p) => p.category === appConfig.selectedOverlay);
+
+			currentPorts.forEach((port, index) => {
+				const portSprite = portContainer.children[index];
+				if (portSprite) {
+					portSprite.position.set(
+						(port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
+						(port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
+					);
+				}
+			});
+		}
 	});
 
 	// Handle special building with "is_drag_build" is true and "special_texture" is not empty array

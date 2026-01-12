@@ -60,6 +60,7 @@ export interface IBuilding {
     type?: string | null;
     view_mode?: number;
     build_rule: BUILD_RULE;
+    rotation_permit: number;
 }
 
 // Placement state interface

@@ -18,11 +18,13 @@ function drawBuilding(
 	sprite: Sprite,
 	building: IBuilding,
 	options?: {
+		getOrientation?: () => number;
 		onPlace?: (gridX: number, gridY: number) => void;
 		onCancel?: () => void;
 	}
 ): PlacementState {
 	const clickHandler = placeOnGridHandler(building, {
+		getOrientation: options?.getOrientation,
 		onPlace: options?.onPlace,
 		onCancel: options?.onCancel
 	});
@@ -36,6 +38,7 @@ function drawBuilding(
 function placeOnGridHandler(
 	buildingData: IBuilding,
 	options: {
+		getOrientation?: () => number;
 		onPlace?: (gridX: number, gridY: number) => void;
 		onCancel?: () => void;
 	}
@@ -46,7 +49,7 @@ function placeOnGridHandler(
 
 		if (event.button === MOUSE_CLICK.LEFT) {
 			// Check if placement is valid
-			if (!blueprint.isValidPlacement || !blueprint.camera) {
+			if (!blueprint.isValidPlacement || !blueprint.camera || !options.getOrientation) {
 				console.error('Error in draw building to canvas');
 				return;
 			}
@@ -56,6 +59,10 @@ function placeOnGridHandler(
 			if (buildingData.view_mode) {
 				appConfig.selectedOverlay = buildingData.view_mode;
 			}
+
+			// Get current orientation from getter (allows dynamic updates)
+			const orientation = options.getOrientation();
+			const rotationPermit = buildingData.rotation_permit ?? 0;
 
 			// Create permanent building
 			const buildingSprite = Sprite.from(buildingData.name);
@@ -71,11 +78,31 @@ function placeOnGridHandler(
 			);
 			buildingSprite.zIndex = buildingData.scene_layer;
 
+			// Apply rotation/flip transform
+			applyOrientationTransform(buildingSprite, orientation, rotationPermit);
+
+			// For rotation, we need to adjust anchor to rotate around center
+			if (rotationPermit === 1 || rotationPermit === 2) {
+				buildingSprite.anchor.set(0.5, 0.5);
+				buildingSprite.position.set(gridCenterX, gridCenterY);
+			}
+
+			// For flip, adjust anchor to flip around center of offset tile
+			if (rotationPermit === 3 && orientation === 1) {
+				// Anchor at center of the origin tile (POI tile)
+				const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
+				const anchorX = originTileCenter / buildingSprite.width;
+				const anchorWorldX = (gridX + offset.x) * CELL_SIZE + originTileCenter;
+				const anchorWorldY = (gridY + offset.y) * CELL_SIZE;
+				buildingSprite.anchor.set(anchorX, 0);
+				buildingSprite.position.set(anchorWorldX, anchorWorldY);
+			}
+
 			container?.addChild(buildingSprite);
 
 			const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY);
 
-			const portPositions = getPortPositions(buildingData, gridX, gridY);
+			const portPositions = getPortPositions(buildingData, gridX, gridY, orientation);
 			const portsData = [];
 			for (let port of portPositions) {
 				const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(port.category);
@@ -113,6 +140,8 @@ function placeOnGridHandler(
 				object_layer: buildingData.object_layer,
 				scene_layer: buildingData.scene_layer,
 				view_mode: buildingData.view_mode ?? 0,
+				orientation: orientation,
+				rotation_permit: rotationPermit,
 				top_left: buildingWorldPosition.topLeft,
 				bottom_right: buildingWorldPosition.bottomRight,
 				sprite: buildingSprite,
@@ -126,8 +155,15 @@ function placeOnGridHandler(
 	};
 }
 
-function getPortPositions(building: IBuilding, gridX: number, gridY: number): PortPosition[] {
+function getPortPositions(
+	building: IBuilding,
+	gridX: number,
+	gridY: number,
+	orientation: number = 0
+): PortPosition[] {
 	const portPositions: PortPosition[] = [];
+	const rotationPermit = building.rotation_permit ?? 0;
+
 	if (building.conduit) {
 		const isGasConduit =
 			building.conduit.input_type === CONDUIT_TYPE.GAS ||
@@ -137,7 +173,12 @@ function getPortPositions(building: IBuilding, gridX: number, gridY: number): Po
 			building.conduit.output_type === CONDUIT_TYPE.LIQUID;
 
 		if (building.conduit.input_offset) {
-			const inputPort = calculatePortOffset({ x: gridX, y: gridY }, building.conduit.input_offset);
+			const rotatedOffset = rotateOffset(
+				building.conduit.input_offset,
+				orientation,
+				rotationPermit
+			);
+			const inputPort = calculatePortOffset({ x: gridX, y: gridY }, rotatedOffset);
 
 			if (isGasConduit) {
 				portPositions.push({
@@ -158,12 +199,14 @@ function getPortPositions(building: IBuilding, gridX: number, gridY: number): Po
 		}
 
 		if (building.conduit.output_offset) {
-			const outputPort = calculatePortOffset(
-				{ x: gridX, y: gridY },
-				building.conduit.output_offset
+			const rotatedOffset = rotateOffset(
+				building.conduit.output_offset,
+				orientation,
+				rotationPermit
 			);
+			const outputPort = calculatePortOffset({ x: gridX, y: gridY }, rotatedOffset);
 
-			// Step 6: Add to appropriate port map based on conduit type
+			// Add to appropriate port map based on conduit type
 			if (isGasConduit) {
 				portPositions.push({
 					x: outputPort.x,
@@ -185,7 +228,8 @@ function getPortPositions(building: IBuilding, gridX: number, gridY: number): Po
 
 	if (building.logic_port && building.logic_port.length > 0) {
 		building.logic_port.forEach((port) => {
-			const portPosition = calculatePortOffset({ x: gridX, y: gridY }, port.offset);
+			const rotatedOffset = rotateOffset(port.offset, orientation, rotationPermit);
+			const portPosition = calculatePortOffset({ x: gridX, y: gridY }, rotatedOffset);
 			const portType = port.type === 'input' ? PORT.INPUT : PORT.OUTPUT;
 			portPositions.push({
 				x: portPosition.x,
@@ -197,12 +241,14 @@ function getPortPositions(building: IBuilding, gridX: number, gridY: number): Po
 	}
 
 	if (building.power_port) {
-		// Step 11: Process power input ports
+		// Process power input ports
 		if (building.power_port.input_offset) {
-			const inputPort = calculatePortOffset(
-				{ x: gridX, y: gridY },
-				building.power_port.input_offset
+			const rotatedOffset = rotateOffset(
+				building.power_port.input_offset,
+				orientation,
+				rotationPermit
 			);
+			const inputPort = calculatePortOffset({ x: gridX, y: gridY }, rotatedOffset);
 			portPositions.push({
 				x: inputPort.x,
 				y: inputPort.y,
@@ -211,12 +257,14 @@ function getPortPositions(building: IBuilding, gridX: number, gridY: number): Po
 			});
 		}
 
-		// Step 12: Process power output ports
+		// Process power output ports
 		if (building.power_port.output_offset) {
-			const outputPort = calculatePortOffset(
-				{ x: gridX, y: gridY },
-				building.power_port.output_offset
+			const rotatedOffset = rotateOffset(
+				building.power_port.output_offset,
+				orientation,
+				rotationPermit
 			);
+			const outputPort = calculatePortOffset({ x: gridX, y: gridY }, rotatedOffset);
 			portPositions.push({
 				x: outputPort.x,
 				y: outputPort.y,
@@ -236,5 +284,45 @@ function calculatePortOffset(position: Position, offset: Position) {
 	return { x, y };
 }
 
-export { drawBuilding, calculatePortOffset, getPortPositions };
+function rotateOffset(offset: Position, orientation: number, rotationPermit: number): Position {
+	// For flip, mirror on X-axis
+	if (rotationPermit === 3) {
+		if (orientation === 1) {
+			return { x: -offset.x, y: offset.y };
+		}
+		return offset;
+	}
+
+	// For rotation, rotate the offset clockwise
+	switch (orientation) {
+		case 90:
+			return { x: offset.y, y: -offset.x };
+		case 180:
+			return { x: -offset.x, y: -offset.y };
+		case 270:
+			return { x: -offset.y, y: offset.x };
+		default:
+			return offset;
+	}
+}
+
+function applyOrientationTransform(
+	sprite: Sprite,
+	orientation: number,
+	rotationPermit: number
+): void {
+	if (rotationPermit === 3) {
+		sprite.scale.x = orientation === 1 ? -1 : 1;
+	} else if (rotationPermit === 1 || rotationPermit === 2) {
+		sprite.angle = orientation;
+	}
+}
+
+export {
+	drawBuilding,
+	calculatePortOffset,
+	getPortPositions,
+	rotateOffset,
+	applyOrientationTransform
+};
 export type { PortPosition };

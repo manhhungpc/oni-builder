@@ -12,6 +12,8 @@ import { getPortSpriteAlias } from '$lib/utils';
 import { appConfig } from 'src/lib/state/config.svelte';
 import { updateConduitTexture } from '$lib/core/connectConduit';
 import { placeTile } from '$lib/core/connectTile';
+import { applyOrientationTransform } from '$lib/core/drawBuilding';
+import type { SavedConnections } from 'src/interface/compressData';
 
 async function fetchAndLoadSprites(displayNames: string[]): Promise<Map<string, IBuilding>> {
 	const buildingDataMap = new Map<string, IBuilding>();
@@ -72,9 +74,24 @@ export async function loadSavedBuildings(
 			gridCenterY - buildingSprite.height / 2
 		);
 		buildingSprite.zIndex = savedBuilding.scene_layer;
+
+		// Apply orientation from saved data
+		const orientation = savedBuilding.orientation ?? 0;
+		const rotationPermit = savedBuilding.rotation_permit ?? buildingData.rotation_permit ?? 0;
+		applyOrientationTransform(buildingSprite, orientation, rotationPermit);
+
+		// For rotation, adjust anchor to rotate around center
+		if ((rotationPermit === 1 || rotationPermit === 2) && orientation !== 0) {
+			buildingSprite.anchor.set(0.5, 0.5);
+			buildingSprite.position.set(gridCenterX, gridCenterY);
+		}
+
 		container.addChild(buildingSprite);
 
 		savedBuilding.sprite = buildingSprite;
+		// Ensure orientation and rotation_permit are set for future saves
+		savedBuilding.orientation = orientation;
+		savedBuilding.rotation_permit = rotationPermit;
 
 		// Create port sprites from decompressed port data
 		if (savedBuilding.ports) {
@@ -103,9 +120,7 @@ export async function loadSavedBuildings(
 	}
 }
 
-export async function loadSavedConduits(
-	savedConnections?: Record<string, Map<string, ConduitNode>>
-) {
+export async function loadSavedConduits(savedConnections?: SavedConnections) {
 	if (!savedConnections) return;
 
 	// Collect unique conduit names from all connections
@@ -123,11 +138,11 @@ export async function loadSavedConduits(
 	await fetchAndLoadSprites([...uniqueNames]);
 
 	const connectionTypes = [
-		{ key: 'liquidPipes', savedData: blueprint.placedConduits[ConduitType.LIQUID] },
-		{ key: 'gasPipes', savedData: blueprint.placedConduits[ConduitType.GAS] },
-		{ key: 'wires', savedData: blueprint.placedConduits[ConduitType.WIRE] },
-		{ key: 'logicWires', savedData: blueprint.placedConduits[ConduitType.LOGIC_WIRE] },
-		{ key: 'conveyor', savedData: blueprint.placedConduits[ConduitType.CONVEYOR] }
+		{ key: 'liquidPipes' as const, savedData: blueprint.placedConduits[ConduitType.LIQUID] },
+		{ key: 'gasPipes' as const, savedData: blueprint.placedConduits[ConduitType.GAS] },
+		{ key: 'wires' as const, savedData: blueprint.placedConduits[ConduitType.WIRE] },
+		{ key: 'logicWires' as const, savedData: blueprint.placedConduits[ConduitType.LOGIC_WIRE] },
+		{ key: 'conveyor' as const, savedData: blueprint.placedConduits[ConduitType.CONVEYOR] }
 	];
 
 	for (const { key, savedData } of connectionTypes) {
@@ -155,18 +170,14 @@ export async function loadSavedConduits(
 	if (tilesData) {
 		blueprint.placedTiles.clear();
 
-		tilesData.forEach((nodeData: GridNodeData, nodeKey: string) => {
+		tilesData.forEach((nodeData, nodeKey) => {
 			// Handle both old format (with metadata wrapper) and new format
 			const name = nodeData.name || (nodeData as any).metadata?.name;
 			const displayName = nodeData.displayName || (nodeData as any).metadata?.displayName;
 
 			if (name && displayName) {
 				const [x, y] = nodeKey.split(',').map(Number);
-				placeTile(
-					{ name, display_name: displayName },
-					{ x, y },
-					blueprint.placedTiles
-				);
+				placeTile({ name, display_name: displayName }, { x, y }, blueprint.placedTiles);
 			}
 		});
 	}

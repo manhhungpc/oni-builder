@@ -1,60 +1,95 @@
-const keyMap: Record<string, string> = {
-    KeyW: "up",
-    ArrowUp: "up",
-    KeyA: "left",
-    ArrowLeft: "left",
-    KeyS: "down",
-    ArrowDown: "down",
-    KeyD: "right",
-    ArrowRight: "right",
+const movementKeyMap: Record<string, string> = {
+	KeyW: 'up',
+	ArrowUp: 'up',
+	KeyA: 'left',
+	ArrowLeft: 'left',
+	KeyS: 'down',
+	ArrowDown: 'down',
+	KeyD: 'right',
+	ArrowRight: 'right'
 };
 
-type KeyName = "up" | "left" | "down" | "right";
+const actionKeyMap: Record<string, string> = {
+	KeyO: 'rotate'
+};
+
+type KeyName = 'up' | 'left' | 'down' | 'right';
+type ActionKeyName = 'rotate';
 
 interface KeyState {
-    pressed: boolean;
+	pressed: boolean;
 }
 
 export class Controller {
-    keys: Record<KeyName, KeyState>;
+	keys: Record<KeyName, KeyState>;
+	onRotate?: () => void;
 
-    constructor() {
-        this.keys = {
-            up: { pressed: false },
-            left: { pressed: false },
-            down: { pressed: false },
-            right: { pressed: false },
-        };
+	constructor() {
+		this.keys = {
+			up: { pressed: false },
+			left: { pressed: false },
+			down: { pressed: false },
+			right: { pressed: false }
+		};
 
-        window.addEventListener("keydown", (event) => this.keydownHandler(event));
-        window.addEventListener("keyup", (event) => this.keyupHandler(event));
-    }
+		window.addEventListener('keydown', (event) => this.keydownHandler(event));
+		window.addEventListener('keyup', (event) => this.keyupHandler(event));
+	}
 
-    keydownHandler(event: KeyboardEvent): void {
-        // Ignore keyboard events when typing in input fields
-        const target = event.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
-            return;
-        }
+	keydownHandler(event: KeyboardEvent): void {
+		// Ignore keyboard events when typing in input fields
+		const target = event.target as HTMLElement;
+		if (
+			target.tagName === 'INPUT' ||
+			target.tagName === 'TEXTAREA' ||
+			target.contentEditable === 'true'
+		) {
+			return;
+		}
 
-        const key = keyMap[event.code] as KeyName;
+		// Handle movement keys
+		const movementKey = movementKeyMap[event.code] as KeyName;
+		if (movementKey) {
+			this.keys[movementKey].pressed = true;
+			return;
+		}
 
-        if (!key) return;
+		// Handle action keys (single press actions)
+		const actionKey = actionKeyMap[event.code] as ActionKeyName;
+		if (actionKey === 'rotate' && this.onRotate) {
+			this.onRotate();
+		}
+	}
 
-        this.keys[key].pressed = true;
-    }
+	keyupHandler(event: KeyboardEvent): void {
+		// Ignore keyboard events when typing in input fields
+		const target = event.target as HTMLElement;
+		if (
+			target.tagName === 'INPUT' ||
+			target.tagName === 'TEXTAREA' ||
+			target.contentEditable === 'true'
+		) {
+			return;
+		}
 
-    keyupHandler(event: KeyboardEvent): void {
-        // Ignore keyboard events when typing in input fields
-        const target = event.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
-            return;
-        }
+		const movementKey = movementKeyMap[event.code] as KeyName;
+		if (movementKey) {
+			this.keys[movementKey].pressed = false;
+		}
+	}
+}
 
-        const key = keyMap[event.code] as KeyName;
-
-        if (!key) return;
-
-        this.keys[key].pressed = false;
-    }
+export function getNextOrientation(currentOrientation: number, rotationPermit: number): number {
+	switch (rotationPermit) {
+		case 0:
+			return 0;
+		case 1:
+			return currentOrientation === 0 ? 90 : 0; // Toggle 0° <> 90°
+		case 2:
+			return (currentOrientation + 90) % 360; // Cycle 0 > 90 > 180 > 270 > 0
+		case 3:
+			return currentOrientation === 0 ? 1 : 0; // Toggle flip state (0 or 1)
+		default:
+			return 0;
+	}
 }

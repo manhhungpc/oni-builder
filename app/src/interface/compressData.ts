@@ -1,4 +1,5 @@
 import { type Compressed } from 'compress-json';
+import type { ConduitNode, GridNodeData } from 'src/interface/building';
 
 export interface CompressedCanvasData {
 	buildings: Compressed;
@@ -13,4 +14,13 @@ export interface CompressedConnections {
 	tiles?: Compressed | null;
 	conveyor?: Compressed | null;
 	other?: Compressed | null;
+}
+
+export interface SavedConnections {
+	liquidPipes?: Map<string, ConduitNode>;
+	gasPipes?: Map<string, ConduitNode>;
+	wires?: Map<string, ConduitNode>;
+	logicWires?: Map<string, ConduitNode>;
+	conveyor?: Map<string, ConduitNode>;
+	tiles?: Map<string, GridNodeData>;
 }

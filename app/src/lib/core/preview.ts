@@ -8,15 +8,21 @@ import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig, message } from '$lib/state/config.svelte';
 import { worldToGrid } from '$lib/utils/grid/transform';
 import { getPortSpriteAlias, getOverlayInfo } from '$lib/utils';
-import { getPortPositions } from './drawBuilding';
+import { getPortPositions, applyOrientationTransform } from './drawBuilding';
 import { OVERLAY } from '$lib/constant';
 
 // Create mouse move handler for building preview with grid snapping
 function previewBuilding(
 	sprite: Sprite,
 	currentBuilding: IBuilding,
-	offset: Position
+	options?: {
+		offset?: Position;
+		orientation?: number;
+	}
 ): PreviewState {
+	const offset = options?.offset ?? { x: 0, y: 0 };
+	const orientation = options?.orientation ?? 0;
+
 	// Create a parent container to hold both the sprite and port container
 	const previewContainer = new Container();
 	previewContainer.label = 'Building Preview';
@@ -29,11 +35,34 @@ function previewBuilding(
 	previewContainer.addChild(sprite);
 	previewContainer.addChild(portContainer);
 
+	// Apply rotation/flip transform to the preview sprite
+	const rotationPermit = currentBuilding.rotation_permit ?? 0;
+	applyOrientationTransform(sprite, orientation, rotationPermit);
+
+	// For rotation, adjust anchor to rotate around center
+	if ((rotationPermit === 1 || rotationPermit === 2) && orientation !== 0) {
+		sprite.anchor.set(0.5, 0.5);
+		// Adjust sprite position to account for anchor change
+		sprite.position.set(
+			sprite.position.x + sprite.width / 2,
+			sprite.position.y + sprite.height / 2
+		);
+	}
+
+	// For flip, adjust anchor to flip around center of offset tile
+	if (rotationPermit === 3 && orientation === 1) {
+		// Anchor at center of the origin tile (POI tile)
+		const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
+		const anchorX = originTileCenter / sprite.width;
+		sprite.anchor.set(anchorX, 0);
+		sprite.position.set(originTileCenter, 0);
+	}
+
 	const currentOverlay = appConfig.selectedOverlay;
 	const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(currentOverlay);
 
-	// Get all port positions of the building
-	const buildingPorts = getPortPositions(currentBuilding, 0, 0);
+	// Get all port positions of the building with rotation applied
+	const buildingPorts = getPortPositions(currentBuilding, 0, 0, orientation);
 
 	// Create sprites for each port of the building
 	buildingPorts.forEach((port) => {

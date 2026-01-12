@@ -27,6 +27,7 @@ model Building {
   type               String?
   view_mode          Int?
   build_rule         Int
+  rotation_permit    Int      @default(0)
 
   // Store as JSONB instead of separate tables
   materials  Json // JSONB: Material[]
