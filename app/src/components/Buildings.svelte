@@ -7,16 +7,12 @@
 	import { OVERLAY } from '$lib/constant';
 	import { Controller, getNextOrientation } from '$lib/core/controller';
 	import { ACTION, MOUSE_CLICK } from '$lib/constant';
-	import {
-		drawBuilding,
-		applyOrientationTransform,
-		getPortPositions
-	} from '$lib/core/drawBuilding';
-	import { CELL_SIZE } from '$lib/constant';
+	import { drawBuilding } from '$lib/core/drawBuilding';
 	import { dragDrawConduit, updateConduitTexture } from '$lib/core/connectConduit';
 	import { clickPlaceTile } from '$lib/core/connectTile';
+	import { dragPlaceBuilding } from '$lib/core/dragBuilding';
 	import { BUILD_RULE } from '$lib/constant';
-	import { previewBuilding } from '$lib/core/preview';
+	import { previewBuilding, updatePreviewOrientation } from '$lib/core/preview';
 	import { calculateBuildingOffset } from '$lib/core/positioning';
 	import { createPlacementSprite, cleanupAttachSprite } from '$lib/rendering/pixi';
 	import type { ConduitNode, PlacementState } from 'src/interface/building';
@@ -256,13 +252,14 @@
 			app.stage.on('pointermove', previewState.mouseMoveHandler);
 		}
 		if (placementState.clickHandler) {
-			if (appConfig.selectedToBuild?.is_drag_build || selectedToBuild.special_texture.length > 0)
+			if (appConfig.selectedToBuild?.is_drag_build || selectedToBuild.special_texture.length > 0) {
 				return () => {
 					if (currentPlacement && app) {
 						cleanupAttachSprite(currentPlacement, app);
 						currentPlacement = null;
 					}
 				};
+			}
 
 			app.stage.on('pointerdown', placementState.clickHandler);
 		}
@@ -283,56 +280,21 @@
 			return;
 		}
 
-		const sprite = currentPlacement.sprite;
-		const rotationPermit = selectedToBuild.rotation_permit ?? 0;
-		const offset = calculateBuildingOffset(selectedToBuild);
-
-		// Store original sprite dimensions for anchor calculations
-		const spriteWidth = sprite.texture.width;
-		const spriteHeight = sprite.texture.height;
-
-		// Reset sprite transform first
-		sprite.anchor.set(0, 0);
-		sprite.position.set(0, 0);
-		sprite.scale.set(1, 1);
-		sprite.angle = 0;
-
-		// Apply new rotation/flip transform
-		applyOrientationTransform(sprite, currentOrientation, rotationPermit);
-
-		// For rotation, adjust anchor to rotate around center
-		if ((rotationPermit === 1 || rotationPermit === 2) && currentOrientation !== 0) {
-			sprite.anchor.set(0.5, 0.5);
-			sprite.position.set(spriteWidth / 2, spriteHeight / 2);
-		}
-
-		// For flip, adjust anchor to flip around center of offset tile
-		if (rotationPermit === 3 && currentOrientation === 1) {
-			// Anchor at center of the origin tile (POI tile)
-			const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
-			const anchorX = originTileCenter / spriteWidth;
-			sprite.anchor.set(anchorX, 0);
-			sprite.position.set(originTileCenter, 0);
-		}
-
 		const portContainer = currentPlacement.previewContainer.children.find(
 			(child) => child.label === 'Port Preview'
 		);
-		if (portContainer && portContainer.children.length > 0) {
-			// Recalculate port positions with new orientation
-			const newBuildingPorts = getPortPositions(selectedToBuild, 0, 0, currentOrientation);
-			const currentPorts = newBuildingPorts.filter((p) => p.category === appConfig.selectedOverlay);
 
-			currentPorts.forEach((port, index) => {
-				const portSprite = portContainer.children[index];
-				if (portSprite) {
-					portSprite.position.set(
-						(port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
-						(port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
-					);
-				}
-			});
-		}
+		if (!portContainer) return;
+
+		const offset = calculateBuildingOffset(selectedToBuild);
+
+		updatePreviewOrientation(
+			currentPlacement.sprite,
+			portContainer,
+			selectedToBuild,
+			offset,
+			currentOrientation
+		);
 	});
 
 	// Handle special building with "is_drag_build" is true and "special_texture" is not empty array
@@ -443,6 +405,53 @@
 		};
 
 		// Attach handlers
+		app.stage.on('pointerdown', handlePointerDown);
+		app.stage.on('pointermove', handlePointerMove);
+		app.stage.on('pointerup', handlePointerUp);
+
+		return () => {
+			app.stage?.removeEventListener('pointerdown', handlePointerDown);
+			app.stage?.removeEventListener('pointermove', handlePointerMove);
+			app.stage?.removeEventListener('pointerup', handlePointerUp);
+			dragHandlers.endDrag();
+		};
+	});
+
+	// Handle drag-build buildings without special_texture
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		const building = appConfig.selectedToBuild;
+
+		if (!app || !building) {
+			return;
+		}
+
+		const hasSpecialTexture = building.special_texture && building.special_texture.length > 0;
+		const isTile = building.build_rule === BUILD_RULE.Tile;
+		const isDragBuildNoSpecial = building.is_drag_build && !hasSpecialTexture && !isTile;
+
+		if (!isDragBuildNoSpecial) {
+			return;
+		}
+
+		const dragHandlers = dragPlaceBuilding(building, {
+			getOrientation: () => currentOrientation
+		});
+
+		const handlePointerDown = (event: PIXI.FederatedPointerEvent) => {
+			if (appConfig.selectedAction !== ACTION.BUILD) return;
+			dragHandlers.startDrag(event);
+		};
+
+		const handlePointerMove = (event: PIXI.FederatedPointerEvent) => {
+			if (appConfig.selectedAction !== ACTION.BUILD) return;
+			dragHandlers.moveDrag(event);
+		};
+
+		const handlePointerUp = () => {
+			dragHandlers.endDrag();
+		};
+
 		app.stage.on('pointerdown', handlePointerDown);
 		app.stage.on('pointermove', handlePointerMove);
 		app.stage.on('pointerup', handlePointerUp);

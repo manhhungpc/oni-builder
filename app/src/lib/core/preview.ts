@@ -35,29 +35,6 @@ function previewBuilding(
 	previewContainer.addChild(sprite);
 	previewContainer.addChild(portContainer);
 
-	// Apply rotation/flip transform to the preview sprite
-	const rotationPermit = currentBuilding.rotation_permit ?? 0;
-	applyOrientationTransform(sprite, orientation, rotationPermit);
-
-	// For rotation, adjust anchor to rotate around center
-	if ((rotationPermit === 1 || rotationPermit === 2) && orientation !== 0) {
-		sprite.anchor.set(0.5, 0.5);
-		// Adjust sprite position to account for anchor change
-		sprite.position.set(
-			sprite.position.x + sprite.width / 2,
-			sprite.position.y + sprite.height / 2
-		);
-	}
-
-	// For flip, adjust anchor to flip around center of offset tile
-	if (rotationPermit === 3 && orientation === 1) {
-		// Anchor at center of the origin tile (POI tile)
-		const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
-		const anchorX = originTileCenter / sprite.width;
-		sprite.anchor.set(anchorX, 0);
-		sprite.position.set(originTileCenter, 0);
-	}
-
 	const currentOverlay = appConfig.selectedOverlay;
 	const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(currentOverlay);
 
@@ -100,6 +77,63 @@ function previewBuilding(
 		previewContainer: previewContainer,
 		mouseMoveHandler: previewHandler
 	};
+}
+
+function updatePreviewOrientation(
+	sprite: Sprite,
+	portContainer: Container,
+	building: IBuilding,
+	offset: Position,
+	newOrientation: number
+): void {
+	const rotationPermit = building.rotation_permit ?? 0;
+	const spriteWidth = sprite.texture.width;
+	const spriteHeight = sprite.texture.height;
+
+	// Reset sprite transform first
+	sprite.anchor.set(0, 0);
+	sprite.position.set(0, 0);
+	sprite.scale.set(1, 1);
+	sprite.angle = 0;
+
+	// Apply rotation/flip transform
+	applyOrientationTransform(sprite, newOrientation, rotationPermit);
+
+	// Rotation 90deg or full circle - adjust anchor to rotate around center
+	if ((rotationPermit === 1 || rotationPermit === 2) && newOrientation !== 0) {
+		sprite.anchor.set(0.5, 0.5);
+		sprite.position.set(spriteWidth / 2, spriteHeight / 2);
+	}
+
+	// Horizontal flip - adjust anchor to flip around center of offset tile on X-axis
+	if (rotationPermit === 3 && newOrientation === 1) {
+		const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
+		const anchorX = originTileCenter / spriteWidth;
+		sprite.anchor.set(anchorX, 0);
+		sprite.position.set(originTileCenter, 0);
+	}
+
+	// Vertical flip - adjust anchor to flip around center of offset tile on Y-axis
+	if (rotationPermit === 4 && newOrientation === 1) {
+		const originTileCenter = (-offset.y + 0.5) * CELL_SIZE;
+		const anchorY = originTileCenter / spriteHeight;
+		sprite.anchor.set(0, anchorY);
+		sprite.position.set(0, originTileCenter);
+	}
+
+	// Update port positions
+	const newBuildingPorts = getPortPositions(building, 0, 0, newOrientation);
+	const currentPorts = newBuildingPorts.filter((p) => p.category === appConfig.selectedOverlay);
+
+	currentPorts.forEach((port, index) => {
+		const portSprite = portContainer.children[index];
+		if (portSprite) {
+			portSprite.position.set(
+				(port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
+				(port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
+			);
+		}
+	});
 }
 
 function checkPortOverlap(
@@ -203,4 +237,4 @@ function gridSnapPreviewHandler(
 	};
 }
 
-export { previewBuilding };
+export { previewBuilding, updatePreviewOrientation };

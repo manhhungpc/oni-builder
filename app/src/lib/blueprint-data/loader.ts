@@ -86,6 +86,26 @@ export async function loadSavedBuildings(
 			buildingSprite.position.set(gridCenterX, gridCenterY);
 		}
 
+		// For horizontal flip, adjust anchor to flip around center of offset tile on X-axis
+		if (rotationPermit === 3 && orientation === 1) {
+			const originTileCenter = (-offset.x + 0.5) * CELL_SIZE;
+			const anchorX = originTileCenter / buildingSprite.width;
+			const anchorWorldX = (gridX + offset.x) * CELL_SIZE + originTileCenter;
+			const anchorWorldY = (gridY + offset.y) * CELL_SIZE;
+			buildingSprite.anchor.set(anchorX, 0);
+			buildingSprite.position.set(anchorWorldX, anchorWorldY);
+		}
+
+		// For vertical flip, adjust anchor to flip around center of offset tile on Y-axis
+		if (rotationPermit === 4 && orientation === 1) {
+			const originTileCenter = (-offset.y + 0.5) * CELL_SIZE;
+			const anchorY = originTileCenter / buildingSprite.height;
+			const anchorWorldX = (gridX + offset.x) * CELL_SIZE;
+			const anchorWorldY = (gridY + offset.y) * CELL_SIZE + originTileCenter;
+			buildingSprite.anchor.set(0, anchorY);
+			buildingSprite.position.set(anchorWorldX, anchorWorldY);
+		}
+
 		container.addChild(buildingSprite);
 
 		savedBuilding.sprite = buildingSprite;

@@ -69,11 +69,13 @@ export interface PlacementState {
     previewContainer?: Container | null;
     mouseMoveHandler?: ((event: FederatedPointerEvent) => void) | null;
     clickHandler?: ((event: FederatedPointerEvent) => void) | null;
+    updateOrientation?: (newOrientation: number) => void;
 }
 
 export interface PreviewState {
     previewContainer: Container;
     mouseMoveHandler?: ((event: FederatedPointerEvent) => void) | null;
+    updateOrientation?: (newOrientation: number) => void;
 }
 
 export interface DragDrawHandlers {

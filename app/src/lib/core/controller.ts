@@ -88,7 +88,9 @@ export function getNextOrientation(currentOrientation: number, rotationPermit: n
 		case 2:
 			return (currentOrientation + 90) % 360; // Cycle 0 > 90 > 180 > 270 > 0
 		case 3:
-			return currentOrientation === 0 ? 1 : 0; // Toggle flip state (0 or 1)
+			return currentOrientation === 0 ? 1 : 0; // Toggle horizontal flip state (0 or 1)
+		case 4:
+			return currentOrientation === 0 ? 1 : 0; // Toggle vertical flip state (0 or 1)
 		default:
 			return 0;
 	}

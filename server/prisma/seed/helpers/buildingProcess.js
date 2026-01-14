@@ -10,6 +10,12 @@ const POWER_PORT_TYPE = {
     transformer: 'transformer',
 };
 
+const BUILDING_OVERRIDES = {
+    InsulatedDoor: {
+        is_drag_build: false,
+    },
+};
+
 async function processBuildingData(buildingData, categoryData) {
     const materials = [];
 
@@ -66,7 +72,7 @@ async function processBuildingData(buildingData, categoryData) {
         );
     }
 
-    return {
+    const processed = {
         name: buildingData.PrefabID || buildingData.name,
         display_name: getDisplayName(buildingData.Name),
         texture_name: buildingData.TextureName,
@@ -91,6 +97,17 @@ async function processBuildingData(buildingData, categoryData) {
         build_rule: buildingData.BuildLocationRule,
         rotation_permit: buildingData.PermittedRotations,
     };
+
+    return applyOverrides(processed);
+}
+
+function applyOverrides(building) {
+    const overrides = BUILDING_OVERRIDES[building.name];
+    if (overrides) {
+        console.log(`Applying overrides for ${building.name}:`, overrides);
+        return { ...building, ...overrides };
+    }
+    return building;
 }
 
 function getDisplayName(nameString) {
