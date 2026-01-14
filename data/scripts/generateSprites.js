@@ -15,6 +15,27 @@ const TEXTURE_OUTPUT_DIR = path.join(__dirname, '../draw_images');
 const PADDING = 20;
 
 // ============================================================================
+// ARGUMENT PARSING
+// ============================================================================
+
+function parseArgs() {
+    const args = process.argv.slice(2);
+    const options = {
+        building: null,
+    };
+
+    for (const arg of args) {
+        if (arg.startsWith('--building=')) {
+            options.building = arg.split('=')[1];
+        }
+    }
+
+    return options;
+}
+
+const CLI_OPTIONS = parseArgs();
+
+// ============================================================================
 // MAIN FUNCTION
 // ============================================================================
 
@@ -26,7 +47,20 @@ async function main() {
 
     // Load building data
     console.log('Loading building data from building_2025.json...');
-    const buildingData = loadBuildingData();
+    let buildingData = loadBuildingData();
+
+    // Filter by specific building if --building flag is provided
+    if (CLI_OPTIONS.building) {
+        const filtered = buildingData.filter((b) => b.name === CLI_OPTIONS.building);
+        if (filtered.length === 0) {
+            console.error(`Building "${CLI_OPTIONS.building}" not found in building data.`);
+            console.log('Available buildings:', buildingData.map((b) => b.name).slice(0, 10).join(', '), '...');
+            process.exit(1);
+        }
+        buildingData = filtered;
+        console.log(`Filtering to building: ${CLI_OPTIONS.building}`);
+    }
+
     console.log(`Loaded ${buildingData.length} buildings to process\n`);
 
     // Generate sprites

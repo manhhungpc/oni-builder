@@ -303858,23 +303858,6 @@
           }
         },
         {
-          "name": "meter_target_0",
-          "isIcon": false,
-          "isInputOutput": false,
-          "uvMin": {
-            "x": 701.0,
-            "y": 609.0
-          },
-          "uvSize": {
-            "x": 134.0,
-            "y": 87.0
-          },
-          "pivot": {
-            "x": 0.547490656,
-            "y": 0.5214395
-          }
-        },
-        {
           "name": "nozzle_0",
           "isIcon": false,
           "isInputOutput": false,
@@ -304044,20 +304027,6 @@
         },
         {
           "name": "watertank_0",
-          "translation": {
-            "x": 25.0,
-            "y": 270.325
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "rotation": 0.0,
-          "flipX": false,
-          "flipY": false
-        },
-        {
-          "name": "meter_target_0",
           "translation": {
             "x": 25.0,
             "y": 270.325
@@ -311347,61 +311316,61 @@
           }
         },
         {
-          "name": "slat_1",
+          "name": "slat_0",
           "isIcon": false,
           "isInputOutput": false,
           "uvMin": {
             "x": 0.0,
-            "y": 398.0
+            "y": 356.0
           },
           "uvSize": {
-            "x": 94.0,
-            "y": 44.0
+            "x": 114.0,
+            "y": 42.0
           },
           "pivot": {
-            "x": 0.430718064,
-            "y": 0.282670468
+            "x": 0.375657916,
+            "y": 0.242559522
           }
         }
       ],
       "spriteModifiers": [
         {
-          "name": "slat_1",
+          "name": "slat_0",
           "translation": {
-            "x": -11.825,
+            "x": -9.525,
             "y": 9.475
           },
           "scale": {
-            "x": 1.04171753,
-            "y": 1.04046631
+            "x": 1.04199219,
+            "y": 1.04199219
           },
           "rotation": 0.0,
           "flipX": false,
           "flipY": false
         },
         {
-          "name": "slat_1",
+          "name": "slat_0",
           "translation": {
-            "x": -12.125,
+            "x": -10.075,
             "y": 37.55
           },
           "scale": {
-            "x": 1.04171753,
-            "y": 1.04264832
+            "x": 1.04199219,
+            "y": 1.04199219
           },
           "rotation": 0.0,
           "flipX": false,
           "flipY": false
         },
         {
-          "name": "slat_1",
+          "name": "slat_0",
           "translation": {
-            "x": -12.7,
+            "x": -12.675,
             "y": 66.15
           },
           "scale": {
-            "x": 1.04171753,
-            "y": 1.04223633
+            "x": 1.04199219,
+            "y": 1.04199219
           },
           "rotation": 0.0,
           "flipX": false,
@@ -311411,11 +311380,11 @@
           "name": "plate_0",
           "translation": {
             "x": -4.7,
-            "y": 101.375
+            "y": 101.325
           },
           "scale": {
-            "x": 1.04171753,
-            "y": 1.04264832
+            "x": 1.04199219,
+            "y": 1.04199219
           },
           "rotation": -180.0,
           "flipX": false,
@@ -311561,6 +311530,23 @@
       ],
       "sprites": [
         {
+          "name": "plate_0",
+          "isIcon": false,
+          "isInputOutput": false,
+          "uvMin": {
+            "x": 0.0,
+            "y": 322.0
+          },
+          "uvSize": {
+            "x": 102.0,
+            "y": 104.0
+          },
+          "pivot": {
+            "x": 0.4968137,
+            "y": 0.0299278777
+          }
+        },
+        {
           "name": "powerpack_0",
           "isIcon": false,
           "isInputOutput": false,
@@ -311614,14 +311600,14 @@
       ],
       "spriteModifiers": [
         {
-          "name": "plate_2",
+          "name": "plate_0",
           "translation": {
             "x": -4.7,
-            "y": 101.375
+            "y": 101.325
           },
           "scale": {
-            "x": 1.04171753,
-            "y": 1.04264832
+            "x": 1.04199219,
+            "y": 1.04199219
           },
           "rotation": -180.0,
           "flipX": false,
@@ -339611,23 +339597,6 @@
       ],
       "sprites": [
         {
-          "name": "iris_0",
-          "isIcon": false,
-          "isInputOutput": false,
-          "uvMin": {
-            "x": 202.0,
-            "y": 0.0
-          },
-          "uvSize": {
-            "x": 84.0,
-            "y": 86.0
-          },
-          "pivot": {
-            "x": 0.500046253,
-            "y": 0.499854654
-          }
-        },
-        {
           "name": "ventmouth_0",
           "isIcon": false,
           "isInputOutput": false,
@@ -339646,20 +339615,6 @@
         }
       ],
       "spriteModifiers": [
-        {
-          "name": "iris_0",
-          "translation": {
-            "x": -1.75,
-            "y": 48.1
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "rotation": 0.0,
-          "flipX": false,
-          "flipY": false
-        },
         {
           "name": "ventmouth_0",
           "translation": {
@@ -405524,23 +405479,6 @@
       ],
       "sprites": [
         {
-          "name": "lid_0",
-          "isIcon": false,
-          "isInputOutput": false,
-          "uvMin": {
-            "x": 126.0,
-            "y": 138.0
-          },
-          "uvSize": {
-            "x": 96.0,
-            "y": 96.0
-          },
-          "pivot": {
-            "x": 0.5,
-            "y": 0.5
-          }
-        },
-        {
           "name": "ventmouth_0",
           "isIcon": false,
           "isInputOutput": false,
@@ -405559,20 +405497,6 @@
         }
       ],
       "spriteModifiers": [
-        {
-          "name": "lid_0",
-          "translation": {
-            "x": -1.85,
-            "y": 48.725
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "rotation": 0.0,
-          "flipX": false,
-          "flipY": false
-        },
         {
           "name": "ventmouth_0",
           "translation": {
