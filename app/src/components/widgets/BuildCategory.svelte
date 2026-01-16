@@ -55,6 +55,7 @@
 		buildings = textSearch
 			? await listBuilding({ search: textSearch })
 			: await listBuilding({ category: activeCategory });
+		await loadSprites(buildings, BASE_IMG_PATH);
 	}
 
 	function onSelectToBuild(building: IBuilding) {

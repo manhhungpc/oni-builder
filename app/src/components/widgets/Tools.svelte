@@ -5,7 +5,7 @@
 	import { Button } from '$lib/ui/primitives/button';
 	import * as Tooltip from '$lib/ui/primitives/tooltip/index.js';
 	import { blueprint } from '$lib/state/blueprint.svelte';
-	import { appConfig } from '$lib/state/config.svelte';
+	import { appConfig, setDevMode } from '$lib/state/config.svelte';
 	import ScissorsLineDashed from '@lucide/svelte/icons/scissors-line-dashed';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
@@ -39,6 +39,7 @@
 	import GoogleLogo from '$lib/assets/google-logo.svg';
 	import Guide from 'src/lib/ui/components/Guide.svelte';
 	import { createLocalGuest, getLocalGuest } from 'src/lib/utils/helpers';
+	import Dialog from 'src/lib/ui/components/Dialog.svelte';
 
 	interface Props {
 		shareable?: boolean;
@@ -75,6 +76,7 @@
 	let isSharing = $state(false);
 	let shareError = $state('');
 	let shareUrl = $state('');
+	let aboutDialogOpen = $state(false);
 
 	let { shareable = true }: Props = $props();
 
@@ -282,7 +284,7 @@
 {#snippet tool_sidebar()}
 	<Sidebar bind:open={appConfig.sidebarOpen}>
 		{#snippet trigger()}
-			<Button size="icon" class="border-orange-6 h-8 w-8 border bg-transparent text-white">
+			<Button size="icon" class="hover:bg-orange-primary h-8 w-8 bg-transparent text-white">
 				<Menu />
 			</Button>
 		{/snippet}
@@ -371,12 +373,46 @@
 		{#snippet footer()}
 			{#if page.data.user}
 				<Button
-					class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
+					class="bg-dark-secondary hover:bg-dark-active flex w-full items-center justify-center"
 					onclick={() => logout()}
 				>
 					Log out
 				</Button>
 			{/if}
+			<div class="flex items-center justify-center gap-4">
+				<Dialog bind:open={aboutDialogOpen}>
+					{#snippet trigger()}
+						<button class="text-gray-primary text-xs hover:cursor-pointer hover:text-white">
+							About
+						</button>
+					{/snippet}
+					{#snippet title()}
+						About
+					{/snippet}
+					{#snippet content()}
+						<p class="text-gray-primary text-sm">
+							Ellie Sticker Bomber is a blueprint builder tool for Oxygen Not Included.
+						</p>
+						<div class="mt-4 flex items-center justify-between">
+							<p class="text-sm">Enable dev mode</p>
+							<Switch
+								checked={appConfig.devMode}
+								onCheckedChange={(checked) => {
+									setDevMode(checked);
+									if (checked) {
+										blueprint.drawBoundaryBoxes();
+									} else {
+										blueprint.clearBoundaryBoxes();
+									}
+								}}
+							/>
+						</div>
+					{/snippet}
+				</Dialog>
+				<button class="text-gray-primary text-xs hover:cursor-pointer hover:text-white">
+					Github
+				</button>
+			</div>
 		{/snippet}
 	</Sidebar>
 {/snippet}

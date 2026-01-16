@@ -4,7 +4,8 @@ import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import { SvelteMap } from 'svelte/reactivity';
 import { Camera } from '$lib/rendering/camera';
 import { Renderer as AppRenderer } from '$lib/rendering/renderer';
-import { CONDUIT_TYPE, PORT } from '$lib/constant';
+import { CELL_SIZE, CONDUIT_TYPE, PORT } from '$lib/constant';
+import { appConfig } from './config.svelte';
 
 export enum ConduitType {
 	LIQUID = 'liquid',
@@ -20,6 +21,7 @@ class BlueprintState {
 	gridRenderer = $state<AppRenderer>();
 	buildContainer = $state<PIXI.Container | null>(null);
 	isValidPlacement = $state(false);
+	boundaryGraphics = $state<PIXI.Graphics | null>(null);
 
 	placedBuildings = $state<PlacedBuildings[]>([]);
 	placedConduits = {
@@ -100,6 +102,32 @@ class BlueprintState {
 		return allPorts;
 	}
 
+	drawBoundaryBoxes(): void {
+		if (!this.buildContainer) return;
+
+		if (!this.boundaryGraphics) {
+			this.boundaryGraphics = new PIXI.Graphics({ label: 'Boundary Boxes' });
+			this.boundaryGraphics.zIndex = 1000;
+			this.buildContainer.addChild(this.boundaryGraphics);
+		}
+
+		this.boundaryGraphics.clear();
+
+		for (const building of this.placedBuildings) {
+			const x = building.top_left.x * CELL_SIZE;
+			const y = building.top_left.y * CELL_SIZE;
+			const width = (building.bottom_right.x - building.top_left.x + 1) * CELL_SIZE;
+			const height = (building.bottom_right.y - building.top_left.y + 1) * CELL_SIZE;
+
+			this.boundaryGraphics.rect(x, y, width, height);
+			this.boundaryGraphics.stroke({ width: 2, color: 0xff0000 });
+		}
+	}
+
+	clearBoundaryBoxes(): void {
+		this.boundaryGraphics?.clear();
+	}
+
 	removeBuilding(building: PlacedBuildings) {
 		building.sprite?.destroy();
 
@@ -113,6 +141,10 @@ class BlueprintState {
 		const index = this.placedBuildings.indexOf(building);
 		if (index > -1) {
 			this.placedBuildings.splice(index, 1);
+		}
+
+		if (appConfig.devMode) {
+			this.drawBoundaryBoxes();
 		}
 	}
 }

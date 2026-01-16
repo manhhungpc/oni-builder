@@ -3,6 +3,7 @@ import { FederatedPointerEvent, Sprite } from 'pixi.js';
 import { CELL_SIZE, MOUSE_CLICK, PORT } from '$lib/constant';
 import type { PlacementState } from 'src/interface/building';
 import { calculateBuildingGridPositions, calculateBuildingOffset } from './positioning';
+import { getSpriteOffset } from './spriteOffset';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { worldToGrid } from '$lib/utils/grid/transform';
 import { CONDUIT_TYPE, OVERLAY } from '$lib/constant';
@@ -120,6 +121,11 @@ function placeBuildingAtGrid(
 		buildingSprite.position.set(anchorWorldX, anchorWorldY);
 	}
 
+	// Apply visual sprite offset (doesn't affect collision)
+	const spriteOffset = getSpriteOffset(buildingData.name);
+	buildingSprite.position.x += spriteOffset.x * CELL_SIZE;
+	buildingSprite.position.y += spriteOffset.y * CELL_SIZE;
+
 	container.addChild(buildingSprite);
 
 	const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY);
@@ -165,6 +171,10 @@ function placeBuildingAtGrid(
 		sprite: buildingSprite,
 		ports: portsData
 	});
+
+	if (appConfig.devMode) {
+		blueprint.drawBoundaryBoxes();
+	}
 }
 
 function getPortPositions(

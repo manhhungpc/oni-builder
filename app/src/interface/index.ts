@@ -23,6 +23,7 @@ export interface AppConfig {
 	selectedOverlay: OVERLAY;
 	selectedToBuild: null | IBuilding;
 	sidebarOpen: boolean;
+	devMode: boolean;
 }
 
 export interface DropdownItem {

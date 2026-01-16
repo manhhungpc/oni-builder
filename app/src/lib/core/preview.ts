@@ -1,14 +1,14 @@
 import type { IBuilding, PortOverlapDetail, Position } from 'src/interface/building';
-import type { Camera } from '$lib/rendering/camera';
-import { FederatedPointerEvent, Sprite, Container, Assets } from 'pixi.js';
+import { FederatedPointerEvent, Sprite, Container, Assets, Graphics } from 'pixi.js';
 import { CELL_SIZE, PORT } from '$lib/constant';
-import type { PlacementState, PreviewState } from 'src/interface/building';
+import type { PreviewState } from 'src/interface/building';
 import { getCollidingBuildings } from './collision';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig, message } from '$lib/state/config.svelte';
 import { worldToGrid } from '$lib/utils/grid/transform';
 import { getPortSpriteAlias, getOverlayInfo } from '$lib/utils';
 import { getPortPositions, applyOrientationTransform } from './drawBuilding';
+import { getSpriteOffset } from './spriteOffset';
 import { OVERLAY } from '$lib/constant';
 
 // Create mouse move handler for building preview with grid snapping
@@ -29,11 +29,26 @@ function previewBuilding(
 	const portContainer = new Container();
 	portContainer.label = 'Port Preview';
 
+	// Create boundary box graphics
+	const boundaryBox = new Graphics();
+	boundaryBox.label = 'Boundary Box';
+	const buildingWidthPx = currentBuilding.width * CELL_SIZE;
+	const buildingHeightPx = currentBuilding.height * CELL_SIZE;
+	boundaryBox.rect(0, 0, buildingWidthPx, buildingHeightPx);
+	boundaryBox.stroke({ width: 2, color: 0x00ff00 });
+	boundaryBox.visible = appConfig.devMode;
+
 	if (sprite.parent) {
 		sprite.parent.addChild(previewContainer);
 	}
 	previewContainer.addChild(sprite);
 	previewContainer.addChild(portContainer);
+	previewContainer.addChild(boundaryBox);
+
+	// Apply visual sprite offset (doesn't affect collision)
+	const spriteOffset = getSpriteOffset(currentBuilding.name);
+	sprite.position.x += spriteOffset.x * CELL_SIZE;
+	sprite.position.y += spriteOffset.y * CELL_SIZE;
 
 	const currentOverlay = appConfig.selectedOverlay;
 	const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(currentOverlay);
@@ -121,6 +136,11 @@ function updatePreviewOrientation(
 		sprite.position.set(0, originTileCenter);
 	}
 
+	// Apply visual sprite offset (doesn't affect collision)
+	const spriteOffset = getSpriteOffset(building.name);
+	sprite.position.x += spriteOffset.x * CELL_SIZE;
+	sprite.position.y += spriteOffset.y * CELL_SIZE;
+
 	// Update port positions
 	const newBuildingPorts = getPortPositions(building, 0, 0, newOrientation);
 	const currentPorts = newBuildingPorts.filter((p) => p.category === appConfig.selectedOverlay);
@@ -190,6 +210,12 @@ function gridSnapPreviewHandler(
 
 		container.position.set((gridX + offset.x) * CELL_SIZE, (gridY + offset.y) * CELL_SIZE);
 		container.zIndex = 999;
+
+		// Update boundary box visibility
+		const boundaryBox = container.children.find((child) => child.label === 'Boundary Box');
+		if (boundaryBox) {
+			boundaryBox.visible = appConfig.devMode;
+		}
 
 		// Check for collision
 		const collideBuildings = getCollidingBuildings({

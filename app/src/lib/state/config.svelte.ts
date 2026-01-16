@@ -1,5 +1,6 @@
 import type { AppConfig, AppMessage } from 'src/interface';
 import { ACTION, OVERLAY } from 'src/lib/constant';
+import { browser } from '$app/environment';
 
 export const appConfig = $state<AppConfig>({
 	panSpeed: 1,
@@ -7,7 +8,8 @@ export const appConfig = $state<AppConfig>({
 	selectedAction: ACTION.SELECT,
 	selectedOverlay: OVERLAY.BUILDING,
 	selectedToBuild: null,
-	sidebarOpen: false
+	sidebarOpen: false,
+	devMode: false
 });
 
 export const mousePosition = $state<{ x: number; y: number }>({
@@ -19,3 +21,12 @@ export const message = $state<AppMessage>({
 	text: '',
 	popup: ''
 });
+
+export function setDevMode(enabled?: boolean) {
+	if (!browser) return;
+	const value = enabled ?? localStorage.getItem('devMode') === 'true';
+	if (enabled !== undefined) {
+		localStorage.setItem('devMode', String(value));
+	}
+	appConfig.devMode = value;
+}

@@ -5,10 +5,12 @@
 	import { onMount } from 'svelte';
 	import { migrateGuestBlueprints } from '$lib/api/blueprints.api';
 	import { getLocalGuest } from 'src/lib/utils/helpers';
+	import { setDevMode } from '$lib/state/config.svelte';
 
 	let { children } = $props();
 
 	onMount(async () => {
+		setDevMode();
 		const user = $page.data.user;
 		const guestId = getLocalGuest();
 
