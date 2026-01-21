@@ -1,8 +1,7 @@
 import type { Application, Container, Renderer, Sprite } from 'pixi.js';
-import { OVERLAY } from 'src/lib/constant';
 import type { Camera } from '$lib/rendering/camera';
 import type { IBuilding, Position } from 'src/interface/building';
-import type { ACTION, CONDUIT_TYPE, PORT } from 'src/lib/constant';
+import type { ACTION, OVERLAY, PORT } from 'src/lib/constant';
 
 export interface GlobalState {
 	pixiApp: null | Application<Renderer>;
@@ -52,9 +51,8 @@ export interface PlacedBuildings {
 	sprite?: Sprite;
 	ports?: Array<{
 		offset: Position;
-		type: CONDUIT_TYPE;
 		direction: PORT;
-		category: number;
+		category: OVERLAY;
 		sprite?: Sprite;
 	}>;
 }

@@ -98,7 +98,6 @@ export interface GridNodeData {
 export interface OverlayInfo {
     name: string;
     ports: Map<string, PORT>;
-    setPort: (key: string, portType: PORT) => void;
 }
 
 export interface PortOverlapDetail {

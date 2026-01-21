@@ -148,10 +148,9 @@ function placeBuildingAtGrid(
 		container.addChild(portSprite);
 
 		portsData.push({
-			type: CONDUIT_TYPE.LIQUID,
 			offset: {
-				x: port.x,
-				y: port.y
+				x: port.x - buildingWorldPosition.topLeft.x,
+				y: port.y - buildingWorldPosition.topLeft.y
 			},
 			direction: port.type,
 			category: port.category,

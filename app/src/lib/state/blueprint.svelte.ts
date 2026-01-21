@@ -4,7 +4,7 @@ import type { ConduitNode, GridNodeData } from 'src/interface/building';
 import { SvelteMap } from 'svelte/reactivity';
 import { Camera } from '$lib/rendering/camera';
 import { Renderer as AppRenderer } from '$lib/rendering/renderer';
-import { CELL_SIZE, CONDUIT_TYPE, PORT } from '$lib/constant';
+import { CELL_SIZE, OVERLAY, PORT } from '$lib/constant';
 import { appConfig } from './config.svelte';
 
 export enum ConduitType {
@@ -82,14 +82,13 @@ class BlueprintState {
 		gridRenderer.draw();
 	}
 
-	getPortsByConduitType(conduitType: CONDUIT_TYPE): Map<string, PORT> {
+	getPortsByCategory(category: OVERLAY): Map<string, PORT> {
 		const allPorts = new Map<string, PORT>();
 
 		for (const building of this.placedBuildings) {
 			if (building.ports) {
 				for (const port of building.ports) {
-					if (port.type === conduitType) {
-						// Convert relative offset to absolute grid position
+					if (port.category === category) {
 						const absX = building.top_left.x + port.offset.x;
 						const absY = building.top_left.y + port.offset.y;
 						const absoluteKey = `${absX},${absY}`;

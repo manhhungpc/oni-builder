@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { ACTION, CELL_SIZE, OVERLAY, PORT, CONDUIT_TYPE } from '$lib/constant';
-import type { IBuilding, OverlayInfo, Position } from 'src/interface/building';
+import { ACTION, CELL_SIZE, OVERLAY } from '$lib/constant';
+import type { OverlayInfo, Position } from 'src/interface/building';
 import { blueprint } from 'src/lib/state/blueprint.svelte';
 import { worldToGrid } from 'src/lib/utils/grid/transform';
 import { FederatedPointerEvent, Graphics } from 'pixi.js';
@@ -50,46 +50,15 @@ export function getPortSpriteAlias(overlayType: OVERLAY) {
 export function getOverlayInfo(overlay: OVERLAY): OverlayInfo | null {
 	switch (overlay) {
 		case OVERLAY.VENTILATION:
-			return {
-				name: 'Gas',
-				ports: blueprint.getPortsByConduitType(CONDUIT_TYPE.GAS),
-				setPort: (key: string, portType: PORT) => {
-					// Port setting now happens within building data
-					// This function is kept for compatibility but may need refactoring
-				}
-			};
+			return { name: 'Gas', ports: blueprint.getPortsByCategory(overlay) };
 		case OVERLAY.PLUMBING:
-			return {
-				name: 'Liquid',
-				ports: blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID),
-				setPort: (key: string, portType: PORT) => {
-					// Port setting now happens within building data
-				}
-			};
+			return { name: 'Liquid', ports: blueprint.getPortsByCategory(overlay) };
 		case OVERLAY.POWER:
-			return {
-				name: 'Power',
-				ports: blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID), // TODO: Need separate power type
-				setPort: (key: string, portType: PORT) => {
-					// Port setting now happens within building data
-				}
-			};
+			return { name: 'Power', ports: blueprint.getPortsByCategory(overlay) };
 		case OVERLAY.AUTOMATION:
-			return {
-				name: 'Logic',
-				ports: blueprint.getPortsByConduitType(CONDUIT_TYPE.LIQUID), // TODO: Need separate logic type
-				setPort: (key: string, portType: PORT) => {
-					// Port setting now happens within building data
-				}
-			};
+			return { name: 'Logic', ports: blueprint.getPortsByCategory(overlay) };
 		case OVERLAY.SHIPPING:
-			return {
-				name: 'Conveyor',
-				ports: blueprint.getPortsByConduitType(CONDUIT_TYPE.CONVEYOR),
-				setPort: (key: string, portType: PORT) => {
-					// Port setting now happens within building data
-				}
-			};
+			return { name: 'Conveyor', ports: blueprint.getPortsByCategory(overlay) };
 		default:
 			return null;
 	}

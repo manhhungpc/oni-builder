@@ -23,6 +23,7 @@
 	import type { PlacedBuildings } from 'src/interface';
 	import { loadSavedBuildings, loadSavedConduits } from '$lib/blueprint-data/loader';
 	import { checkBuildingBoundary, createDeleteHighlight } from 'src/lib/utils';
+	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
 
 	interface Props {
 		savedBuildings?: PlacedBuildings[];
@@ -38,6 +39,18 @@
 	let lastPanPosition = $state({ x: 0, y: 0 });
 	let currentOrientation = $state(0);
 	let previousPreview: IBuilding | null = $state(null);
+
+	// SELECT mode hover state
+	let selectModeHoverResult = $state<GridQueryResult | null>(null);
+	let selectModeGridPosition = $state<{ x: number; y: number } | null>(null);
+
+	// Derived state for type-safe template rendering
+	const showSelectPopup = $derived(
+		appConfig.selectedAction === ACTION.SELECT &&
+			selectModeHoverResult !== null &&
+			selectModeGridPosition !== null &&
+			!selectModeHoverResult.isEmpty
+	);
 
 	async function initPixiApp(app: PIXI.Application) {
 		if (!app || !canvasElement) return;
@@ -463,6 +476,38 @@
 			dragHandlers.endDrag();
 		};
 	});
+
+	// Handle SELECT mode hover - show popup with items at grid position
+	$effect(() => {
+		const app = blueprint.pixiApp;
+
+		if (!app || appConfig.selectedAction !== ACTION.SELECT) {
+			selectModeHoverResult = null;
+			selectModeGridPosition = null;
+			return;
+		}
+
+		const handleSelectHover = (event: PIXI.FederatedPointerEvent) => {
+			if (appConfig.selectedAction !== ACTION.SELECT || isPanning) return;
+
+			const camera = blueprint.camera;
+			if (!camera) return;
+
+			const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+			const { gridX, gridY } = worldToGrid(worldPos);
+
+			selectModeHoverResult = getItemsAtGridPosition(gridX, gridY);
+			selectModeGridPosition = { x: gridX, y: gridY };
+		};
+
+		app.stage.on('pointermove', handleSelectHover);
+
+		return () => {
+			app.stage?.removeEventListener('pointermove', handleSelectHover);
+			selectModeHoverResult = null;
+			selectModeGridPosition = null;
+		};
+	});
 </script>
 
 <div class="grid-wrapper">
@@ -489,6 +534,30 @@
 	/>
 	{#if message.popup && !blueprint.isValidPlacement}
 		<MousePopup content={message.popup} {mousePosition} />
+	{/if}
+	{#if showSelectPopup && selectModeHoverResult}
+		<MousePopup {mousePosition}>
+			{#snippet children()}
+				<div class="min-w-28">
+					{#if appConfig.devMode && selectModeGridPosition}
+						<div class="border-b-dark-active border-b pb-1 text-xs">
+							Grid ({selectModeGridPosition.x}, {selectModeGridPosition.y})
+						</div>
+					{/if}
+					{#each selectModeHoverResult?.buildings ?? [] as building}
+						<div class="px-0.5 text-sm">{building.display_name}</div>
+					{/each}
+					{#each selectModeHoverResult?.conduits ?? [] as conduit}
+						<div class="px-0.5 text-sm">{conduit.displayName}</div>
+					{/each}
+					{#if selectModeHoverResult?.tile}
+						<div class="px-0.5 text-sm">
+							{selectModeHoverResult.tile.displayName || selectModeHoverResult.tile.name || 'Tile'}
+						</div>
+					{/if}
+				</div>
+			{/snippet}
+		</MousePopup>
 	{/if}
 </div>
 
