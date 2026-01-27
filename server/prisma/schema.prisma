@@ -70,3 +70,15 @@ model Blueprint {
   @@index([createdAt])
   @@index([userId])
 }
+
+model Element {
+  id            String @id @default(uuid())
+  name          String @unique
+  texture       String
+  type          String // "liquid", "gas", "solid", "vacuum"
+  colour        String? // "r,g,b,a"
+  uiColour      String? // "r,g,b,a"
+  conduitColour String? // "r,g,b,a"
+
+  @@index([type])
+}

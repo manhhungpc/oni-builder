@@ -10,6 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import buildingsRouter from './routes/buildings';
 import blueprintsRouter from './routes/blueprints';
 import usersRouter from './routes/users';
+import elementsRouter from './routes/elements';
 import * as swaggerDocument from '../swagger.json';
 import passport from './config/passport';
 
@@ -50,6 +51,7 @@ app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/buildings', buildingsRouter);
 app.use('/api/blueprints', blueprintsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/elements', elementsRouter);
 
 // Global error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 const { processBuildingData } = require('./helpers/buildingProcess');
+const { processElementData } = require('./helpers/elementProcess');
 const dataReader = require('./helpers/dataReader');
 
 const prisma = new PrismaClient();
@@ -19,6 +20,7 @@ async function main() {
         // Clear existing data if --blank flag is present
         if (shouldBlank) {
             await prisma.building.deleteMany();
+            await prisma.element.deleteMany();
         }
 
         // Get the project root (parent of server directory)
@@ -47,6 +49,9 @@ async function main() {
             console.error('Error: Target must be a JSON file or directory containing JSON files');
             process.exit(1);
         }
+
+        // Seed elements (mandatory)
+        await seedElements();
 
         console.log('Seed completed!');
     } catch (error) {
@@ -125,6 +130,54 @@ async function seedFromDirectory(directoryPath) {
         console.error('Seed from directory failed:', error);
         throw error;
     }
+}
+
+async function seedElements() {
+    const projectRoot = path.join(__dirname, '../../..');
+    const elementsPath = path.join(projectRoot, 'data/database_base/elements_minimal.json');
+
+    if (!fs.existsSync(elementsPath)) {
+        console.error(`Error: Elements file not found at ${elementsPath}`);
+        process.exit(1);
+    }
+
+    const elements = JSON.parse(fs.readFileSync(elementsPath, 'utf8'));
+    console.log(`\nSeeding ${elements.length} elements...`);
+
+    let created = 0;
+    let updated = 0;
+
+    for (const elementData of elements) {
+        const processed = processElementData(elementData);
+
+        if (!processed) {
+            console.warn(`Skipping element with missing data`);
+            continue;
+        }
+
+        try {
+            const existing = await prisma.element.findUnique({
+                where: { name: processed.name },
+            });
+
+            if (existing) {
+                await prisma.element.update({
+                    where: { name: processed.name },
+                    data: processed,
+                });
+                updated++;
+            } else {
+                await prisma.element.create({
+                    data: processed,
+                });
+                created++;
+            }
+        } catch (error) {
+            console.error(`Failed to process element: ${processed.name}`, error.message);
+        }
+    }
+
+    console.log(`Elements seeded: ${created} created, ${updated} updated`);
 }
 
 main().catch((error) => {
