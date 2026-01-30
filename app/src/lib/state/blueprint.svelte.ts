@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import type { PlacedBuildings } from 'src/interface';
 import type { ConduitNode, GridNodeData } from 'src/interface/building';
+import type { PlacedElement } from 'src/interface/element';
 import { SvelteMap } from 'svelte/reactivity';
 import { Camera } from '$lib/rendering/camera';
 import { Renderer as AppRenderer } from '$lib/rendering/renderer';
@@ -32,6 +33,23 @@ class BlueprintState {
 		[ConduitType.CONVEYOR]: new SvelteMap<string, ConduitNode>()
 	};
 	placedTiles = new SvelteMap<string, GridNodeData>();
+	placedElements = new SvelteMap<string, PlacedElement>();
+
+	addElement(key: string, data: PlacedElement) {
+		this.placedElements.set(key, data);
+	}
+
+	removeElement(key: string) {
+		const element = this.placedElements.get(key);
+		if (element?.sprite) {
+			element.sprite.destroy();
+		}
+		this.placedElements.delete(key);
+	}
+
+	hasElement(key: string): boolean {
+		return this.placedElements.has(key);
+	}
 
 	addConduit(type: ConduitType, key: string, data: ConduitNode) {
 		this.placedConduits[type].set(key, data);

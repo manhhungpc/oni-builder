@@ -22,7 +22,8 @@
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
 	import { loadSavedBuildings, loadSavedConduits } from '$lib/blueprint-data/loader';
-	import { checkBuildingBoundary, createDeleteHighlight } from 'src/lib/utils';
+	import { checkBuildingBoundary, createDeleteHighlight, previewPaintElement, clearPaintHighlight } from 'src/lib/utils';
+	import { paintElementHandlers } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
 
 	interface Props {
@@ -506,6 +507,60 @@
 			app.stage?.removeEventListener('pointermove', handleSelectHover);
 			selectModeHoverResult = null;
 			selectModeGridPosition = null;
+		};
+	});
+
+	// Handle PAINT mode for element painting
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		const selectedElement = appConfig.selectedElement;
+
+		if (!app || appConfig.selectedAction !== ACTION.PAINT) {
+			clearPaintHighlight();
+			return;
+		}
+
+		// Show preview even without element selected
+		const handlePaintPreview = (event: PIXI.FederatedPointerEvent) => {
+			if (appConfig.selectedAction !== ACTION.PAINT) return;
+			previewPaintElement(event);
+		};
+
+		app.stage.on('pointermove', handlePaintPreview);
+
+		// Only attach paint handlers if an element is selected
+		if (!selectedElement) {
+			return () => {
+				app.stage?.removeEventListener('pointermove', handlePaintPreview);
+				clearPaintHighlight();
+			};
+		}
+
+		const handlers = paintElementHandlers(selectedElement);
+
+		const handlePointerDown = (event: PIXI.FederatedPointerEvent) => {
+			handlers.startPaint(event);
+		};
+
+		const handlePointerMove = (event: PIXI.FederatedPointerEvent) => {
+			handlers.movePaint(event);
+		};
+
+		const handlePointerUp = () => {
+			handlers.endPaint();
+		};
+
+		app.stage.on('pointerdown', handlePointerDown);
+		app.stage.on('pointermove', handlePointerMove);
+		app.stage.on('pointerup', handlePointerUp);
+
+		return () => {
+			app.stage?.removeEventListener('pointermove', handlePaintPreview);
+			app.stage?.removeEventListener('pointerdown', handlePointerDown);
+			app.stage?.removeEventListener('pointermove', handlePointerMove);
+			app.stage?.removeEventListener('pointerup', handlePointerUp);
+			handlers.endPaint();
+			clearPaintHighlight();
 		};
 	});
 </script>

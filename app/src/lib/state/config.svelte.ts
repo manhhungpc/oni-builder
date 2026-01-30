@@ -8,6 +8,7 @@ export const appConfig = $state<AppConfig>({
 	selectedAction: ACTION.SELECT,
 	selectedOverlay: OVERLAY.BUILDING,
 	selectedToBuild: null,
+	selectedElement: null,
 	sidebarOpen: false,
 	devMode: false
 });

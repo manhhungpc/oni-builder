@@ -3,4 +3,9 @@ interface QueryBuildings {
     search?: string;
 }
 
-export { QueryBuildings };
+interface QueryElements {
+    type?: string;
+    search?: string;
+}
+
+export type { QueryBuildings, QueryElements };

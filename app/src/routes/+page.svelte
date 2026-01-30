@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Buildings from 'src/components/Buildings.svelte';
 	import BuildCategory from 'src/components/widgets/BuildCategory.svelte';
+	import ElementSelector from 'src/components/widgets/ElementSelector.svelte';
 	import Tools from 'src/components/widgets/Tools.svelte';
 	import Overlays from 'src/components/widgets/Overlays.svelte';
 	import EllieIcon from '$lib/assets/ONI_Ellie_Icon.png';
@@ -18,6 +19,7 @@
 
 <main>
 	<BuildCategory />
+	<ElementSelector />
 	<Overlays />
 	<Tools />
 

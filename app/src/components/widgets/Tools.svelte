@@ -11,7 +11,7 @@
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
 	import MessageCircleWarning from '@lucide/svelte/icons/message-circle-warning';
 	import Copy from '@lucide/svelte/icons/copy';
-	import PaintBucket from '@lucide/svelte/icons/paint-bucket';
+	import Brush from '@lucide/svelte/icons/brush';
 	import Menu from '@lucide/svelte/icons/menu';
 	import Pencil from '@lucide/svelte/icons/pencil';
 	import { ACTION } from '$lib/constant';
@@ -224,7 +224,7 @@
 				MousePointer2,
 				'Select building / View properties'
 			)}
-			<!-- {@render button_with_tooltip(ACTION.FILL, PaintBucket, 'Fill element')} -->
+			{@render button_with_tooltip(ACTION.PAINT, Brush, 'Paint element')}
 			{@render button_with_tooltip(ACTION.CUT, ScissorsLineDashed, 'Cut pipes connection')}
 			{@render button_with_tooltip(ACTION.DELETE, Trash2, 'Delete building')}
 		</div>
