@@ -1,6 +1,7 @@
 import type { Application, Container, Renderer, Sprite } from 'pixi.js';
 import type { Camera } from '$lib/rendering/camera';
 import type { IBuilding, Position } from 'src/interface/building';
+import type { IElement } from 'src/interface/element';
 import type { ACTION, OVERLAY, PORT } from 'src/lib/constant';
 
 export interface GlobalState {
@@ -21,6 +22,7 @@ export interface AppConfig {
 	selectedAction: ACTION;
 	selectedOverlay: OVERLAY;
 	selectedToBuild: null | IBuilding;
+	selectedElement: null | IElement;
 	sidebarOpen: boolean;
 	devMode: boolean;
 }

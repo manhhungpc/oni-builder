@@ -45,6 +45,7 @@ app.use('/conduit_images', express.static(path.join(__dirname, '../../data/condu
 app.use('/tile_images', express.static(path.join(__dirname, '../../data/tile_images')));
 app.use('/ui_images', express.static(path.join(__dirname, '../../data/ui_images')));
 app.use('/draw_images', express.static(path.join(__dirname, '../../data/draw_images')));
+app.use('/element_images', express.static(path.join(__dirname, '../../data/element_images')));
 
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

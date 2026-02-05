@@ -88,6 +88,41 @@ export function createDeleteHighlight(event: FederatedPointerEvent) {
 	}
 }
 
+const paintHighlight = new Graphics();
+export function previewPaintElement(event: FederatedPointerEvent) {
+	if (appConfig.selectedAction === ACTION.PAINT && appConfig.selectedElement) {
+		paintHighlight.clear();
+		const colorStr = appConfig.selectedElement.colour;
+		let color = 0x808080;
+		if (colorStr) {
+			const parts = colorStr.split(',').map(Number);
+			if (parts.length >= 3) {
+				color = (parts[0] << 16) | (parts[1] << 8) | parts[2];
+			}
+		}
+		paintHighlight.rect(0, 0, CELL_SIZE, CELL_SIZE);
+		paintHighlight.fill({ color, alpha: 0.5 });
+
+		blueprint.buildContainer?.addChild(paintHighlight);
+		paintHighlight.zIndex = 999;
+
+		if (!blueprint.camera) {
+			return;
+		}
+
+		const worldPos = blueprint.camera.screenToWorld(event.global.x, event.global.y);
+		const { gridX, gridY } = worldToGrid(worldPos);
+
+		paintHighlight.position.set(gridX * CELL_SIZE, gridY * CELL_SIZE);
+	} else {
+		paintHighlight.clear();
+	}
+}
+
+export function clearPaintHighlight() {
+	paintHighlight.clear();
+}
+
 export function checkBuildingBoundary(
 	clickPosition: Position,
 	buildingData: PlacedBuildings

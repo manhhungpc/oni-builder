@@ -36,7 +36,7 @@ export enum PORT {
 
 export enum ACTION {
 	SELECT = 'Select',
-	FILL = 'Fill',
+	PAINT = 'Paint',
 	BUILD = 'Build',
 	CUT = 'Cut',
 	DELETE = 'Delete'
