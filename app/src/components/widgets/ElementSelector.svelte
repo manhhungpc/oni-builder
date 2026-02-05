@@ -6,6 +6,10 @@
 	import { debounce } from '$lib/utils/helpers';
 	import { ACTION } from '$lib/constant';
 	import { appConfig } from 'src/lib/state/config.svelte';
+	import GasIcon from 'src/components/icons/GasIcon.svelte';
+	import LiquidIcon from 'src/components/icons/LiquidIcon.svelte';
+
+	const BASE_IMG_PATH = import.meta.env.VITE_API_URL;
 
 	const elementTypes = [
 		{ id: 'solid', name: 'Solid' },
@@ -77,7 +81,7 @@
 </script>
 
 {#if showSelector}
-	<div class="bg-dark-primary fixed left-2 top-16 z-50 rounded-lg p-2">
+	<div class="bg-dark-primary top-18 fixed left-2 z-50 rounded-lg p-2">
 		<div class="flex gap-2">
 			{#each elementTypes as type}
 				<button
@@ -92,19 +96,6 @@
 	</div>
 
 	{#if openElementsModal}
-		<!-- Invisible overlay to detect clicks outside -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		{#if !appConfig.selectedElement}
-			<div
-				class="fixed inset-0 z-40 h-full w-full"
-				onclick={() => {
-					openElementsModal = false;
-					activeType = '';
-				}}
-			></div>
-		{/if}
-
 		<!-- Modal content -->
 		<div class="bg-dark-primary fixed left-2 top-[120px] z-50 rounded-lg p-2">
 			<input
@@ -119,13 +110,20 @@
 				{#each elements as element}
 					<button
 						onclick={() => onSelectToPaint(element)}
-						class="bg-dark-primary flex h-20 w-20 flex-col items-center justify-center rounded p-1 hover:!bg-neutral-700"
+						class="bg-dark-primary flex min-h-20 w-20 flex-col items-center justify-center rounded p-1 hover:!bg-neutral-700"
 					>
-						<div
-							class="h-10 w-10 rounded"
-							style="background-color: {getElementColorStyle(element.colour)}"
-						></div>
-						<p class="mt-1 truncate text-xs leading-none">{element.name}</p>
+						{#if element.type === 'gas'}
+							<GasIcon color={getElementColorStyle(element.uiColour)} />
+						{:else if element.type === 'liquid'}
+							<LiquidIcon color={getElementColorStyle(element.uiColour)} />
+						{:else}
+							<img
+								src={BASE_IMG_PATH + '/element_images/' + element.texture + '.png'}
+								alt={element.name}
+								class="h-10 shrink-0"
+							/>
+						{/if}
+						<p class="mt-1 w-full break-words text-center text-xs leading-tight">{element.name}</p>
 					</button>
 				{/each}
 			</div>

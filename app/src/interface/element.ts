@@ -1,4 +1,4 @@
-import type { Graphics } from 'pixi.js';
+import type { Container } from 'pixi.js';
 
 export interface IElement {
 	id: string;
@@ -15,5 +15,5 @@ export interface PlacedElement {
 	name: string;
 	type: string;
 	colour: string | null;
-	sprite?: Graphics;
+	container?: Container;
 }

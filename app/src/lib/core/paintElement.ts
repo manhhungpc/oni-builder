@@ -1,4 +1,4 @@
-import { FederatedPointerEvent, Graphics } from 'pixi.js';
+import { FederatedPointerEvent, Graphics, Sprite, Container, Assets } from 'pixi.js';
 import { worldToGrid, gridToWorld } from '$lib/utils/grid/transform';
 import type { Position } from 'src/interface/building';
 import type { IElement, PlacedElement } from 'src/interface/element';
@@ -12,13 +12,14 @@ export interface PaintHandlers {
 	endPaint: () => void;
 }
 
-/**
- * Check if an element can be placed at the given grid position
- * (1 tile can only have 1 element)
- */
-export function canPlaceElement(gridX: number, gridY: number): boolean {
-	const key = `${gridX},${gridY}`;
-	return !blueprint.hasElement(key);
+const WAVE_ICON_ALIAS = 'element-wave';
+const BUBBLE_ICON_ALIAS = 'element-bubble';
+
+export async function loadElementIcons(): Promise<void> {
+	await Promise.all([
+		Assets.load({ alias: WAVE_ICON_ALIAS, src: '/icon/Wave.svg' }),
+		Assets.load({ alias: BUBBLE_ICON_ALIAS, src: '/icon/Bubble.svg' })
+	]);
 }
 
 /**
@@ -40,24 +41,37 @@ function parseElementColor(colorString: string | null): number {
 export function placeElement(element: IElement, gridPos: Position): boolean {
 	const key = `${gridPos.x},${gridPos.y}`;
 
-	// Check if tile already has an element
+	// Remove existing element if present
 	if (blueprint.hasElement(key)) {
-		return false;
+		blueprint.removeElement(key);
 	}
 
-	// Create colored rectangle for the element
-	const sprite = new Graphics();
-	const color = parseElementColor(element.colour);
+	const container = new Container({label: `Element ${element.name}`});
+	const elementColor = parseElementColor(element.colour);
 
-	sprite.rect(0, 0, CELL_SIZE, CELL_SIZE);
-	sprite.fill({ color, alpha: 0.7 });
+	const gridColor = new Graphics();
+	gridColor.rect(0, 0, CELL_SIZE, CELL_SIZE);
+	gridColor.fill({ color: elementColor, alpha: 0.7 });
+	container.addChild(gridColor);
+
+	if (element.type === 'liquid') {
+		const iconSprite = Sprite.from(WAVE_ICON_ALIAS);
+		iconSprite.width = CELL_SIZE;
+		iconSprite.height = CELL_SIZE;
+		container.addChild(iconSprite);
+	} else if (element.type === 'gas') {
+		const iconSprite = Sprite.from(BUBBLE_ICON_ALIAS);
+		iconSprite.width = CELL_SIZE;
+		iconSprite.height = CELL_SIZE;
+		container.addChild(iconSprite);
+	}
 
 	const worldPos = gridToWorld(gridPos.x, gridPos.y);
-	sprite.x = worldPos.x;
-	sprite.y = worldPos.y;
-	sprite.zIndex = 1; // Below buildings
+	container.x = worldPos.x;
+	container.y = worldPos.y;
+	container.zIndex = 1; // Below buildings
 
-	blueprint.buildContainer?.addChild(sprite);
+	blueprint.buildContainer?.addChild(container);
 
 	// Store element data
 	const placedElement: PlacedElement = {
@@ -65,7 +79,7 @@ export function placeElement(element: IElement, gridPos: Position): boolean {
 		name: element.name,
 		type: element.type,
 		colour: element.colour,
-		sprite
+		container
 	};
 
 	blueprint.addElement(key, placedElement);

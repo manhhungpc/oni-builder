@@ -23,7 +23,7 @@
 	import type { PlacedBuildings } from 'src/interface';
 	import { loadSavedBuildings, loadSavedConduits } from '$lib/blueprint-data/loader';
 	import { checkBuildingBoundary, createDeleteHighlight, previewPaintElement, clearPaintHighlight } from 'src/lib/utils';
-	import { paintElementHandlers } from '$lib/core/paintElement';
+	import { paintElementHandlers, loadElementIcons } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
 
 	interface Props {
@@ -58,6 +58,9 @@
 
 		// Initialize PIXI app through centralized state management
 		await blueprint.initPixiApp(app, canvasElement);
+
+		// Load element icons for paint mode
+		await loadElementIcons();
 
 		const camera = blueprint.camera;
 		const gridRenderer = blueprint.gridRenderer;

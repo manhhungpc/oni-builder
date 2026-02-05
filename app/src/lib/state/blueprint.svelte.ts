@@ -41,8 +41,8 @@ class BlueprintState {
 
 	removeElement(key: string) {
 		const element = this.placedElements.get(key);
-		if (element?.sprite) {
-			element.sprite.destroy();
+		if (element?.container) {
+			element.container.destroy({ children: true });
 		}
 		this.placedElements.delete(key);
 	}

@@ -92,9 +92,16 @@ const paintHighlight = new Graphics();
 export function previewPaintElement(event: FederatedPointerEvent) {
 	if (appConfig.selectedAction === ACTION.PAINT && appConfig.selectedElement) {
 		paintHighlight.clear();
-		// Create red-tinted rectangle for preview
+		const colorStr = appConfig.selectedElement.colour;
+		let color = 0x808080;
+		if (colorStr) {
+			const parts = colorStr.split(',').map(Number);
+			if (parts.length >= 3) {
+				color = (parts[0] << 16) | (parts[1] << 8) | parts[2];
+			}
+		}
 		paintHighlight.rect(0, 0, CELL_SIZE, CELL_SIZE);
-		paintHighlight.fill({ color: 0xff0000, alpha: 0.5 });
+		paintHighlight.fill({ color, alpha: 0.5 });
 
 		blueprint.buildContainer?.addChild(paintHighlight);
 		paintHighlight.zIndex = 999;
