@@ -8,6 +8,8 @@
     "start": "node dist/server.js",
     "db:generate": "npx prisma generate",
     "db:seed": "node prisma/seed/seed.js",
+    "db:seed:stg": "dotenv -e .env.dev -- node prisma/seed/seed.js",
+    "db:seed:prod": "dotenv -e .env.prod -- node prisma/seed/seed.js",
     "db:migrate:dev": "npx prisma migrate dev",
     "db:migrate:stg": "dotenv -e .env.dev -- npx prisma migrate deploy",
     "db:migrate:prod": "dotenv -e .env.prod -- npx prisma migrate deploy",
