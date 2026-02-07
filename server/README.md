@@ -31,9 +31,9 @@ If `--file` and `--folder` argument in the same command, onlym`--file` argument 
 
 > **Note: On Windows, command with arguments must be run in `Git Bash` command line, or else it won't work**
 
-## Production Deployment (PM2)
+## Deployment (PM2)
 
-Use `pm2.sh` to manage production and development server instances.
+Use `pm2.sh` to manage staging and production server instances. The script automatically runs database migrations and generates Prisma client before starting.
 
 ### Prerequisites
 
@@ -42,8 +42,8 @@ Use `pm2.sh` to manage production and development server instances.
 npm install -g pm2
 
 # Create environment files
-cp .env.example .env.prod  # Production config (port 3003)
-cp .env.example .env.dev   # Development config (port 3004)
+cp .env.example .env.prod  # Production config (port 8008)
+cp .env.example .env.dev   # Staging config (port 3003)
 
 # Make script executable
 chmod +x pm2.sh
@@ -52,25 +52,25 @@ chmod +x pm2.sh
 ### Usage
 
 ```bash
-# Start servers
-./pm2.sh dev      # Start development server (port 3004)
-./pm2.sh prod     # Start production server (port 3003)
+# Start servers (auto-runs migrations + prisma generate)
+./pm2.sh stg      # Start staging server (port 3003)
+./pm2.sh prod     # Start production server (port 8008)
 ./pm2.sh all      # Start both servers
 
 # Stop servers
 ./pm2.sh stop          # Stop all servers
-./pm2.sh stop dev      # Stop development only
+./pm2.sh stop stg      # Stop staging only
 ./pm2.sh stop prod     # Stop production only
 
 # Restart servers
 ./pm2.sh restart       # Restart all servers
-./pm2.sh restart dev   # Restart development only
+./pm2.sh restart stg   # Restart staging only
 ./pm2.sh restart prod  # Restart production only
 
 # Monitoring
 ./pm2.sh status        # Show server status
 ./pm2.sh logs          # Show all logs
-./pm2.sh logs dev      # Show development logs
+./pm2.sh logs stg      # Show staging logs
 ./pm2.sh logs prod     # Show production logs
 
 # Build only
@@ -79,10 +79,10 @@ chmod +x pm2.sh
 
 ### Environment Files
 
-| File        | Port | Description             |
-| ----------- | ---- | ----------------------- |
-| `.env.prod` | 3003 | Production environment  |
-| `.env.dev`  | 3004 | Development environment |
+| File        | Port | Description            |
+| ----------- | ---- | ---------------------- |
+| `.env.prod` | 8008 | Production environment |
+| `.env.dev`  | 3003 | Staging environment    |
 
 ### Auto-start on Reboot
 
