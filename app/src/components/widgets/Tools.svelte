@@ -36,7 +36,7 @@
 	import { loginWithGoogle, logout } from 'src/lib/api/users.api';
 	import { page } from '$app/state';
 	import type { Component } from 'svelte';
-	import GoogleLogo from '$lib/assets/google-logo.svg';
+
 	import Guide from 'src/lib/ui/components/Guide.svelte';
 	import { createLocalGuest, getLocalGuest } from 'src/lib/utils/helpers';
 	import Dialog from 'src/lib/ui/components/Dialog.svelte';
@@ -363,7 +363,7 @@
 					class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
 					onclick={() => loginWithGoogle()}
 				>
-					<img src={GoogleLogo} alt="icon" class="h-4 w-4" />
+					<img src="/images/google-logo.svg" alt="icon" class="h-4 w-4" />
 					<p>Login with Google</p>
 				</Button>
 			{/if}

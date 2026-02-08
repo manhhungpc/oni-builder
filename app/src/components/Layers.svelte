@@ -38,7 +38,7 @@
 			await Assets.load(
 				portSpriteAlias.map((alias) => ({
 					alias,
-					src: `../../src/assets/ports/${alias}.png`
+					src: `/images/ports/${alias}.png`
 				}))
 			);
 		} catch (error) {

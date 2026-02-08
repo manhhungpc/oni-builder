@@ -1,5 +1,9 @@
 import dotenv from 'dotenv';
-dotenv.config();
+
+const envFile = process.env.NODE_ENV === 'production' ? '.env.prod'
+    : process.env.NODE_ENV === 'staging' ? '.env.dev'
+    : '.env';
+dotenv.config({ path: envFile });
 
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
@@ -47,7 +51,10 @@ app.use('/ui_images', express.static(path.join(__dirname, '../../data/ui_images'
 app.use('/draw_images', express.static(path.join(__dirname, '../../data/draw_images')));
 app.use('/element_images', express.static(path.join(__dirname, '../../data/element_images')));
 
-app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Only enable swagger in development
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging') {
+    app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 app.use('/api/buildings', buildingsRouter);
 app.use('/api/blueprints', blueprintsRouter);

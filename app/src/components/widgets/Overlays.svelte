@@ -77,7 +77,7 @@
 				class="hover:bg-dark-secondary flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
 			>
 				<img
-					src={`/src/assets/overlays/${overlayData?.icon}`}
+					src={`/images/overlays/${overlayData?.icon}`}
 					alt="selected_overlay"
 					class="h-5 w-5"
 				/>
@@ -99,7 +99,7 @@
 							class="hover:text-dark-primary hover:bg-yellow-primary flex cursor-pointer items-center gap-3 px-3 py-2 text-sm text-white transition-colors hover:font-medium"
 						>
 							<img
-								src={`/src/assets/overlays/${overlay.icon}`}
+								src={`/images/overlays/${overlay.icon}`}
 								alt={overlay.text}
 								class="h-5 w-5"
 							/>

@@ -4,7 +4,7 @@
 	import ElementSelector from 'src/components/widgets/ElementSelector.svelte';
 	import Tools from 'src/components/widgets/Tools.svelte';
 	import Overlays from 'src/components/widgets/Overlays.svelte';
-	import EllieIcon from '$lib/assets/ONI_Ellie_Icon.png';
+
 	import { appConfig } from '$lib/state/config.svelte';
 	import { browser } from '$app/environment';
 
@@ -33,7 +33,7 @@
 				Welcome! New here? <br />
 				View the guide <b><u>HERE</u></b> to get started
 			</div>
-			<img src={EllieIcon} alt="ellie-icon" class="w-20 shrink-0" />
+			<img src="/images/ONI_Ellie_Icon.png" alt="ellie-icon" class="w-20 shrink-0" />
 		</button>
 	{/if}
 </main>

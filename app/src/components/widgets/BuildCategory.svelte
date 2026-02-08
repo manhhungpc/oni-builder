@@ -97,7 +97,7 @@
 				class="category-button {activeCategory === category.id ? 'active' : ''}"
 				title={category.name}
 			>
-				<img src="/src/assets/miniui/{category.icon}" alt={category.name} class="h-8 w-8" />
+				<img src="/images/miniui/{category.icon}" alt={category.name} class="h-8 w-8" />
 			</button>
 		{/each}
 	</div>

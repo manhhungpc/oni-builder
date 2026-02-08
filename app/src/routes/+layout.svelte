@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/ONI_Ellie_Icon.png';
+
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { migrateGuestBlueprints } from '$lib/api/blueprints.api';
@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href="/images/ONI_Ellie_Icon.png" />
 	<title>Ellie Sticker Bomber</title>
 </svelte:head>
 
