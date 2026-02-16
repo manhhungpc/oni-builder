@@ -1,3 +1,6 @@
+import { ACTION } from '$lib/constant';
+import { appConfig } from '$lib/state/config.svelte';
+
 const movementKeyMap: Record<string, string> = {
 	KeyW: 'up',
 	ArrowUp: 'up',
@@ -11,6 +14,13 @@ const movementKeyMap: Record<string, string> = {
 
 const actionKeyMap: Record<string, string> = {
 	KeyO: 'rotate'
+};
+
+const modeKeyMap: Record<string, ACTION> = {
+	Digit1: ACTION.SELECT,
+	Digit2: ACTION.PAINT,
+	Digit3: ACTION.CUT,
+	Digit4: ACTION.DELETE
 };
 
 type KeyName = 'up' | 'left' | 'down' | 'right';
@@ -58,6 +68,13 @@ export class Controller {
 		const actionKey = actionKeyMap[event.code] as ActionKeyName;
 		if (actionKey === 'rotate' && this.onRotate) {
 			this.onRotate();
+			return;
+		}
+
+		// Handle mode switching keys (1, 2, 3, 4)
+		const modeKey = modeKeyMap[event.code];
+		if (modeKey) {
+			appConfig.selectedAction = modeKey;
 		}
 	}
 

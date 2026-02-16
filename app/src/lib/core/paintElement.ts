@@ -5,6 +5,7 @@ import type { IElement, PlacedElement } from 'src/interface/element';
 import { CELL_SIZE, MOUSE_CLICK, ACTION } from '$lib/constant';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
+import { rgbaToHex } from '$lib/utils/color';
 
 export interface PaintHandlers {
 	startPaint: (event: FederatedPointerEvent) => void;
@@ -23,19 +24,6 @@ export async function loadElementIcons(): Promise<void> {
 }
 
 /**
- * Parse element colour string "r,g,b,a" to hex number
- */
-function parseElementColor(colorString: string | null): number {
-	if (!colorString) return 0x808080; // Default gray
-
-	const parts = colorString.split(',').map(Number);
-	if (parts.length < 3) return 0x808080;
-
-	const [r, g, b] = parts;
-	return (r << 16) | (g << 8) | b;
-}
-
-/**
  * Place an element at the specified grid position
  */
 export function placeElement(element: IElement, gridPos: Position): boolean {
@@ -47,7 +35,7 @@ export function placeElement(element: IElement, gridPos: Position): boolean {
 	}
 
 	const container = new Container({label: `Element ${element.name}`});
-	const elementColor = parseElementColor(element.colour);
+	const elementColor = rgbaToHex(element.colour);
 
 	const gridColor = new Graphics();
 	gridColor.rect(0, 0, CELL_SIZE, CELL_SIZE);

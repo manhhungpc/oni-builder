@@ -7,6 +7,7 @@ import { worldToGrid } from 'src/lib/utils/grid/transform';
 import { FederatedPointerEvent, Graphics } from 'pixi.js';
 import { appConfig } from 'src/lib/state/config.svelte';
 import type { PlacedBuildings } from 'src/interface';
+import { rgbaToHex } from '$lib/utils/color';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -92,14 +93,7 @@ const paintHighlight = new Graphics();
 export function previewPaintElement(event: FederatedPointerEvent) {
 	if (appConfig.selectedAction === ACTION.PAINT && appConfig.selectedElement) {
 		paintHighlight.clear();
-		const colorStr = appConfig.selectedElement.colour;
-		let color = 0x808080;
-		if (colorStr) {
-			const parts = colorStr.split(',').map(Number);
-			if (parts.length >= 3) {
-				color = (parts[0] << 16) | (parts[1] << 8) | parts[2];
-			}
-		}
+		const color = rgbaToHex(appConfig.selectedElement.colour);
 		paintHighlight.rect(0, 0, CELL_SIZE, CELL_SIZE);
 		paintHighlight.fill({ color, alpha: 0.5 });
 

@@ -8,6 +8,7 @@
 	import { appConfig } from 'src/lib/state/config.svelte';
 	import GasIcon from 'src/components/icons/GasIcon.svelte';
 	import LiquidIcon from 'src/components/icons/LiquidIcon.svelte';
+	import { rgbaToCss } from '$lib/utils/color';
 
 	const BASE_IMG_PATH = import.meta.env.VITE_API_URL;
 
@@ -53,18 +54,6 @@
 		appConfig.selectedAction = ACTION.PAINT;
 	}
 
-	/**
-	 * Parse element colour string "r,g,b,a" to CSS rgb
-	 */
-	function getElementColorStyle(colorString: string | null): string {
-		if (!colorString) return 'rgb(128, 128, 128)';
-
-		const parts = colorString.split(',').map(Number);
-		if (parts.length < 3) return 'rgb(128, 128, 128)';
-
-		const [r, g, b] = parts;
-		return `rgb(${r}, ${g}, ${b})`;
-	}
 
 	$effect(() => {
 		const handleCloseElementModal = () => {
@@ -113,9 +102,9 @@
 						class="bg-dark-primary flex min-h-20 w-20 flex-col items-center justify-center rounded p-1 hover:!bg-neutral-700"
 					>
 						{#if element.type === 'gas'}
-							<GasIcon color={getElementColorStyle(element.uiColour)} />
+							<GasIcon color={rgbaToCss(element.uiColour)} />
 						{:else if element.type === 'liquid'}
-							<LiquidIcon color={getElementColorStyle(element.uiColour)} />
+							<LiquidIcon color={rgbaToCss(element.uiColour)} />
 						{:else}
 							<img
 								src={BASE_IMG_PATH + '/element_images/' + element.texture + '.png'}

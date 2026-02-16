@@ -6,6 +6,7 @@
 	import * as Tooltip from '$lib/ui/primitives/tooltip/index.js';
 	import { blueprint } from '$lib/state/blueprint.svelte';
 	import { appConfig, setDevMode } from '$lib/state/config.svelte';
+	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
 	import ScissorsLineDashed from '@lucide/svelte/icons/scissors-line-dashed';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
@@ -14,6 +15,8 @@
 	import Brush from '@lucide/svelte/icons/brush';
 	import Menu from '@lucide/svelte/icons/menu';
 	import Pencil from '@lucide/svelte/icons/pencil';
+	import LogOut from '@lucide/svelte/icons/log-out';
+	import SimulationPanel from './SimulationPanel.svelte';
 	import { ACTION } from '$lib/constant';
 	import { OVERLAY } from '$lib/constant';
 	import { cn } from '$lib/utils';
@@ -79,6 +82,13 @@
 	let aboutDialogOpen = $state(false);
 
 	let { shareable = true }: Props = $props();
+
+	// Simulation mode state
+	const isSimulationMode = $derived(pipeFlowState.isSimulationMode);
+
+	function enterSimulationMode() {
+		pipeFlowState.enterSimulationMode();
+	}
 
 	async function handleShareUrl() {
 		try {
@@ -169,7 +179,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
-	class="bg-dark-primary border-orange-primary fixed right-2 top-20 z-20 min-w-64 rounded-md border p-4"
+	class="fixed top-20 right-2 z-20 min-w-64 rounded-md border border-orange-primary bg-dark-primary p-4"
 	onclick={() => {
 		// Dispatch custom event to close building modal
 		window.dispatchEvent(new CustomEvent('close-building-modal'));
@@ -208,16 +218,6 @@
 			</span>
 		</div>
 
-		<!-- <div class="flex items-center justify-between">
-			<p>Enable foundation check</p>
-			<Switch disabled class="disabled:!cursor-not-allowed" />
-		</div>
-
-		<div class="flex items-center justify-between">
-			<p>Show liquid/gas flow</p>
-			<Switch disabled class="disabled:!cursor-not-allowed" />
-		</div> -->
-
 		<div class="flex gap-2">
 			{@render button_with_tooltip(
 				ACTION.SELECT,
@@ -229,17 +229,35 @@
 			{@render button_with_tooltip(ACTION.DELETE, Trash2, 'Delete building')}
 		</div>
 		{#if appConfig.selectedAction == ACTION.CUT}
-			<small class="text-yellow-4 flex items-center gap-2">
+			<small class="flex items-center gap-2 text-yellow-4">
 				<MessageCircleWarning />
 				Choose overlay before proceed
 			</small>
 		{/if}
 
+		<!-- Simulation Mode Toggle -->
+		{#if isSimulationMode}
+			<Button
+				class="bg-red-600 hover:cursor-pointer hover:bg-red-700"
+				onclick={() => pipeFlowState.exitSimulationMode()}
+			>
+				<LogOut class="mr-2 h-4 w-4" />
+				Exit Simulation Mode
+			</Button>
+		{:else}
+			<Button
+				class="bg-cyan-600 hover:cursor-pointer hover:bg-cyan-700"
+				onclick={enterSimulationMode}
+			>
+				Enter Simulation Mode
+			</Button>
+		{/if}
+
 		{#if shareUrl}
-			<div class="bg-dark-secondary flex flex-col gap-2 rounded p-2">
+			<div class="flex flex-col gap-2 rounded bg-dark-secondary p-2">
 				<small class="text-gray-400">Share URL:</small>
 				<div class="flex w-56 flex-row items-center gap-1">
-					<p class="select-text truncate text-xs text-blue-400">
+					<p class="truncate text-xs text-blue-400 select-text">
 						{shareUrl}
 					</p>
 					<Button size="icon" onclick={() => navigator.clipboard.writeText(shareUrl)}>
@@ -251,7 +269,7 @@
 
 		{#if shareable && !shareUrl}
 			<Button
-				class="bg-orange-primary hover:bg-orange-6 hover:cursor-pointer disabled:opacity-50"
+				class="bg-orange-primary hover:cursor-pointer hover:bg-orange-6 disabled:opacity-50"
 				onclick={handleShareUrl}
 				disabled={isSharing}
 			>
@@ -263,6 +281,11 @@
 		{/if}
 	</div>
 </div>
+
+<!-- Bottom bar shown alongside tools when simulating -->
+{#if isSimulationMode}
+	<SimulationPanel />
+{/if}
 
 {#snippet button_with_tooltip(action: ACTION, IconComponent: Component, tooltipText: string)}
 	<Tooltip.Provider delayDuration={0}>
@@ -284,7 +307,7 @@
 {#snippet tool_sidebar()}
 	<Sidebar bind:open={appConfig.sidebarOpen}>
 		{#snippet trigger()}
-			<Button size="icon" class="hover:bg-orange-primary h-8 w-8 bg-transparent text-white">
+			<Button size="icon" class="h-8 w-8 bg-transparent text-white hover:bg-orange-primary">
 				<Menu />
 			</Button>
 		{/snippet}
@@ -297,7 +320,7 @@
 			{#if page.data.user}
 				<div class="flex items-start justify-between gap-3">
 					<div class="mb-4 flex flex-col justify-center">
-						<span class="text-gray-primary text-xs">Welcome,</span>
+						<span class="text-xs text-gray-primary">Welcome,</span>
 						<span class="text-lg font-bold text-white">{page.data.user.name}</span>
 					</div>
 					<img
@@ -309,11 +332,11 @@
 				</div>
 
 				<div class="mb-4">
-					<h3 class="text-orange-4 mb-2 font-medium">My collection</h3>
+					<h3 class="mb-2 font-medium text-orange-4">My collection</h3>
 					{#if isLoadingBlueprints}
-						<p class="text-gray-primary text-sm">Loading...</p>
+						<p class="text-sm text-gray-primary">Loading...</p>
 					{:else if myBlueprints.length === 0}
-						<p class="text-gray-primary text-sm">No blueprints yet</p>
+						<p class="text-sm text-gray-primary">No blueprints yet</p>
 					{:else}
 						<div class="flex flex-col gap-1">
 							{#each myBlueprints as bp}
@@ -337,18 +360,18 @@
 							<div class="mt-3 flex items-center justify-between">
 								<Button
 									size="sm"
-									class="bg-dark-secondary hover:bg-dark-active text-xs"
+									class="bg-dark-secondary text-xs hover:bg-dark-active"
 									disabled={blueprintsPage <= 1}
 									onclick={() => loadMyBlueprints(blueprintsPage - 1)}
 								>
 									Prev
 								</Button>
-								<span class="text-gray-primary text-xs">
+								<span class="text-xs text-gray-primary">
 									{blueprintsPage} / {blueprintsTotalPages}
 								</span>
 								<Button
 									size="sm"
-									class="bg-dark-secondary hover:bg-dark-active text-xs"
+									class="bg-dark-secondary text-xs hover:bg-dark-active"
 									disabled={blueprintsPage >= blueprintsTotalPages}
 									onclick={() => loadMyBlueprints(blueprintsPage + 1)}
 								>
@@ -360,7 +383,7 @@
 				</div>
 			{:else}
 				<Button
-					class="bg-dark-secondary hover:bg-dark-active mb-2 flex w-full items-center justify-center"
+					class="mb-2 flex w-full items-center justify-center bg-dark-secondary hover:bg-dark-active"
 					onclick={() => loginWithGoogle()}
 				>
 					<img src="/images/google-logo.svg" alt="icon" class="h-4 w-4" />
@@ -373,7 +396,7 @@
 		{#snippet footer()}
 			{#if page.data.user}
 				<Button
-					class="bg-dark-secondary hover:bg-dark-active flex w-full items-center justify-center"
+					class="flex w-full items-center justify-center bg-dark-secondary hover:bg-dark-active"
 					onclick={() => logout()}
 				>
 					Log out
@@ -382,15 +405,15 @@
 			<div class="flex items-center justify-center gap-4">
 				<Dialog bind:open={aboutDialogOpen}>
 					{#snippet trigger()}
-						<button class="text-gray-primary text-xs hover:cursor-pointer hover:text-white">
+						<span class="text-xs text-gray-primary hover:cursor-pointer hover:text-white">
 							About
-						</button>
+						</span>
 					{/snippet}
 					{#snippet title()}
 						About
 					{/snippet}
 					{#snippet content()}
-						<p class="text-gray-primary text-sm">
+						<p class="text-sm text-gray-primary">
 							Ellie Sticker Bomber is a blueprint builder tool for Oxygen Not Included.
 						</p>
 						<div class="mt-4 flex items-center justify-between">
@@ -409,7 +432,7 @@
 						</div>
 					{/snippet}
 				</Dialog>
-				<button class="text-gray-primary text-xs hover:cursor-pointer hover:text-white">
+				<button class="text-xs text-gray-primary hover:cursor-pointer hover:text-white">
 					Github
 				</button>
 			</div>

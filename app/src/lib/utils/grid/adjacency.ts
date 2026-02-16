@@ -154,9 +154,38 @@ function hasConnection(
     return nodeValue.connects.includes(toKey);
 }
 
+/**
+ * BFS spread from seed positions through connected conduit nodes.
+ * Returns all reachable positions (seeds + connected conduits).
+ */
+function bfs(
+    startPosition: string,
+    connectionList: SvelteMap<string, ConduitNode>
+): Set<string> {
+    const network = new Set<string>();
+    const queue: string[] = [startPosition];
+    network.add(startPosition);
+
+    while (queue.length > 0) {
+        const current = queue.shift()!;
+        const node = connectionList.get(current);
+        if (!node) continue;
+
+        for (const neighbor of node.connects) {
+            if (network.has(neighbor)) continue;
+            if (!connectionList.has(neighbor)) continue;
+            network.add(neighbor);
+            queue.push(neighbor);
+        }
+    }
+
+    return network;
+}
+
 export {
     nodeKey,
     parseNodeKey,
+    bfs,
     addNode,
     addConnection,
     removeNode,

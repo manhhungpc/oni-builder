@@ -4,7 +4,7 @@
 	import { appConfig, mousePosition, message } from '$lib/state/config.svelte';
 	import Layers from 'src/components/Layers.svelte';
 	import { ConduitType } from '$lib/state/blueprint.svelte';
-	import { OVERLAY } from '$lib/constant';
+	import { OVERLAY, PORT, CELL_SIZE } from '$lib/constant';
 	import { Controller, getNextOrientation } from '$lib/core/controller';
 	import { ACTION, MOUSE_CLICK } from '$lib/constant';
 	import { drawBuilding } from '$lib/core/drawBuilding';
@@ -22,9 +22,17 @@
 	import type { IBuilding } from 'src/interface/building';
 	import type { PlacedBuildings } from 'src/interface';
 	import { loadSavedBuildings, loadSavedConduits } from '$lib/blueprint-data/loader';
-	import { checkBuildingBoundary, createDeleteHighlight, previewPaintElement, clearPaintHighlight } from 'src/lib/utils';
+	import {
+		checkBuildingBoundary,
+		createDeleteHighlight,
+		previewPaintElement,
+		clearPaintHighlight
+	} from 'src/lib/utils';
 	import { paintElementHandlers, loadElementIcons } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
+	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
+	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/flowRenderer';
+	import { rgbaToHex } from '$lib/utils/color';
 
 	interface Props {
 		savedBuildings?: PlacedBuildings[];
@@ -566,6 +574,86 @@
 			clearPaintHighlight();
 		};
 	});
+
+	// Handle SIMULATION mode - click pipes to fill
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		const buildContainer = blueprint.buildContainer;
+		const isSimMode = pipeFlowState.isSimulationMode;
+
+		if (!app || !buildContainer || !isSimMode) {
+			return;
+		}
+
+		const handleSimulationClick = (event: PIXI.FederatedPointerEvent) => {
+			if (event.button !== MOUSE_CLICK.LEFT) return;
+			if (!pipeFlowState.isSimulationMode) return;
+			if (pipeFlowState.isRunning) return; // Don't fill while running
+
+			const camera = blueprint.camera;
+			if (!camera) return;
+
+			const worldPos = camera.screenToWorld(event.global.x, event.global.y);
+			const { gridX, gridY } = worldToGrid(worldPos);
+			const gridKey = `${gridX},${gridY}`;
+
+			// Verify position is in liquid conduit map
+			const conduitMap = blueprint.placedConduits[ConduitType.LIQUID];
+			if (!conduitMap.has(gridKey)) return;
+
+			if (pipeFlowState.fillMode === 'auto') {
+				pipeFlowState.autoFill(gridKey);
+			} else {
+				pipeFlowState.toggleFill(gridKey);
+			}
+		};
+
+		app.stage.on('pointerdown', handleSimulationClick);
+
+		return () => {
+			app.stage?.removeEventListener('pointerdown', handleSimulationClick);
+		};
+	});
+
+	// Handle SIMULATION rendering updates
+	$effect(() => {
+		const buildContainer = blueprint.buildContainer;
+		const isSimMode = pipeFlowState.isSimulationMode;
+		const filledPipes = pipeFlowState.filledPipes;
+		const selectedElement = pipeFlowState.selectedElement;
+		const pipeDirections = pipeFlowState.pipeDirections;
+
+		if (!buildContainer || !isSimMode) {
+			return;
+		}
+
+		// Render filled pipes
+		if (selectedElement) {
+			renderFilledPipes(pipeFlowState.renderState, buildContainer, filledPipes, selectedElement);
+		}
+
+		// Render direction arrows when map is non-empty (after Start)
+		if (pipeDirections.size > 0 && selectedElement) {
+			renderDirectionArrows(pipeFlowState.renderState, buildContainer, pipeDirections);
+		}
+	});
+
+	// Handle SIMULATION flow ticker
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		const isRunning = pipeFlowState.isRunning;
+
+		if (!app || !isRunning) return;
+
+		const tickerFn = (ticker: PIXI.Ticker) => {
+			pipeFlowState.updateFlow(ticker.deltaMS);
+		};
+		app.ticker.add(tickerFn);
+
+		return () => {
+			app.ticker.remove(tickerFn);
+		};
+	});
 </script>
 
 <div class="grid-wrapper">
@@ -598,7 +686,7 @@
 			{#snippet children()}
 				<div class="min-w-28">
 					{#if appConfig.devMode && selectModeGridPosition}
-						<div class="border-b-dark-active border-b pb-1 text-xs">
+						<div class="border-b border-b-dark-active pb-1 text-xs">
 							Grid ({selectModeGridPosition.x}, {selectModeGridPosition.y})
 						</div>
 					{/if}
