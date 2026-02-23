@@ -42,13 +42,33 @@ function calculateBuildingOffset(building: IBuilding): Position {
     };
 }
 
+// Calulate building bounds when rotating around origin of building (0,0)s
+function getRotatingBoundary(bound: BuildingBounds, orientation: number): BuildingBounds {
+    switch (orientation) {
+        case 90: // (x,y) → (y, -x)
+            return { minX: bound.minY, maxX: bound.maxY, minY: -bound.maxX, maxY: -bound.minX };
+        case 180: // (x,y) → (-x, -y)
+            return { minX: -bound.maxX, maxX: -bound.minX, minY: -bound.maxY, maxY: -bound.minY };
+        case 270: // (x,y) → (-y, x)
+            return { minX: -bound.maxY, maxX: -bound.minY, minY: bound.minX, maxY: bound.maxX };
+        default:
+            return bound;
+    }
+}
+
 // Calculate the world positions for top-left and bottom-right corners of the building
 function calculateBuildingGridPositions(
     building: IBuilding,
     gridX: number,
-    gridY: number
+    gridY: number,
+    orientation: number = 0,
+    rotationPermit: number = 0
 ): { topLeft: Position; bottomRight: Position } {
-    const bound = getBuildingBounds(building);
+    let bound = getBuildingBounds(building);
+
+    if ((rotationPermit === 1 || rotationPermit === 2) && orientation !== 0) {
+        bound = getRotatingBoundary(bound, orientation);
+    }
 
     return {
         topLeft: {
@@ -86,4 +106,4 @@ function getBuildingOccupiedTiles(building: IBuilding, gridX: number, gridY: num
     }));
 }
 
-export { calculateBuildingGridPositions, calculateBuildingOffset, getBuildingOccupiedTiles, getBuildingBounds };
+export { calculateBuildingGridPositions, calculateBuildingOffset, getBuildingOccupiedTiles, getBuildingBounds, getRotatingBoundary };

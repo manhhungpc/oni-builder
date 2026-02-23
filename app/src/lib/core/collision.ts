@@ -11,6 +11,8 @@ interface CollisionCheckParams {
     currentBuilding?: IBuilding;
     placedBuildings?: PlacedBuildings[];
     connectionList?: SvelteMap<string, ConduitNode>;
+    orientation?: number;
+    rotationPermit?: number;
 }
 
 interface BoundingBox {
@@ -83,7 +85,7 @@ export function checkBuildingCollision(params: CollisionCheckParams): boolean {
  * @returns Array of buildings that collide with the current placement
  */
 export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuildings[] {
-    const { placedBuildings, currentBuilding, gridX, gridY } = params;
+    const { placedBuildings, currentBuilding, gridX, gridY, orientation = 0, rotationPermit = 0 } = params;
     const collidingBuildings: PlacedBuildings[] = [];
 
     if (!placedBuildings || !currentBuilding) return [];
@@ -98,7 +100,7 @@ export function getCollidingBuildings(params: CollisionCheckParams): PlacedBuild
     }
 
     // Calculate grid positions for the current building
-    const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY);
+    const currentBuildingPositions = calculateBuildingGridPositions(currentBuilding, gridX, gridY, orientation, rotationPermit);
     const currentBox = worldPositionsToBoundingBox(
         currentBuildingPositions.topLeft,
         currentBuildingPositions.bottomRight

@@ -95,10 +95,17 @@ function placeBuildingAtGrid(
 
 	applyOrientationTransform(buildingSprite, orientation, rotationPermit);
 
-	// Rotation 90deg or full circle
+	// Rotation 90deg or full circle - adjust anchor to rotate around origin cell center
 	if (rotationPermit === 1 || rotationPermit === 2) {
-		buildingSprite.anchor.set(0.5, 0.5);
-		buildingSprite.position.set(gridCenterX, gridCenterY);
+		const pivotX = (gridX + 0.5) * CELL_SIZE;
+		const pivotY = (gridY + 0.5) * CELL_SIZE;
+		const spriteTopLeftX = gridCenterX - buildingSprite.width / 2;
+		const spriteTopLeftY = gridCenterY - buildingSprite.height / 2;
+		buildingSprite.anchor.set(
+			(pivotX - spriteTopLeftX) / buildingSprite.width,
+			(pivotY - spriteTopLeftY) / buildingSprite.height
+		);
+		buildingSprite.position.set(pivotX, pivotY);
 	}
 
 	// Horizontal flip
@@ -128,7 +135,7 @@ function placeBuildingAtGrid(
 
 	container.addChild(buildingSprite);
 
-	const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY);
+	const buildingWorldPosition = calculateBuildingGridPositions(buildingData, gridX, gridY, orientation, rotationPermit);
 
 	const portPositions = getPortPositions(buildingData, gridX, gridY, orientation);
 	const portsData = [];

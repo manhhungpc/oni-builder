@@ -255,7 +255,8 @@
 
 		const previewState = previewBuilding(sprite, selectedToBuild, {
 			offset,
-			orientation: 0
+			orientation: 0,
+			getOrientation: () => currentOrientation
 		});
 
 		const placementState = drawBuilding(sprite, selectedToBuild, {
