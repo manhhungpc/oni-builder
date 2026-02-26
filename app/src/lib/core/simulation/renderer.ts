@@ -3,7 +3,8 @@ import type { Container } from 'pixi.js';
 import type { IElement } from 'src/interface/element';
 import type { FlowRenderState, PacketState } from 'src/interface/pipeFlow';
 import { CELL_SIZE } from '$lib/constant';
-import { getFlowDirection, gridToWorld } from './flowSimulation';
+import { getFlowDirection } from './helpers';
+import { gridToCellCenter } from '$lib/utils/grid/transform';
 import { rgbaToHex } from '$lib/utils/color';
 
 const FLOW_RENDER_LAYER = 1010; // Above highlighted conduits (999) and ports (1000)
@@ -23,7 +24,7 @@ export function renderFilledPipes(
 
 	for (const position of filledPipes) {
 		if (!renderState.filledPipeGraphics.has(position)) {
-			const worldPos = gridToWorld(position, CELL_SIZE);
+			const worldPos = gridToCellCenter(position);
 
 			const graphics = new PIXI.Graphics();
 			graphics.circle(0, 0, CIRCLE_RADIUS);
@@ -63,7 +64,7 @@ export function renderDirectionArrows(
 		const direction = getFlowDirection(position, pipeDirections);
 		if (!direction) continue;
 
-		const worldPos = gridToWorld(position, CELL_SIZE);
+		const worldPos = gridToCellCenter(position);
 		const graphics = new PIXI.Graphics();
 
 		const angle = Math.atan2(direction.dy, direction.dx);
@@ -89,25 +90,24 @@ export function renderDirectionArrows(
  * Animate fill circles: each circle moves from current cell to next cell over 1s continuously.
  */
 export function animatePacketsFlow(
-	renderState: FlowRenderState,
-	packetStates: Map<string, PacketState>,
+	packetStates: PacketState[],
 	progress: number // 0→1 per step
 ): void {
-	for (const [homePosition, graphics] of renderState.filledPipeGraphics) {
-		const state = packetStates.get(homePosition);
+	for (const state of packetStates) {
+		if (!state.graphics) continue;
 
-		if (!state || !state.to) {
-			const pos = gridToWorld(state ? state.from : homePosition, CELL_SIZE);
-			graphics.position.set(pos.x, pos.y);
+		if (!state.to) {
+			const pos = gridToCellCenter(state.from);
+			state.graphics.position.set(pos.x, pos.y);
 			continue;
 		}
 
-		const fromPos = gridToWorld(state.from, CELL_SIZE);
-		const toPos = gridToWorld(state.to, CELL_SIZE);
+		const fromPos = gridToCellCenter(state.from);
+		const toPos = gridToCellCenter(state.to);
 
 		const x = fromPos.x + (toPos.x - fromPos.x) * progress;
 		const y = fromPos.y + (toPos.y - fromPos.y) * progress;
-		graphics.position.set(x, y);
+		state.graphics.position.set(x, y);
 	}
 }
 
@@ -116,12 +116,12 @@ export function animatePacketsFlow(
  */
 export function resetFlowCirclePositions(renderState: FlowRenderState): void {
 	for (const [position, graphics] of renderState.filledPipeGraphics) {
-		const homePos = gridToWorld(position, CELL_SIZE);
+		const homePos = gridToCellCenter(position);
 		graphics.position.set(homePos.x, homePos.y);
 	}
 }
 
-function clearDirectionArrows(renderState: FlowRenderState): void {
+export function clearDirectionArrows(renderState: FlowRenderState): void {
 	for (const [, graphics] of renderState.directionArrowGraphics) {
 		graphics.destroy();
 	}

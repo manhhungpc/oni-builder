@@ -19,4 +19,8 @@ export interface FlowRenderState {
 export interface PacketState {
 	from: string;
 	to?: string;
+	element: IElement;
+	temperature: number;
+	mass: number;
+	graphics?: Graphics;
 }

@@ -2,14 +2,13 @@ import type { IElement } from 'src/interface/element';
 import type { FlowRenderState, PacketState } from 'src/interface/pipeFlow';
 import {
 	clearFlowRendering,
+	clearDirectionArrows,
 	animatePacketsFlow,
 	resetFlowCirclePositions
-} from '$lib/core/simulation/flowRenderer';
-import {
-	autoFillFromPosition,
-	calculateDirections,
-	getConnectedPipes
-} from '$lib/core/simulation/flowSimulation';
+} from '$lib/core/simulation/renderer';
+import { autoFillFromPosition } from '$lib/core/simulation/fill';
+import { calculateDirections, initPackets, applyMoves } from '$lib/core/simulation/calculation';
+import { getConnectedPipes } from '$lib/core/simulation/helpers';
 import { blueprint } from '$lib/state/blueprint.svelte';
 import { appConfig } from '$lib/state/config.svelte';
 import { ACTION } from '$lib/constant';
@@ -20,13 +19,13 @@ class FlowSimulationStore {
 	isSimulationMode = $state(false);
 	selectedElement = $state<IElement | null>(null);
 	filledPipes = $state<Set<string>>(new Set());
- 	fillMode = $state<'manual' | 'auto'>('manual');
+	fillMode = $state<'manual' | 'auto'>('manual');
 	pipeDirections = $state<Map<string, string[]>>(new Map());
 	isRunning = $state(false);
 
 	// Flow animation progress
 	flowProgress = 0;
-	packetStates: Map<string, PacketState> = new Map();
+	packetStates: PacketState[] = [];
 
 	renderState = $state<FlowRenderState>({
 		filledPipeGraphics: new Map(),
@@ -40,9 +39,11 @@ class FlowSimulationStore {
 	}
 
 	exitSimulationMode() {
-		this.stopSimulation();
-		this.filledPipes = new Set();
+		this.isRunning = false;
 		this.pipeDirections = new Map();
+		this.packetStates = [];
+		this.flowProgress = 0;
+		this.filledPipes = new Set();
 
 		if (blueprint.buildContainer) {
 			clearFlowRendering(this.renderState, blueprint.buildContainer);
@@ -103,76 +104,42 @@ class FlowSimulationStore {
 		if (this.filledPipes.size === 0) return;
 		if (this.isRunning) return;
 
-		this.pipeDirections = calculateDirections(this.filledPipes);
-		this.flowProgress = 0;
+		// Resume: if packetStates exist from a previous pause, just resume
+		if (this.packetStates.length > 0 && this.pipeDirections.size > 0) {
+			this.isRunning = true;
+			return;
+		}
 
-		console.log('[SIM] pipeDirections:', [...this.pipeDirections.entries()]);
+		// Fresh start: calculate directions and create packets
+		this.pipeDirections = calculateDirections(this.filledPipes);
 
 		if (this.pipeDirections.size === 0) {
 			return;
 		}
 
-		this.packetStates = new Map();
-		for (const pos of this.filledPipes) {
-			this.packetStates.set(pos, { from: pos });
-		}
-		this.forwardPackets();
+		this.packetStates = initPackets(this.filledPipes, this.pipeDirections, this.selectedElement);
 
+		// Attach graphics references from filledPipeGraphics
+		for (const packet of this.packetStates) {
+			packet.graphics = this.renderState.filledPipeGraphics.get(packet.from);
+		}
+
+		this.flowProgress = 0;
 		this.isRunning = true;
 	}
 
 	stopSimulation() {
 		this.isRunning = false;
-		this.pipeDirections = new Map();
-		this.flowProgress = 0;
-		this.packetStates = new Map();
-
-		// Reset circles back to home positions
-		resetFlowCirclePositions(this.renderState);
 	}
 
 	resetSimulation() {
-		this.stopSimulation();
-		this.filledPipes = new Set();
+		this.isRunning = false;
+		this.pipeDirections = new Map();
+		this.packetStates = [];
+		this.flowProgress = 0;
 
-		if (blueprint.buildContainer) {
-			clearFlowRendering(this.renderState, blueprint.buildContainer);
-		}
-		this.renderState = {
-			filledPipeGraphics: new Map(),
-			directionArrowGraphics: new Map(),
-			tickerCallback: null
-		};
-	}
-
-	/**
-	 * Move each packet to its next cell.
-	 * Returns false when ALL packets have reached dead ends.
-	 */
-	private forwardPackets(): boolean {
-		for (const [, state] of this.packetStates) {
-			if (!state.to) {
-				// First call — set initial direction
-				const nextCells = this.pipeDirections.get(state.from);
-				if (nextCells && nextCells.length > 0) {
-					state.to = nextCells[0];
-				}
-				continue;
-			}
-
-			state.from = state.to;
-			const nextCells = this.pipeDirections.get(state.from);
-
-			if (nextCells && nextCells.length > 0) {
-				state.to = nextCells[0];
-			} else {
-				state.to = undefined;
-				continue;
-			}
-		}
-
-		const allStopped = [...this.packetStates.values()].every((s) => !s.to);
-		return !allStopped;
+		resetFlowCirclePositions(this.renderState);
+		clearDirectionArrows(this.renderState);
 	}
 
 	/**
@@ -185,13 +152,13 @@ class FlowSimulationStore {
 
 		while (this.flowProgress >= 1) {
 			this.flowProgress -= 1;
-			if (!this.forwardPackets()) {
+			if (!applyMoves(this.packetStates, this.pipeDirections)) {
 				this.isRunning = false;
 				return;
 			}
 		}
 
-		animatePacketsFlow(this.renderState, this.packetStates, this.flowProgress);
+		animatePacketsFlow(this.packetStates, this.flowProgress);
 	}
 }
 

@@ -54,6 +54,24 @@ export function getConduitList(overlays?: OVERLAY): SvelteMap<string, ConduitNod
 	}
 }
 
+export function getConduitType(): ConduitType {
+	switch (appConfig.selectedElement?.type) {
+		case 'liquid': return ConduitType.LIQUID;
+		case 'gas': return ConduitType.GAS;
+		case 'solid': return ConduitType.CONVEYOR;
+		default: return ConduitType.LIQUID;
+	}
+}
+
+export function getOverlay(): OVERLAY {
+	switch (appConfig.selectedElement?.type) {
+		case 'liquid': return OVERLAY.PLUMBING;
+		case 'gas': return OVERLAY.VENTILATION;
+		case 'solid': return OVERLAY.SHIPPING;
+		default: return OVERLAY.PLUMBING;
+	}
+}
+
 export function getTileList(): SvelteMap<string, GridNodeData> {
 	return blueprint.placedTiles;
 }

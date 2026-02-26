@@ -31,7 +31,8 @@
 	import { paintElementHandlers, loadElementIcons } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
 	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
-	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/flowRenderer';
+	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/renderer';
+	import { hasConduit } from '$lib/core/simulation/helpers';
 	import { rgbaToHex } from '$lib/utils/color';
 
 	interface Props {
@@ -598,9 +599,8 @@
 			const { gridX, gridY } = worldToGrid(worldPos);
 			const gridKey = `${gridX},${gridY}`;
 
-			// Verify position is in liquid conduit map
-			const conduitMap = blueprint.placedConduits[ConduitType.LIQUID];
-			if (!conduitMap.has(gridKey)) return;
+			// Verify position is in the conduit map for the selected element
+			if (!hasConduit(gridKey)) return;
 
 			if (pipeFlowState.fillMode === 'auto') {
 				pipeFlowState.autoFill(gridKey);
