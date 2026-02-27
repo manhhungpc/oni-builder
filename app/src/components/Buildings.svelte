@@ -30,7 +30,7 @@
 	} from 'src/lib/utils';
 	import { paintElementHandlers, loadElementIcons } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
-	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
+	import { pipeFlowState } from '$lib/state/flowSimulation.svelte';
 	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/renderer';
 	import { hasConduit } from '$lib/core/simulation/helpers';
 	import { rgbaToHex } from '$lib/utils/color';

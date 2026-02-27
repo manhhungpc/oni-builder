@@ -15,12 +15,13 @@ import { ACTION } from '$lib/constant';
 
 const STEP_DURATION = 1000; // 1 grid/second (1x speed)
 
-class FlowSimulationStore {
+class FlowSimulation {
 	isSimulationMode = $state(false);
 	selectedElement = $state<IElement | null>(null);
 	filledPipes = $state<Set<string>>(new Set());
 	fillMode = $state<'manual' | 'auto'>('manual');
 	pipeDirections = $state<Map<string, string[]>>(new Map());
+	portPairs = $state<Map<string, string>>(new Map());
 	isRunning = $state(false);
 
 	// Flow animation progress
@@ -41,6 +42,7 @@ class FlowSimulationStore {
 	exitSimulationMode() {
 		this.isRunning = false;
 		this.pipeDirections = new Map();
+		this.portPairs = new Map();
 		this.packetStates = [];
 		this.flowProgress = 0;
 		this.filledPipes = new Set();
@@ -110,14 +112,13 @@ class FlowSimulationStore {
 			return;
 		}
 
-		// Fresh start: calculate directions and create packets
-		this.pipeDirections = calculateDirections(this.filledPipes);
+		calculateDirections(this.filledPipes);
 
 		if (this.pipeDirections.size === 0) {
 			return;
 		}
 
-		this.packetStates = initPackets(this.filledPipes, this.pipeDirections, this.selectedElement);
+		this.packetStates = initPackets(this.filledPipes, this.selectedElement);
 
 		// Attach graphics references from filledPipeGraphics
 		for (const packet of this.packetStates) {
@@ -135,6 +136,7 @@ class FlowSimulationStore {
 	resetSimulation() {
 		this.isRunning = false;
 		this.pipeDirections = new Map();
+		this.portPairs = new Map();
 		this.packetStates = [];
 		this.flowProgress = 0;
 
@@ -142,9 +144,6 @@ class FlowSimulationStore {
 		clearDirectionArrows(this.renderState);
 	}
 
-	/**
-	 * Called every frame by the ticker when simulation is running.
-	 */
 	updateFlow(deltaMS: number) {
 		if (!this.isRunning) return;
 
@@ -152,7 +151,7 @@ class FlowSimulationStore {
 
 		while (this.flowProgress >= 1) {
 			this.flowProgress -= 1;
-			if (!applyMoves(this.packetStates, this.pipeDirections)) {
+			if (!applyMoves(this.packetStates)) {
 				this.isRunning = false;
 				return;
 			}
@@ -162,4 +161,4 @@ class FlowSimulationStore {
 	}
 }
 
-export const pipeFlowState = new FlowSimulationStore();
+export const pipeFlowState = new FlowSimulation();

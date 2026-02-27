@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/ui/primitives/button';
-	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
+	import { pipeFlowState } from '$lib/state/flowSimulation.svelte';
 	import type { IElement } from 'src/interface/element';
 	import { listElements } from '$lib/api/elements.api';
 	import { debounce } from '$lib/utils/helpers';
@@ -69,11 +69,11 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="fixed right-0 bottom-0 left-0 z-20 border-t border-cyan-500 bg-dark-primary px-4 py-3">
+<div class="fixed right-0 bottom-0 left-0 z-20 bg-dark-primary px-4 py-3">
 	<div class="flex items-center gap-4">
 		<!-- Label -->
 		<div class="flex items-center gap-2">
-			<span class="text-sm font-bold text-cyan-400">Simulation</span>
+			<span class="text-sm font-bold text-orange-primary">Simulation</span>
 		</div>
 
 		<!-- Divider -->
@@ -132,7 +132,7 @@
 			<button
 				onclick={toggleFillMode}
 				class="rounded px-2 py-1 text-xs font-medium {fillMode === 'auto'
-					? 'bg-cyan-600 text-white'
+					? 'bg-orange-primary text-white'
 					: 'bg-dark-secondary text-gray-300 hover:bg-dark-active'}"
 			>
 				{fillMode === 'auto' ? 'Auto' : 'Manual'}
@@ -154,7 +154,10 @@
 		<!-- Control Buttons -->
 		<div class="flex gap-2">
 			{#if isRunning}
-				<Button onclick={handleStop} class="bg-yellow-600 px-3 py-1.5 text-sm hover:bg-yellow-700">
+				<Button
+					onclick={handleStop}
+					class="bg-yellow-primary px-3 py-1.5 text-sm text-dark-primary hover:bg-yellow-6"
+				>
 					<Pause class="mr-1 h-3 w-3" />
 					Stop
 				</Button>
@@ -162,7 +165,7 @@
 				<Button
 					onclick={handleStart}
 					disabled={!canStart}
-					class="bg-green-600 px-3 py-1.5 text-sm hover:bg-green-700 disabled:opacity-50"
+					class="bg-orange-primary px-3 py-1.5 text-sm hover:bg-orange-6 disabled:opacity-50"
 				>
 					<Play class="mr-1 h-3 w-3" />
 					Start

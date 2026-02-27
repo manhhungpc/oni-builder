@@ -6,7 +6,7 @@
 	import * as Tooltip from '$lib/ui/primitives/tooltip/index.js';
 	import { blueprint } from '$lib/state/blueprint.svelte';
 	import { appConfig, setDevMode } from '$lib/state/config.svelte';
-	import { pipeFlowState } from '$lib/state/pipeFlow.svelte';
+	import { pipeFlowState } from '$lib/state/flowSimulation.svelte';
 	import ScissorsLineDashed from '@lucide/svelte/icons/scissors-line-dashed';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import MousePointer2 from '@lucide/svelte/icons/mouse-pointer-2';
@@ -185,7 +185,7 @@
 		window.dispatchEvent(new CustomEvent('close-building-modal'));
 	}}
 >
-	<div class="flex flex-col gap-5">
+	<div class="flex flex-col gap-4">
 		<div class="flex justify-between">
 			<div class="text-xl">Mode: <b>{appConfig.selectedAction}</b></div>
 			{@render tool_sidebar()}
@@ -235,24 +235,6 @@
 			</small>
 		{/if}
 
-		<!-- Simulation Mode Toggle -->
-		{#if isSimulationMode}
-			<Button
-				class="bg-red-600 hover:cursor-pointer hover:bg-red-700"
-				onclick={() => pipeFlowState.exitSimulationMode()}
-			>
-				<LogOut class="mr-2 h-4 w-4" />
-				Exit Simulation Mode
-			</Button>
-		{:else}
-			<Button
-				class="bg-cyan-600 hover:cursor-pointer hover:bg-cyan-700"
-				onclick={enterSimulationMode}
-			>
-				Enter Simulation Mode
-			</Button>
-		{/if}
-
 		{#if shareUrl}
 			<div class="flex flex-col gap-2 rounded bg-dark-secondary p-2">
 				<small class="text-gray-400">Share URL:</small>
@@ -278,6 +260,24 @@
 		{/if}
 		{#if shareError}
 			<small class="text-red-500">{shareError}</small>
+		{/if}
+
+		<hr class="border-dark-active" />
+		{#if isSimulationMode}
+			<Button
+				class="bg-red-600 hover:cursor-pointer hover:bg-red-700"
+				onclick={() => pipeFlowState.exitSimulationMode()}
+			>
+				<LogOut class="mr-2 h-4 w-4" />
+				Exit Simulation Mode
+			</Button>
+		{:else}
+			<Button
+				class="bg-dark-secondary hover:cursor-pointer hover:bg-dark-active"
+				onclick={enterSimulationMode}
+			>
+				Enter Simulation Mode
+			</Button>
 		{/if}
 	</div>
 </div>

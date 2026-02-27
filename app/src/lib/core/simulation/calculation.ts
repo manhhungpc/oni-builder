@@ -1,25 +1,44 @@
 import type { IElement } from 'src/interface/element';
 import type { PacketState } from 'src/interface/pipeFlow';
 import { blueprint } from '$lib/state/blueprint.svelte';
+import { pipeFlowState } from '$lib/state/flowSimulation.svelte';
 import { bfs } from '$lib/utils/grid/adjacency';
 import { getConduitType } from '$lib/utils/helpers';
-import { isOutputPort, isInputPort, getConnectedPipes } from './helpers';
+import { PORT } from '$lib/constant';
+import {
+	isOutputPort,
+	isInputPort,
+	getConnectedPipes,
+	findBuildingWithPort,
+	getBuildingOutputPort
+} from './helpers';
 
-// ── Network discovery ────────────────────────────────────────────────
-
-/**
- * BFS spread from filled pipes through the entire conduit network.
- * For each conduit visited, check if it has a port (INPUT/OUTPUT).
- */
-export function findPipesNetwork(filledPipes: Set<string>): {
+// #region Network discovery
+// BFS spread from a single pipe through its entire connected conduit network.
+function buildPipesNetwork(startPipe: string): {
 	network: Set<string>;
 	outputEnds: string[];
 	inputEnds: string[];
 	blankEnds: string[];
 } {
 	const conduitMap = blueprint.placedConduits[getConduitType()];
-	const [firstPipe] = filledPipes;
-	const network = bfs(firstPipe, conduitMap);
+	const network = bfs(startPipe, conduitMap);
+
+	// Expand network through buildings: INPUT port → building's OUTPUT port → other side
+	const jumpQueue = [...network].filter((pos) => isInputPort(pos));
+	while (jumpQueue.length > 0) {
+		const pos = jumpQueue.shift()!;
+		const building = findBuildingWithPort(pos, PORT.INPUT);
+		if (!building) continue;
+		const outputPos = getBuildingOutputPort(building);
+		if (!outputPos || network.has(outputPos)) continue;
+
+		const otherSide = bfs(outputPos, conduitMap);
+		for (const p of otherSide) {
+			network.add(p);
+			if (isInputPort(p)) jumpQueue.push(p);
+		}
+	}
 
 	const outputEnds: string[] = [];
 	const inputEnds: string[] = [];
@@ -42,64 +61,110 @@ export function findPipesNetwork(filledPipes: Set<string>): {
 	return { network, outputEnds, inputEnds, blankEnds };
 }
 
-/**
- * Calculate flow directions from filled pipes.
- * Uses findPipesNetwork to find ports, then builds direction map.
- * Keys are in BFS order from OUTPUT→INPUT.
- */
-export function calculateDirections(filledPipes: Set<string>): Map<string, string[]> {
-	const directions = new Map<string, string[]>();
-	if (filledPipes.size === 0) return directions;
+// Build a map of INPUT position → OUTPUT position for buildings with a valid downstream sink.
+function buildPortPairs(network: Set<string>): Map<string, string> {
+	const conduitMap = blueprint.placedConduits[getConduitType()];
+	const jumps = new Map<string, string>();
+	for (const pos of network) {
+		if (!isInputPort(pos)) continue;
+		const building = findBuildingWithPort(pos, PORT.INPUT);
+		if (!building) continue;
+		const outputPos = getBuildingOutputPort(building);
+		if (!outputPos || !network.has(outputPos)) continue;
 
-	const { network, outputEnds, inputEnds } = findPipesNetwork(filledPipes);
-
-	if (inputEnds.length === 0) {
-		console.log('[CALC] stuck: no input ends found');
-		return directions;
-	}
-
-	// Start from OUTPUT end, or farthest pipe from INPUT if no OUTPUT
-	const startPos = outputEnds.length > 0 ? outputEnds[0] : [...network].pop()!;
-
-	// BFS from start through network to build direction map
-	const visited = new Set<string>();
-	const queue: string[] = [startPos];
-	visited.add(startPos);
-	directions.set(startPos, []);
-
-	while (queue.length > 0) {
-		const current = queue.shift()!;
-		const children: string[] = [];
-
-		for (const neighbor of getConnectedPipes(current)) {
-			if (visited.has(neighbor)) continue;
-			if (!network.has(neighbor)) continue;
-
-			visited.add(neighbor);
-			children.push(neighbor);
-			directions.set(neighbor, []);
-			queue.push(neighbor);
+		const downstreamNetwork = bfs(outputPos, conduitMap);
+		const hasSink = [...downstreamNetwork].some((p) => isInputPort(p));
+		if (hasSink) {
+			jumps.set(pos, outputPos);
 		}
-
-		const existing = directions.get(current) || [];
-		directions.set(current, [...existing, ...children]);
 	}
-
-	console.log('[CALC] directions:', [...directions.entries()]);
-	return directions;
+	return jumps;
 }
 
-// ── Packet lifecycle ─────────────────────────────────────────────────
+// Calculate flow directions for all filled pipe networks.
+export function calculateDirections(filledPipes: Set<string>): void {
+	const directions = new Map<string, string[]>();
+	const allPortJumps = new Map<string, string>();
 
-/**
- * Create packets for every filled pipe and plan their initial moves.
- */
-export function initPackets(
-	filledPipes: Set<string>,
-	pipeDirections: Map<string, string[]>,
-	element: IElement
-): PacketState[] {
-	const defaultMass = element.type === 'gas' ? 0.5 : 5;
+	if (filledPipes.size === 0) {
+		pipeFlowState.pipeDirections = directions;
+		pipeFlowState.portPairs = allPortJumps;
+		return;
+	}
+
+	const discovered = new Set<string>();
+
+	for (const pipe of filledPipes) {
+		if (discovered.has(pipe)) continue;
+
+		const { network, outputEnds, inputEnds } = buildPipesNetwork(pipe);
+
+		for (const pos of network) {
+			discovered.add(pos);
+		}
+
+		if (inputEnds.length === 0) {
+			console.log('[CALC] stuck: no input ends found for network at', pipe);
+			continue;
+		}
+
+		const portPairs = buildPortPairs(network);
+		for (const [k, v] of portPairs) {
+			allPortJumps.set(k, v);
+		}
+
+		const startPos = outputEnds.length > 0 ? outputEnds[0] : [...network].pop()!;
+
+		const visited = new Set<string>();
+		const queue: string[] = [startPos];
+		visited.add(startPos);
+		directions.set(startPos, []);
+
+		while (queue.length > 0) {
+			const current = queue.shift()!;
+			const children: string[] = [];
+
+			for (const neighbor of getConnectedPipes(current)) {
+				if (visited.has(neighbor)) continue;
+				if (!network.has(neighbor)) continue;
+
+				visited.add(neighbor);
+				children.push(neighbor);
+				directions.set(neighbor, []);
+				queue.push(neighbor);
+			}
+
+			const jumpTarget = portPairs.get(current);
+			if (jumpTarget && !visited.has(jumpTarget)) {
+				visited.add(jumpTarget);
+				directions.set(jumpTarget, []);
+				queue.push(jumpTarget);
+			}
+
+			const existing = directions.get(current) || [];
+			directions.set(current, [...existing, ...children]);
+		}
+	}
+
+	pipeFlowState.pipeDirections = directions;
+	pipeFlowState.portPairs = allPortJumps;
+}
+
+// #region Packet lifecycle
+function passThroughPorts(packetStates: PacketState[]): void {
+	const occupied = new Set(packetStates.map((s) => s.from));
+	for (const state of packetStates) {
+		const jumpTarget = pipeFlowState.portPairs.get(state.from);
+		if (jumpTarget && !occupied.has(jumpTarget)) {
+			occupied.delete(state.from);
+			state.from = jumpTarget;
+			occupied.add(jumpTarget);
+		}
+	}
+}
+
+export function initPackets(filledPipes: Set<string>, element: IElement): PacketState[] {
+	const defaultMass = element.type === 'gas' ? 1 : 10;
 	const packetStates: PacketState[] = [];
 
 	for (const pos of filledPipes) {
@@ -111,17 +176,13 @@ export function initPackets(
 		});
 	}
 
-	planMoves(packetStates, pipeDirections);
+	passThroughPorts(packetStates);
+	planMoves(packetStates);
 	return packetStates;
 }
 
-/**
- * Reverse-iteration occupancy check for moving packets.
- */
-export function planMoves(
-	packetStates: PacketState[],
-	pipeDirections: Map<string, string[]>
-): void {
+// Plan next moves for packets using reverse-iteration occupancy check.
+export function planMoves(packetStates: PacketState[]): void {
 	const occupied = new Set<string>();
 	const packetAt = new Map<string, PacketState>();
 	for (const state of packetStates) {
@@ -129,43 +190,41 @@ export function planMoves(
 		packetAt.set(state.from, state);
 	}
 
-	// Reverse = INPUT→OUTPUT = front-to-back
-	const flowOrder = [...pipeDirections.keys()].reverse();
+	const flowOrder = [...pipeFlowState.pipeDirections.keys()].reverse();
 
 	for (const pos of flowOrder) {
 		const state = packetAt.get(pos);
 		if (!state) continue;
 
-		const nextCells = pipeDirections.get(pos);
+		const nextCells = pipeFlowState.pipeDirections.get(pos);
 		if (!nextCells || nextCells.length === 0) {
 			state.to = undefined;
 			continue;
 		}
 
 		const target = nextCells[0];
-		if (!occupied.has(target)) {
+		const finalPos = pipeFlowState.portPairs.get(target) ?? target;
+
+		if (!occupied.has(target) && !occupied.has(finalPos)) {
 			state.to = target;
-			occupied.delete(pos); // will be vacated
+			occupied.add(finalPos);
+			occupied.delete(pos);
 		} else {
-			state.to = undefined; // blocked
+			state.to = undefined;
 		}
 	}
 }
 
-/**
- * Move packets that have a planned target, then plan next moves.
- */
-export function applyMoves(
-	packetStates: PacketState[],
-	pipeDirections: Map<string, string[]>
-): boolean {
+// Apply planned moves, teleport through buildings, then plan next moves.
+export function applyMoves(packetStates: PacketState[]): boolean {
 	for (const state of packetStates) {
 		if (!state.to) continue;
 		state.from = state.to;
 		state.to = undefined;
 	}
 
-	planMoves(packetStates, pipeDirections);
+	passThroughPorts(packetStates);
+	planMoves(packetStates);
 
 	return packetStates.some((s) => s.to !== undefined);
 }
