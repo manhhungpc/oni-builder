@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Buildings from 'src/components/Buildings.svelte';
-	import BuildCategory from 'src/components/widgets/BuildCategory.svelte';
+	import BuildingSelector from 'src/components/widgets/BuildingSelector.svelte';
 	import ElementSelector from 'src/components/widgets/ElementSelector.svelte';
 	import Tools from 'src/components/widgets/Tools.svelte';
 	import Overlays from 'src/components/widgets/Overlays.svelte';
@@ -18,7 +18,7 @@
 </script>
 
 <main>
-	<BuildCategory />
+	<BuildingSelector />
 	<ElementSelector />
 	<Overlays />
 	<Tools />

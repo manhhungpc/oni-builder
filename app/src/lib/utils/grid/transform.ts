@@ -13,3 +13,11 @@ export function gridToWorld(gridX: number, gridY: number): { x: number; y: numbe
         y: gridY * CELL_SIZE,
     };
 }
+
+export function gridToCellCenter(position: string): { x: number; y: number } {
+    const [x, y] = position.split(',').map(Number);
+    return {
+        x: x * CELL_SIZE + CELL_SIZE / 2,
+        y: y * CELL_SIZE + CELL_SIZE / 2,
+    };
+}

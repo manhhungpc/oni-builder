@@ -1,5 +1,5 @@
 import type { IBuilding, PortOverlapDetail, Position } from 'src/interface/building';
-import { FederatedPointerEvent, Sprite, Container, Assets, Graphics } from 'pixi.js';
+import { FederatedPointerEvent, Sprite, Container, Graphics } from 'pixi.js';
 import { CELL_SIZE, PORT } from '$lib/constant';
 import type { PreviewState } from 'src/interface/building';
 import { getCollidingBuildings } from './collision';
@@ -9,6 +9,7 @@ import { worldToGrid } from '$lib/utils/grid/transform';
 import { getPortSpriteAlias, getOverlayInfo } from '$lib/utils';
 import { getPortPositions, applyOrientationTransform } from './drawBuilding';
 import { getSpriteOffset } from './spriteOffset';
+import { getBuildingBounds, getRotatingBoundary } from './positioning';
 import { OVERLAY } from '$lib/constant';
 
 // Create mouse move handler for building preview with grid snapping
@@ -18,10 +19,12 @@ function previewBuilding(
 	options?: {
 		offset?: Position;
 		orientation?: number;
+		getOrientation?: () => number;
 	}
 ): PreviewState {
 	const offset = options?.offset ?? { x: 0, y: 0 };
 	const orientation = options?.orientation ?? 0;
+	const getOrientation = options?.getOrientation;
 
 	// Create a parent container to hold both the sprite and port container
 	const previewContainer = new Container();
@@ -85,7 +88,7 @@ function previewBuilding(
 		previewContainer,
 		offset,
 		currentBuilding,
-		buildingPorts
+		getOrientation
 	);
 
 	return {
@@ -114,10 +117,12 @@ function updatePreviewOrientation(
 	// Apply rotation/flip transform
 	applyOrientationTransform(sprite, newOrientation, rotationPermit);
 
-	// Rotation 90deg or full circle - adjust anchor to rotate around center
+	// Rotation 90deg or full circle - adjust anchor to rotate around origin cell center
 	if ((rotationPermit === 1 || rotationPermit === 2) && newOrientation !== 0) {
-		sprite.anchor.set(0.5, 0.5);
-		sprite.position.set(spriteWidth / 2, spriteHeight / 2);
+		const pivotX = (-offset.x + 0.5) * CELL_SIZE;
+		const pivotY = (-offset.y + 0.5) * CELL_SIZE;
+		sprite.anchor.set(pivotX / spriteWidth, pivotY / spriteHeight);
+		sprite.position.set(pivotX, pivotY);
 	}
 
 	// Horizontal flip - adjust anchor to flip around center of offset tile on X-axis
@@ -141,19 +146,59 @@ function updatePreviewOrientation(
 	sprite.position.x += spriteOffset.x * CELL_SIZE;
 	sprite.position.y += spriteOffset.y * CELL_SIZE;
 
-	// Update port positions
-	const newBuildingPorts = getPortPositions(building, 0, 0, newOrientation);
-	const currentPorts = newBuildingPorts.filter((p) => p.category === appConfig.selectedOverlay);
+	// Recreate port sprites at rotated positions
+	portContainer.removeChildren();
 
-	currentPorts.forEach((port, index) => {
-		const portSprite = portContainer.children[index];
-		if (portSprite) {
+	const newBuildingPorts = getPortPositions(building, 0, 0, newOrientation);
+	const currentOverlay = appConfig.selectedOverlay;
+	const { portSpriteInput, portSpriteOutput } = getPortSpriteAlias(currentOverlay);
+
+	for (const port of newBuildingPorts) {
+		if (port.category !== currentOverlay) continue;
+		const spriteAlias = port.type === PORT.INPUT ? portSpriteInput : portSpriteOutput;
+		if (!spriteAlias) continue;
+
+		try {
+			const portSprite = Sprite.from(spriteAlias);
+			portSprite.width = CELL_SIZE / 2;
+			portSprite.height = CELL_SIZE / 2;
 			portSprite.position.set(
 				(port.x - offset.x) * CELL_SIZE + CELL_SIZE / 4,
 				(port.y - offset.y) * CELL_SIZE + CELL_SIZE / 4
 			);
+			portSprite.alpha = 0.7;
+			portContainer.addChild(portSprite);
+		} catch (error) {
+			console.warn(`Port sprite ${spriteAlias} not loaded yet`);
 		}
-	});
+	}
+
+	// Update boundary box for rotation
+	const boundaryBox = sprite.parent?.children.find((c) => c.label === 'Boundary Box');
+	if (boundaryBox instanceof Graphics) {
+		boundaryBox.clear();
+
+		let boxX = 0;
+		let boxY = 0;
+		let boxWidth = building.width * CELL_SIZE;
+		let boxHeight = building.height * CELL_SIZE;
+
+		if (rotationPermit === 1 || rotationPermit === 2) {
+			if (newOrientation === 90 || newOrientation === 270) {
+				boxWidth = building.height * CELL_SIZE;
+				boxHeight = building.width * CELL_SIZE;
+			}
+			if (newOrientation !== 0) {
+				const rotated = getRotatingBoundary(getBuildingBounds(building), newOrientation);
+				boxX = (rotated.minX - offset.x) * CELL_SIZE;
+				boxY = (-rotated.maxY - offset.y) * CELL_SIZE;
+			}
+		}
+
+		boundaryBox.rect(boxX, boxY, boxWidth, boxHeight);
+		boundaryBox.stroke({ width: 2, color: 0x00ff00 });
+		boundaryBox.visible = appConfig.devMode;
+	}
 }
 
 function checkPortOverlap(
@@ -195,7 +240,7 @@ function gridSnapPreviewHandler(
 	container: Container,
 	offset: Position,
 	currentBuilding: IBuilding,
-	buildingPorts: Array<{ x: number; y: number; type: PORT; category: OVERLAY }>
+	getOrientation?: () => number
 ): (event: FederatedPointerEvent) => void {
 	return (event: FederatedPointerEvent) => {
 		if (!blueprint.camera) {
@@ -218,11 +263,14 @@ function gridSnapPreviewHandler(
 		}
 
 		// Check for collision
+		const currentOrientation = getOrientation?.() ?? 0;
 		const collideBuildings = getCollidingBuildings({
 			placedBuildings: blueprint.placedBuildings,
 			currentBuilding,
 			gridX: gridX,
-			gridY: gridY
+			gridY: gridY,
+			orientation: currentOrientation,
+			rotationPermit: currentBuilding.rotation_permit ?? 0
 		});
 
 		const collideBuildingLayers = new Set(
@@ -232,8 +280,9 @@ function gridSnapPreviewHandler(
 		const invalidPlacement =
 			collideBuildings.length && collideBuildingLayers.has(currentBuilding.object_layer);
 
+		const currentBuildingPorts = getPortPositions(currentBuilding, 0, 0, currentOrientation);
 		const portOverlapDetail = checkPortOverlap(
-			buildingPorts,
+			currentBuildingPorts,
 			gridX,
 			gridY,
 			appConfig.selectedOverlay
