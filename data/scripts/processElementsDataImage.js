@@ -88,6 +88,13 @@ function extractElements() {
 
     const elements = Object.entries(data.elementTable).map(([key, element]) => ({
         name: element.name,
+        idx: element.idx,
+        specificHeatCapacity: element.specificHeatCapacity,
+        thermalConductivity: element.thermalConductivity,
+        molarMass: element.molarMass,
+        maxMass: element.maxMass,
+        lowTempTransition: element.lowTempTransition ? { idx: element.lowTempTransition.idx } : null,
+        highTempTransition: element.highTempTransition ? { idx: element.highTempTransition.idx } : null,
         substance: element.substance ? {
             name: element.substance.name,
             elementID: element.substance.elementID,

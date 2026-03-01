@@ -1,6 +1,15 @@
 [
   {
     "name": "<link=\"WOOD\">Wood</link>",
+    "idx": 59,
+    "specificHeatCapacity": 2.3,
+    "thermalConductivity": 0.22,
+    "molarMass": 217.8529,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Wood",
       "elementID": 16214647,
@@ -91,6 +100,15 @@
   },
   {
     "name": "<link=\"ELECTRUM\">Electrum</link>",
+    "idx": 60,
+    "specificHeatCapacity": 0.15,
+    "thermalConductivity": 2,
+    "molarMass": 95.61,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 122
+    },
     "substance": {
       "name": "Electrum",
       "elementID": 28407099,
@@ -181,6 +199,17 @@
   },
   {
     "name": "<link=\"MILK\">Brackene</link>",
+    "idx": 138,
+    "specificHeatCapacity": 4.1,
+    "thermalConductivity": 0.609,
+    "molarMass": 23,
+    "maxMass": 1100,
+    "lowTempTransition": {
+      "idx": 11
+    },
+    "highTempTransition": {
+      "idx": 133
+    },
     "substance": {
       "name": "Brackene",
       "elementID": 59201595,
@@ -271,6 +300,15 @@
   },
   {
     "name": "<link=\"SOLIDCARBONDIOXIDE\">Solid Carbon Dioxide</link>",
+    "idx": 61,
+    "specificHeatCapacity": 0.846,
+    "thermalConductivity": 1.46,
+    "molarMass": 44.01,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 116
+    },
     "substance": {
       "name": "Solid Carbon Dioxide",
       "elementID": 83003332,
@@ -361,6 +399,15 @@
   },
   {
     "name": "<link=\"ALUMINUMGAS\">Aluminum Gas</link>",
+    "idx": 176,
+    "specificHeatCapacity": 0.91,
+    "thermalConductivity": 2.5,
+    "molarMass": 63.546,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 114
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Aluminum Gas",
       "elementID": 100766521,
@@ -451,6 +498,15 @@
   },
   {
     "name": "<link=\"COBALT\">Cobalt</link>",
+    "idx": 62,
+    "specificHeatCapacity": 0.42,
+    "thermalConductivity": 100,
+    "molarMass": 58.9,
+    "maxMass": 8900,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 132
+    },
     "substance": {
       "name": "Cobalt",
       "elementID": 108179667,
@@ -541,6 +597,15 @@
   },
   {
     "name": "<link=\"CARBONFIBRE\">Carbon Fiber</link>",
+    "idx": 63,
+    "specificHeatCapacity": 0.52,
+    "thermalConductivity": 0,
+    "molarMass": 25,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 141
+    },
     "substance": {
       "name": "Carbon Fiber",
       "elementID": 118518245,
@@ -631,6 +696,15 @@
   },
   {
     "name": "<link=\"URANIUMORE\">Uranium Ore</link>",
+    "idx": 64,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 20,
+    "molarMass": 120,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 154
+    },
     "substance": {
       "name": "Uranium Ore",
       "elementID": 134298891,
@@ -721,6 +795,15 @@
   },
   {
     "name": "<link=\"SOLIDPROPANE\">Solid Propane</link>",
+    "idx": 65,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 1,
+    "molarMass": 44.1,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 128
+    },
     "substance": {
       "name": "Solid Propane",
       "elementID": 166493482,
@@ -811,6 +894,15 @@
   },
   {
     "name": "<link=\"ALUMINUMORE\">Aluminum Ore</link>",
+    "idx": 66,
+    "specificHeatCapacity": 0.91,
+    "thermalConductivity": 20.5,
+    "molarMass": 143.09,
+    "maxMass": 500,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 114
+    },
     "substance": {
       "name": "Aluminum Ore",
       "elementID": 167973730,
@@ -901,6 +993,15 @@
   },
   {
     "name": "<link=\"SEDIMENTARYROCK\">Sedimentary Rock</link>",
+    "idx": 67,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Sedimentary Rock",
       "elementID": 183408504,
@@ -991,6 +1092,15 @@
   },
   {
     "name": "<link=\"FULLERENE\">Fullerene</link>",
+    "idx": 68,
+    "specificHeatCapacity": 0.95,
+    "thermalConductivity": 50,
+    "molarMass": 12.0107,
+    "maxMass": 50,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 141
+    },
     "substance": {
       "name": "Fullerene",
       "elementID": 245514112,
@@ -1081,6 +1191,15 @@
   },
   {
     "name": "<link=\"GOLDAMALGAM\">Gold Amalgam</link>",
+    "idx": 69,
+    "specificHeatCapacity": 0.15,
+    "thermalConductivity": 2,
+    "molarMass": 95.61,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 122
+    },
     "substance": {
       "name": "Gold Amalgam",
       "elementID": 361868060,
@@ -1171,6 +1290,17 @@
   },
   {
     "name": "<link=\"LIQUIDMETHANE\">Liquid Methane</link>",
+    "idx": 139,
+    "specificHeatCapacity": 2.191,
+    "thermalConductivity": 0.03,
+    "molarMass": 16.044,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 87
+    },
+    "highTempTransition": {
+      "idx": 169
+    },
     "substance": {
       "name": "Liquid Methane",
       "elementID": 371787440,
@@ -1261,6 +1391,15 @@
   },
   {
     "name": "<link=\"SALT\">Salt</link>",
+    "idx": 70,
+    "specificHeatCapacity": 0.7,
+    "thermalConductivity": 0.444,
+    "molarMass": 50,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 131
+    },
     "substance": {
       "name": "Salt",
       "elementID": 381665462,
@@ -1351,6 +1490,15 @@
   },
   {
     "name": "<link=\"SAND\">Sand</link>",
+    "idx": 71,
+    "specificHeatCapacity": 0.83,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 118
+    },
     "substance": {
       "name": "Sand",
       "elementID": 381796644,
@@ -1441,6 +1589,15 @@
   },
   {
     "name": "<link=\"TUNGSTENGAS\">Tungsten Gas</link>",
+    "idx": 177,
+    "specificHeatCapacity": 0.134,
+    "thermalConductivity": 1,
+    "molarMass": 183.84,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 129
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Tungsten Gas",
       "elementID": 431998133,
@@ -1531,6 +1688,15 @@
   },
   {
     "name": "<link=\"SNOW\">Snow</link>",
+    "idx": 72,
+    "specificHeatCapacity": 2.05,
+    "thermalConductivity": 0.545,
+    "molarMass": 18.01528,
+    "maxMass": 20,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 152
+    },
     "substance": {
       "name": "Snow",
       "elementID": 489261827,
@@ -1621,6 +1787,15 @@
   },
   {
     "name": "<link=\"SANDSTONE\">Sandstone</link>",
+    "idx": 73,
+    "specificHeatCapacity": 0.8,
+    "thermalConductivity": 2.9,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Sandstone",
       "elementID": 493438017,
@@ -1711,6 +1886,17 @@
   },
   {
     "name": "<link=\"MOLTENIRON\">Molten Iron</link>",
+    "idx": 140,
+    "specificHeatCapacity": 0.449,
+    "thermalConductivity": 4,
+    "molarMass": 55.845,
+    "maxMass": 7870,
+    "lowTempTransition": {
+      "idx": 92
+    },
+    "highTempTransition": {
+      "idx": 183
+    },
     "substance": {
       "name": "Molten Iron",
       "elementID": 502659099,
@@ -1801,6 +1987,17 @@
   },
   {
     "name": "<link=\"MOLTENCARBON\">Liquid Carbon</link>",
+    "idx": 141,
+    "specificHeatCapacity": 0.71,
+    "thermalConductivity": 2,
+    "molarMass": 12.0107,
+    "maxMass": 4000,
+    "lowTempTransition": {
+      "idx": 32
+    },
+    "highTempTransition": {
+      "idx": 174
+    },
     "substance": {
       "name": "Liquid Carbon",
       "elementID": 505665536,
@@ -1891,6 +2088,15 @@
   },
   {
     "name": "<link=\"GLASS\">Glass</link>",
+    "idx": 74,
+    "specificHeatCapacity": 0.84,
+    "thermalConductivity": 1.11,
+    "molarMass": 25,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 118
+    },
     "substance": {
       "name": "Glass",
       "elementID": 623986332,
@@ -1981,6 +2187,17 @@
   },
   {
     "name": "<link=\"SYNGAS\">Molten Synthesis Gas</link>",
+    "idx": 142,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.1,
+    "molarMass": 1.00794,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 40
+    },
+    "highTempTransition": {
+      "idx": 181
+    },
     "substance": {
       "name": "Molten Synthesis Gas",
       "elementID": 660593444,
@@ -2071,6 +2288,15 @@
   },
   {
     "name": "<link=\"FABRICATEDWOOD\">Plywood</link>",
+    "idx": 75,
+    "specificHeatCapacity": 2.3,
+    "thermalConductivity": 0.35,
+    "molarMass": 217.8529,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Plywood",
       "elementID": 663200452,
@@ -2161,6 +2387,15 @@
   },
   {
     "name": "<link=\"CONTAMINATEDOXYGEN\">Polluted Oxygen</link>",
+    "idx": 178,
+    "specificHeatCapacity": 1.01,
+    "thermalConductivity": 0.024,
+    "molarMass": 15.9994,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 112
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Polluted Oxygen",
       "elementID": 721531317,
@@ -2251,6 +2486,13 @@
   },
   {
     "name": "<link=\"VACUUM\">Vacuum</link>",
+    "idx": 190,
+    "specificHeatCapacity": 0,
+    "thermalConductivity": 0,
+    "molarMass": 0,
+    "maxMass": 0,
+    "lowTempTransition": null,
+    "highTempTransition": null,
     "substance": {
       "name": "Vacuum",
       "elementID": 758759285,
@@ -2341,6 +2583,15 @@
   },
   {
     "name": "<link=\"CLAY\">Clay</link>",
+    "idx": 76,
+    "specificHeatCapacity": 0.92,
+    "thermalConductivity": 2,
+    "molarMass": 200,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 21
+    },
     "substance": {
       "name": "Clay",
       "elementID": 867327137,
@@ -2431,6 +2682,15 @@
   },
   {
     "name": "<link=\"TOXICSAND\">Polluted Dirt</link>",
+    "idx": 77,
+    "specificHeatCapacity": 0.83,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 118
+    },
     "substance": {
       "name": "Polluted Dirt",
       "elementID": 869554203,
@@ -2521,6 +2781,15 @@
   },
   {
     "name": "<link=\"ICE\">Ice</link>",
+    "idx": 78,
+    "specificHeatCapacity": 2.05,
+    "thermalConductivity": 2.18,
+    "molarMass": 18.01528,
+    "maxMass": 1100,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 152
+    },
     "substance": {
       "name": "Ice",
       "elementID": 873952427,
@@ -2611,6 +2880,17 @@
   },
   {
     "name": "<link=\"SUGARWATER\">Nectar</link>",
+    "idx": 143,
+    "specificHeatCapacity": 4.1,
+    "thermalConductivity": 0.609,
+    "molarMass": 21,
+    "maxMass": 1100,
+    "lowTempTransition": {
+      "idx": 78
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Nectar",
       "elementID": 878488353,
@@ -2701,6 +2981,15 @@
   },
   {
     "name": "<link=\"GRAPHITE\">Graphite</link>",
+    "idx": 79,
+    "specificHeatCapacity": 0.71,
+    "thermalConductivity": 8,
+    "molarMass": 12.0107,
+    "maxMass": 600,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 32
+    },
     "substance": {
       "name": "Graphite",
       "elementID": 878995724,
@@ -2791,6 +3080,15 @@
   },
   {
     "name": "<link=\"TOXICMUD\">Polluted Mud</link>",
+    "idx": 80,
+    "specificHeatCapacity": 0.83,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Polluted Mud",
       "elementID": 900133477,
@@ -2881,6 +3179,15 @@
   },
   {
     "name": "<link=\"LEADGAS\">Lead Gas</link>",
+    "idx": 179,
+    "specificHeatCapacity": 0.128,
+    "thermalConductivity": 3.5,
+    "molarMass": 196.966568,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 115
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Lead Gas",
       "elementID": 905042813,
@@ -2971,6 +3278,15 @@
   },
   {
     "name": "<link=\"MUD\">Mud</link>",
+    "idx": 81,
+    "specificHeatCapacity": 0.83,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Mud",
       "elementID": 908179228,
@@ -3061,6 +3377,15 @@
   },
   {
     "name": "<link=\"CARBON\">Coal</link>",
+    "idx": 82,
+    "specificHeatCapacity": 0.71,
+    "thermalConductivity": 1.25,
+    "molarMass": 12.0107,
+    "maxMass": 4000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 32
+    },
     "substance": {
       "name": "Coal",
       "elementID": 947100397,
@@ -3151,6 +3476,15 @@
   },
   {
     "name": "<link=\"SOLIDOXYGEN\">Solid Oxygen</link>",
+    "idx": 83,
+    "specificHeatCapacity": 1.01,
+    "thermalConductivity": 1,
+    "molarMass": 50,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 112
+    },
     "substance": {
       "name": "Solid Oxygen",
       "elementID": 973502379,
@@ -3241,6 +3575,13 @@
   },
   {
     "name": "<link=\"CREATURE\">Genetic Ooze</link>",
+    "idx": 84,
+    "specificHeatCapacity": 3.47,
+    "thermalConductivity": 0.6,
+    "molarMass": 25,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": null,
     "substance": {
       "name": "Genetic Ooze",
       "elementID": 976099455,
@@ -3331,6 +3672,15 @@
   },
   {
     "name": "<link=\"FALLOUT\">Nuclear Fallout</link>",
+    "idx": 180,
+    "specificHeatCapacity": 0.265,
+    "thermalConductivity": 1,
+    "molarMass": 92.9,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 134
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Nuclear Fallout",
       "elementID": 1000463219,
@@ -3421,6 +3771,15 @@
   },
   {
     "name": "<link=\"DEPLETEDURANIUM\">Depleted Uranium</link>",
+    "idx": 85,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 20,
+    "molarMass": 120,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 154
+    },
     "substance": {
       "name": "Depleted Uranium",
       "elementID": 1064294988,
@@ -3511,6 +3870,15 @@
   },
   {
     "name": "<link=\"KATAIRITE\">Abyssalite</link>",
+    "idx": 86,
+    "specificHeatCapacity": 4,
+    "thermalConductivity": 0.00001,
+    "molarMass": 341.76,
+    "maxMass": 3200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 129
+    },
     "substance": {
       "name": "Abyssalite",
       "elementID": 1071649902,
@@ -3601,6 +3969,15 @@
   },
   {
     "name": "<link=\"SYNGAS\">Synthesis Gas</link>",
+    "idx": 181,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.168,
+    "molarMass": 26.96,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 142
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Synthesis Gas",
       "elementID": 1102028305,
@@ -3691,6 +4068,17 @@
   },
   {
     "name": "<link=\"NAPHTHA\">Liquid Naphtha</link>",
+    "idx": 144,
+    "specificHeatCapacity": 2.191,
+    "thermalConductivity": 0.2,
+    "molarMass": 102.2,
+    "maxMass": 740,
+    "lowTempTransition": {
+      "idx": 29
+    },
+    "highTempTransition": {
+      "idx": 167
+    },
     "substance": {
       "name": "Liquid Naphtha",
       "elementID": 1157157570,
@@ -3781,6 +4169,15 @@
   },
   {
     "name": "<link=\"SOLIDMETHANE\">Solid Methane</link>",
+    "idx": 87,
+    "specificHeatCapacity": 2.191,
+    "thermalConductivity": 0.03,
+    "molarMass": 16.044,
+    "maxMass": 750,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 139
+    },
     "substance": {
       "name": "Solid Methane",
       "elementID": 1183979137,
@@ -3871,6 +4268,15 @@
   },
   {
     "name": "<link=\"HARDPOLYPROPYLENE\">Plastium</link>",
+    "idx": 88,
+    "specificHeatCapacity": 1.5,
+    "thermalConductivity": 0.25,
+    "molarMass": 100.016,
+    "maxMass": 913,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 167
+    },
     "substance": {
       "name": "Plastium",
       "elementID": 1220285359,
@@ -3961,6 +4367,17 @@
   },
   {
     "name": "<link=\"NATURALRESIN\">Resin</link>",
+    "idx": 145,
+    "specificHeatCapacity": 1.11,
+    "thermalConductivity": 0.15,
+    "molarMass": 52.5,
+    "maxMass": 920,
+    "lowTempTransition": {
+      "idx": 89
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Resin",
       "elementID": 1244532348,
@@ -4051,6 +4468,15 @@
   },
   {
     "name": "<link=\"NATURALSOLIDRESIN\">Solid Resin</link>",
+    "idx": 89,
+    "specificHeatCapacity": 1.3,
+    "thermalConductivity": 0.17,
+    "molarMass": 52.5,
+    "maxMass": 1850,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 145
+    },
     "substance": {
       "name": "Solid Resin",
       "elementID": 1254083875,
@@ -4141,6 +4567,15 @@
   },
   {
     "name": "<link=\"OXYROCK\">Oxylite</link>",
+    "idx": 90,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 4,
+    "molarMass": 43,
+    "maxMass": 500,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Oxylite",
       "elementID": 1262005685,
@@ -4231,6 +4666,15 @@
   },
   {
     "name": "<link=\"MAFICROCK\">Mafic Rock</link>",
+    "idx": 91,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 1,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Mafic Rock",
       "elementID": 1282846257,
@@ -4321,6 +4765,15 @@
   },
   {
     "name": "<link=\"IRON\">Iron</link>",
+    "idx": 92,
+    "specificHeatCapacity": 0.449,
+    "thermalConductivity": 55,
+    "molarMass": 55.845,
+    "maxMass": 7870,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 140
+    },
     "substance": {
       "name": "Iron",
       "elementID": 1306370440,
@@ -4411,6 +4864,17 @@
   },
   {
     "name": "<link=\"MOLTENSUCROSE\">Liquid Sucrose</link>",
+    "idx": 146,
+    "specificHeatCapacity": 1.255,
+    "thermalConductivity": 0.15,
+    "molarMass": 32,
+    "maxMass": 740,
+    "lowTempTransition": {
+      "idx": 4
+    },
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Liquid Sucrose",
       "elementID": 1318135165,
@@ -4501,6 +4965,15 @@
   },
   {
     "name": "<link=\"NICKELGAS\">Nickel Gas</link>",
+    "idx": 182,
+    "specificHeatCapacity": 0.44,
+    "thermalConductivity": 1,
+    "molarMass": 58.69,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 155
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Nickel Gas",
       "elementID": 1320373807,
@@ -4591,6 +5064,17 @@
   },
   {
     "name": "<link=\"LIQUIDPHOSPHORUS\">Liquid Phosphorus</link>",
+    "idx": 147,
+    "specificHeatCapacity": 0.7697,
+    "thermalConductivity": 0.236,
+    "molarMass": 30.9737625,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 55
+    },
+    "highTempTransition": {
+      "idx": 185
+    },
     "substance": {
       "name": "Liquid Phosphorus",
       "elementID": 1323821489,
@@ -4681,6 +5165,15 @@
   },
   {
     "name": "<link=\"REGOLITH\">Regolith</link>",
+    "idx": 93,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 1,
+    "molarMass": 50,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Regolith",
       "elementID": 1362238252,
@@ -4771,6 +5264,15 @@
   },
   {
     "name": "<link=\"SOLIDRESIN\">Solid Sap</link>",
+    "idx": 94,
+    "specificHeatCapacity": 1.3,
+    "thermalConductivity": 0.17,
+    "molarMass": 52.5,
+    "maxMass": 1850,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 126
+    },
     "substance": {
       "name": "Solid Sap",
       "elementID": 1376267226,
@@ -4861,6 +5363,15 @@
   },
   {
     "name": "<link=\"NICKELORE\">Nickel Ore</link>",
+    "idx": 95,
+    "specificHeatCapacity": 0.45,
+    "thermalConductivity": 3,
+    "molarMass": 203.35,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 155
+    },
     "substance": {
       "name": "Nickel Ore",
       "elementID": 1387581016,
@@ -4951,6 +5462,15 @@
   },
   {
     "name": "<link=\"SLABS\">Building Slab</link>",
+    "idx": 96,
+    "specificHeatCapacity": 0.52,
+    "thermalConductivity": 8,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Building Slab",
       "elementID": 1412740729,
@@ -5041,6 +5561,15 @@
   },
   {
     "name": "<link=\"BITUMEN\">Bitumen</link>",
+    "idx": 97,
+    "specificHeatCapacity": 1.76,
+    "thermalConductivity": 0.17,
+    "molarMass": 82.2,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Bitumen",
       "elementID": 1433229102,
@@ -5131,6 +5660,17 @@
   },
   {
     "name": "<link=\"MOLTENSTEEL\">Molten Steel</link>",
+    "idx": 148,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 80,
+    "molarMass": 63.546,
+    "maxMass": 3870,
+    "lowTempTransition": {
+      "idx": 33
+    },
+    "highTempTransition": {
+      "idx": 164
+    },
     "substance": {
       "name": "Molten Steel",
       "elementID": 1459013976,
@@ -5221,6 +5761,17 @@
   },
   {
     "name": "<link=\"MOLTENNIOBIUM\">Molten Niobium</link>",
+    "idx": 149,
+    "specificHeatCapacity": 0.265,
+    "thermalConductivity": 54,
+    "molarMass": 92.9,
+    "maxMass": 3870,
+    "lowTempTransition": {
+      "idx": 9
+    },
+    "highTempTransition": {
+      "idx": 160
+    },
     "substance": {
       "name": "Molten Niobium",
       "elementID": 1499134368,
@@ -5311,6 +5862,15 @@
   },
   {
     "name": "<link=\"IRONGAS\">Iron Gas</link>",
+    "idx": 183,
+    "specificHeatCapacity": 0.449,
+    "thermalConductivity": 1,
+    "molarMass": 55.845,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 140
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Iron Gas",
       "elementID": 1541626289,
@@ -5401,6 +5961,15 @@
   },
   {
     "name": "Packed <link=\"SNOW\">Snow</link>",
+    "idx": 98,
+    "specificHeatCapacity": 2.05,
+    "thermalConductivity": 0.545,
+    "molarMass": 18.01528,
+    "maxMass": 20,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 152
+    },
     "substance": {
       "name": "Packed Snow",
       "elementID": 1542131326,
@@ -5491,6 +6060,15 @@
   },
   {
     "name": "<link=\"TEMPCONDUCTORSOLID\">Thermium</link>",
+    "idx": 99,
+    "specificHeatCapacity": 0.622,
+    "thermalConductivity": 220,
+    "molarMass": 174.35,
+    "maxMass": 1800,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 149
+    },
     "substance": {
       "name": "Thermium",
       "elementID": 1559722904,
@@ -5581,6 +6159,15 @@
   },
   {
     "name": "<link=\"IRONORE\">Iron Ore</link>",
+    "idx": 100,
+    "specificHeatCapacity": 0.449,
+    "thermalConductivity": 4,
+    "molarMass": 159.6882,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 140
+    },
     "substance": {
       "name": "Iron Ore",
       "elementID": 1608833498,
@@ -5671,6 +6258,15 @@
   },
   {
     "name": "<link=\"DIRT\">Dirt</link>",
+    "idx": 101,
+    "specificHeatCapacity": 1.48,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 71
+    },
     "substance": {
       "name": "Dirt",
       "elementID": 1624244999,
@@ -5761,6 +6357,15 @@
   },
   {
     "name": "<link=\"CEMENT\">Cement</link>",
+    "idx": 102,
+    "specificHeatCapacity": 1.55,
+    "thermalConductivity": 8,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Cement",
       "elementID": 1627140480,
@@ -5851,6 +6456,15 @@
   },
   {
     "name": "<link=\"DIRTYICE\">Polluted Ice</link>",
+    "idx": 103,
+    "specificHeatCapacity": 3.05,
+    "thermalConductivity": 1,
+    "molarMass": 25,
+    "maxMass": 800,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 151
+    },
     "substance": {
       "name": "Polluted Ice",
       "elementID": 1664334585,
@@ -5941,6 +6555,15 @@
   },
   {
     "name": "<link=\"CEMENTMIX\">Cement Mix</link>",
+    "idx": 104,
+    "specificHeatCapacity": 0.52,
+    "thermalConductivity": 8,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Cement Mix",
       "elementID": 1668719292,
@@ -6031,6 +6654,17 @@
   },
   {
     "name": "<link=\"MERCURY\">Mercury</link>",
+    "idx": 150,
+    "specificHeatCapacity": 0.14,
+    "thermalConductivity": 8.3,
+    "molarMass": 200.59,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 42
+    },
+    "highTempTransition": {
+      "idx": 170
+    },
     "substance": {
       "name": "Mercury",
       "elementID": 1732126099,
@@ -6121,6 +6755,15 @@
   },
   {
     "name": "<link=\"FOSSIL\">Fossil</link>",
+    "idx": 105,
+    "specificHeatCapacity": 0.91,
+    "thermalConductivity": 2,
+    "molarMass": 200,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Fossil",
       "elementID": 1757792140,
@@ -6211,6 +6854,17 @@
   },
   {
     "name": "<link=\"DIRTYWATER\">Polluted Water</link>",
+    "idx": 151,
+    "specificHeatCapacity": 4.179,
+    "thermalConductivity": 0.58,
+    "molarMass": 20,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 103
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Polluted Water",
       "elementID": 1832607973,
@@ -6301,6 +6955,17 @@
   },
   {
     "name": "<link=\"WATER\">Water</link>",
+    "idx": 152,
+    "specificHeatCapacity": 4.179,
+    "thermalConductivity": 0.609,
+    "molarMass": 18.01528,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 78
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Water",
       "elementID": 1836671383,
@@ -6391,6 +7056,13 @@
   },
   {
     "name": "<link=\"UNOBTANIUM\">Neutronium</link>",
+    "idx": 106,
+    "specificHeatCapacity": 0,
+    "thermalConductivity": 0,
+    "molarMass": 10000,
+    "maxMass": 20000,
+    "lowTempTransition": null,
+    "highTempTransition": null,
     "substance": {
       "name": "Neutronium",
       "elementID": 1838482828,
@@ -6481,6 +7153,15 @@
   },
   {
     "name": "<link=\"IRIDIUMGAS\">Iridium Gas</link>",
+    "idx": 184,
+    "specificHeatCapacity": 0.131,
+    "thermalConductivity": 1,
+    "molarMass": 183.84,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 119
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Iridium Gas",
       "elementID": 1859051228,
@@ -6512,6 +7193,15 @@
   },
   {
     "name": "<link=\"CINNABAR\">Cinnabar Ore</link>",
+    "idx": 107,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 4.5,
+    "molarMass": 232.66,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 170
+    },
     "substance": {
       "name": "Cinnabar Ore",
       "elementID": 1875790680,
@@ -6602,6 +7292,15 @@
   },
   {
     "name": "<link=\"PHOSPHORUSGAS\">Phosphorus Gas</link>",
+    "idx": 185,
+    "specificHeatCapacity": 0.7697,
+    "thermalConductivity": 0.236,
+    "molarMass": 30.9737625,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 147
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Phosphorus Gas",
       "elementID": 1887387588,
@@ -6692,6 +7391,17 @@
   },
   {
     "name": "<link=\"SALTWATER\">Salt Water</link>",
+    "idx": 153,
+    "specificHeatCapacity": 4.1,
+    "thermalConductivity": 0.609,
+    "molarMass": 21,
+    "maxMass": 1100,
+    "lowTempTransition": {
+      "idx": 133
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Salt Water",
       "elementID": 1911997537,
@@ -6782,6 +7492,15 @@
   },
   {
     "name": "<link=\"SOLIDETHANOL\">Solid Ethanol</link>",
+    "idx": 108,
+    "specificHeatCapacity": 2.46,
+    "thermalConductivity": 20,
+    "molarMass": 46.07,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 136
+    },
     "substance": {
       "name": "Solid Ethanol",
       "elementID": 1937241528,
@@ -6872,6 +7591,17 @@
   },
   {
     "name": "<link=\"MOLTENURANIUM\">Liquid Uranium</link>",
+    "idx": 154,
+    "specificHeatCapacity": 1.69,
+    "thermalConductivity": 2,
+    "molarMass": 196.966568,
+    "maxMass": 9970,
+    "lowTempTransition": {
+      "idx": 85
+    },
+    "highTempTransition": {
+      "idx": 173
+    },
     "substance": {
       "name": "Liquid Uranium",
       "elementID": 1937473860,
@@ -6962,6 +7692,15 @@
   },
   {
     "name": "<link=\"CARBONDIOXIDE\">Carbon Dioxide</link>",
+    "idx": 186,
+    "specificHeatCapacity": 0.846,
+    "thermalConductivity": 0.0146,
+    "molarMass": 44.01,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 116
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Carbon Dioxide",
       "elementID": 1960575215,
@@ -7052,6 +7791,15 @@
   },
   {
     "name": "<link=\"COPPERGAS\">Copper Gas</link>",
+    "idx": 187,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 1,
+    "molarMass": 63.546,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 156
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Copper Gas",
       "elementID": 1966552544,
@@ -7142,6 +7890,15 @@
   },
   {
     "name": "<link=\"FOOLSGOLD\">Pyrite</link>",
+    "idx": 109,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 4.5,
+    "molarMass": 95.61,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 140
+    },
     "substance": {
       "name": "Pyrite",
       "elementID": 2059777261,
@@ -7232,6 +7989,17 @@
   },
   {
     "name": "<link=\"MOLTENNICKEL\">Molten Nickel</link>",
+    "idx": 155,
+    "specificHeatCapacity": 0.44,
+    "thermalConductivity": 30,
+    "molarMass": 58.69,
+    "maxMass": 7870,
+    "lowTempTransition": {
+      "idx": 10
+    },
+    "highTempTransition": {
+      "idx": 182
+    },
     "substance": {
       "name": "Molten Nickel",
       "elementID": 2079148957,
@@ -7322,6 +8090,15 @@
   },
   {
     "name": "<link=\"ALUMINUM\">Aluminum</link>",
+    "idx": 110,
+    "specificHeatCapacity": 0.91,
+    "thermalConductivity": 205,
+    "molarMass": 55.845,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 114
+    },
     "substance": {
       "name": "Aluminum",
       "elementID": 2108244480,
@@ -7412,6 +8189,17 @@
   },
   {
     "name": "<link=\"MOLTENCOPPER\">Molten Copper</link>",
+    "idx": 156,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 12,
+    "molarMass": 63.546,
+    "maxMass": 3870,
+    "lowTempTransition": {
+      "idx": 13
+    },
+    "highTempTransition": {
+      "idx": 187
+    },
     "substance": {
       "name": "Molten Copper",
       "elementID": 2128494380,
@@ -7502,6 +8290,15 @@
   },
   {
     "name": "<link=\"CRUSHEDICE\">Crushed Ice</link>",
+    "idx": 0,
+    "specificHeatCapacity": 2.05,
+    "thermalConductivity": 2.18,
+    "molarMass": 18.01528,
+    "maxMass": 20,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 152
+    },
     "substance": {
       "name": "Crushed Ice",
       "elementID": -2123557039,
@@ -7592,6 +8389,15 @@
   },
   {
     "name": "<link=\"DIAMOND\">Diamond</link>",
+    "idx": 1,
+    "specificHeatCapacity": 0.516,
+    "thermalConductivity": 80,
+    "molarMass": 12.0107,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 141
+    },
     "substance": {
       "name": "Diamond",
       "elementID": -2079931820,
@@ -7682,6 +8488,15 @@
   },
   {
     "name": "<link=\"AEROGEL\">Aerogel</link>",
+    "idx": 2,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 0.003,
+    "molarMass": 200,
+    "maxMass": 2,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 86
+    },
     "substance": {
       "name": "Aerogel",
       "elementID": -2070223827,
@@ -7772,6 +8587,15 @@
   },
   {
     "name": "<link=\"ISORESIN\">Isosap</link>",
+    "idx": 3,
+    "specificHeatCapacity": 1.3,
+    "thermalConductivity": 0.17,
+    "molarMass": 162.14,
+    "maxMass": 50,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 144
+    },
     "substance": {
       "name": "Isosap",
       "elementID": -2008682336,
@@ -7862,6 +8686,15 @@
   },
   {
     "name": "<link=\"SUCROSE\">Sucrose</link>",
+    "idx": 4,
+    "specificHeatCapacity": 1.255,
+    "thermalConductivity": 0.15,
+    "molarMass": 342.3,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 146
+    },
     "substance": {
       "name": "Sucrose",
       "elementID": -1960895024,
@@ -7952,6 +8785,15 @@
   },
   {
     "name": "<link=\"PEAT\">Peat</link>",
+    "idx": 5,
+    "specificHeatCapacity": 0.71,
+    "thermalConductivity": 0.6,
+    "molarMass": 24.02,
+    "maxMass": 4000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 82
+    },
     "substance": {
       "name": "Peat",
       "elementID": -1927771704,
@@ -8042,6 +8884,15 @@
   },
   {
     "name": "<link=\"PHOSPHATENODULES\">Phosphate Nodules</link>",
+    "idx": 6,
+    "specificHeatCapacity": 0.15,
+    "thermalConductivity": 2,
+    "molarMass": 95.61,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 147
+    },
     "substance": {
       "name": "Phosphate Nodules",
       "elementID": -1901832310,
@@ -8132,6 +8983,15 @@
   },
   {
     "name": "<link=\"ALGAE\">Algae</link>",
+    "idx": 7,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 2,
+    "molarMass": 4,
+    "maxMass": 300,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 101
+    },
     "substance": {
       "name": "Algae",
       "elementID": -1870043872,
@@ -8222,6 +9082,15 @@
   },
   {
     "name": "<link=\"MILKFAT\">Brackwax</link>",
+    "idx": 8,
+    "specificHeatCapacity": 1.92,
+    "thermalConductivity": 0.15,
+    "molarMass": 42.08,
+    "maxMass": 913,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 144
+    },
     "substance": {
       "name": "Brackwax",
       "elementID": -1792538178,
@@ -8312,6 +9181,15 @@
   },
   {
     "name": "<link=\"NIOBIUM\">Niobium</link>",
+    "idx": 9,
+    "specificHeatCapacity": 0.265,
+    "thermalConductivity": 54,
+    "molarMass": 92.9,
+    "maxMass": 50,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 149
+    },
     "substance": {
       "name": "Niobium",
       "elementID": -1779895821,
@@ -8402,6 +9280,15 @@
   },
   {
     "name": "<link=\"NICKEL\">Nickel</link>",
+    "idx": 10,
+    "specificHeatCapacity": 0.44,
+    "thermalConductivity": 91,
+    "molarMass": 58.69,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 155
+    },
     "substance": {
       "name": "Nickel",
       "elementID": -1774383478,
@@ -8492,6 +9379,15 @@
   },
   {
     "name": "<link=\"MILKICE\">Frozen Brackene</link>",
+    "idx": 11,
+    "specificHeatCapacity": 3.4,
+    "thermalConductivity": 2.18,
+    "molarMass": 18.01528,
+    "maxMass": 1100,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 138
+    },
     "substance": {
       "name": "Frozen Brackene",
       "elementID": -1767622480,
@@ -8582,6 +9478,15 @@
   },
   {
     "name": "<link=\"CUPRITE\">Copper Ore</link>",
+    "idx": 12,
+    "specificHeatCapacity": 0.386,
+    "thermalConductivity": 4.5,
+    "molarMass": 143.09,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 156
+    },
     "substance": {
       "name": "Copper Ore",
       "elementID": -1736594426,
@@ -8672,6 +9577,15 @@
   },
   {
     "name": "<link=\"COPPER\">Copper</link>",
+    "idx": 13,
+    "specificHeatCapacity": 0.385,
+    "thermalConductivity": 60,
+    "molarMass": 63.546,
+    "maxMass": 3870,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 156
+    },
     "substance": {
       "name": "Copper",
       "elementID": -1725038055,
@@ -8762,6 +9676,15 @@
   },
   {
     "name": "<link=\"CRUSHEDROCK\">Crushed Rock</link>",
+    "idx": 14,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Crushed Rock",
       "elementID": -1714565729,
@@ -8852,6 +9775,15 @@
   },
   {
     "name": "<link=\"SUPERINSULATOR\">Insulite</link>",
+    "idx": 15,
+    "specificHeatCapacity": 5.57,
+    "thermalConductivity": 0.00001,
+    "molarMass": 341.76,
+    "maxMass": 1800,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 129
+    },
     "substance": {
       "name": "Insulite",
       "elementID": -1713958528,
@@ -8942,6 +9874,15 @@
   },
   {
     "name": "<link=\"SHALE\">Shale</link>",
+    "idx": 16,
+    "specificHeatCapacity": 0.25,
+    "thermalConductivity": 1.8,
+    "molarMass": 55,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Shale",
       "elementID": -1708952091,
@@ -9032,6 +9973,15 @@
   },
   {
     "name": "<link=\"TALLOW\">Tallow</link>",
+    "idx": 17,
+    "specificHeatCapacity": 2.19,
+    "thermalConductivity": 10,
+    "molarMass": 850.92,
+    "maxMass": 2500,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 120
+    },
     "substance": {
       "name": "Tallow",
       "elementID": -1624652107,
@@ -9122,6 +10072,15 @@
   },
   {
     "name": "<link=\"YELLOWCAKE\">Yellowcake</link>",
+    "idx": 18,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 20,
+    "molarMass": 120,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 154
+    },
     "substance": {
       "name": "Yellowcake",
       "elementID": -1624413844,
@@ -9212,6 +10171,15 @@
   },
   {
     "name": "<link=\"BRINEICE\">Brine Ice</link>",
+    "idx": 19,
+    "specificHeatCapacity": 3.4,
+    "thermalConductivity": 2.18,
+    "molarMass": 18.01528,
+    "maxMass": 1100,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 133
+    },
     "substance": {
       "name": "Brine Ice",
       "elementID": -1561279013,
@@ -9302,6 +10270,15 @@
   },
   {
     "name": "<link=\"SOLIDVISCOGEL\">Solid Visco-Gel</link>",
+    "idx": 20,
+    "specificHeatCapacity": 1.55,
+    "thermalConductivity": 0.45,
+    "molarMass": 95,
+    "maxMass": 150,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 113
+    },
     "substance": {
       "name": "Solid Visco-Gel",
       "elementID": -1495120499,
@@ -9392,6 +10369,15 @@
   },
   {
     "name": "<link=\"CERAMIC\">Ceramic</link>",
+    "idx": 21,
+    "specificHeatCapacity": 0.84,
+    "thermalConductivity": 0.62,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Ceramic",
       "elementID": -1467370314,
@@ -9482,6 +10468,15 @@
   },
   {
     "name": "<link=\"COBALTITE\">Cobalt Ore</link>",
+    "idx": 22,
+    "specificHeatCapacity": 0.42,
+    "thermalConductivity": 4,
+    "molarMass": 165.9,
+    "maxMass": 6300,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 132
+    },
     "substance": {
       "name": "Cobalt Ore",
       "elementID": -1411918265,
@@ -9572,6 +10567,15 @@
   },
   {
     "name": "<link=\"FERTILIZER\">Fertilizer</link>",
+    "idx": 23,
+    "specificHeatCapacity": 0.83,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 300,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 101
+    },
     "substance": {
       "name": "Fertilizer",
       "elementID": -1396791454,
@@ -9662,6 +10666,15 @@
   },
   {
     "name": "<link=\"SOLIDCRUDEOIL\">Solid Crude Oil</link>",
+    "idx": 24,
+    "specificHeatCapacity": 1.69,
+    "thermalConductivity": 2,
+    "molarMass": 500,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 117
+    },
     "substance": {
       "name": "Solid Crude Oil",
       "elementID": -1224086026,
@@ -9752,6 +10765,15 @@
   },
   {
     "name": "<link=\"WOLFRAMITE\">Wolframite</link>",
+    "idx": 25,
+    "specificHeatCapacity": 0.134,
+    "thermalConductivity": 15,
+    "molarMass": 150,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 129
+    },
     "substance": {
       "name": "Wolframite",
       "elementID": -1208854194,
@@ -9842,6 +10864,15 @@
   },
   {
     "name": "<link=\"SLIMEMOLD\">Slime</link>",
+    "idx": 26,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 2,
+    "molarMass": 4,
+    "maxMass": 300,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 101
+    },
     "substance": {
       "name": "Slime",
       "elementID": -1153056158,
@@ -9932,6 +10963,15 @@
   },
   {
     "name": "<link=\"POLYPROPYLENE\">Plastic</link>",
+    "idx": 27,
+    "specificHeatCapacity": 1.92,
+    "thermalConductivity": 0.15,
+    "molarMass": 42.08,
+    "maxMass": 913,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 144
+    },
     "substance": {
       "name": "Plastic",
       "elementID": -1142341158,
@@ -10022,6 +11062,15 @@
   },
   {
     "name": "<link=\"AMBER\">Amber</link>",
+    "idx": 28,
+    "specificHeatCapacity": 1.3,
+    "thermalConductivity": 0.17,
+    "molarMass": 52.5,
+    "maxMass": 1850,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 145
+    },
     "substance": {
       "name": "Amber",
       "elementID": -1130501789,
@@ -10112,6 +11161,15 @@
   },
   {
     "name": "<link=\"SOLIDNAPHTHA\">Solid Naphtha</link>",
+    "idx": 29,
+    "specificHeatCapacity": 2.191,
+    "thermalConductivity": 0.2,
+    "molarMass": 102.2,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 144
+    },
     "substance": {
       "name": "Solid Naphtha",
       "elementID": -1112594153,
@@ -10202,6 +11260,15 @@
   },
   {
     "name": "<link=\"TUNGSTEN\">Tungsten</link>",
+    "idx": 30,
+    "specificHeatCapacity": 0.134,
+    "thermalConductivity": 60,
+    "molarMass": 183.84,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 129
+    },
     "substance": {
       "name": "Tungsten",
       "elementID": -1058835580,
@@ -10292,6 +11359,15 @@
   },
   {
     "name": "<link=\"SANDCEMENT\">Sand Cement</link>",
+    "idx": 31,
+    "specificHeatCapacity": 1.5,
+    "thermalConductivity": 8,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Sand Cement",
       "elementID": -1038746460,
@@ -10382,6 +11458,15 @@
   },
   {
     "name": "<link=\"REFINEDCARBON\">Refined Carbon</link>",
+    "idx": 32,
+    "specificHeatCapacity": 1.74,
+    "thermalConductivity": 3.1,
+    "molarMass": 12.0107,
+    "maxMass": 4000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 141
+    },
     "substance": {
       "name": "Refined Carbon",
       "elementID": -902240476,
@@ -10472,6 +11557,15 @@
   },
   {
     "name": "<link=\"STEEL\">Steel</link>",
+    "idx": 33,
+    "specificHeatCapacity": 0.49,
+    "thermalConductivity": 54,
+    "molarMass": 54.97,
+    "maxMass": 10000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 148
+    },
     "substance": {
       "name": "Steel",
       "elementID": -899253461,
@@ -10562,6 +11656,15 @@
   },
   {
     "name": "<link=\"PHOSPHORITE\">Phosphorite</link>",
+    "idx": 34,
+    "specificHeatCapacity": 0.15,
+    "thermalConductivity": 2,
+    "molarMass": 95.61,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 147
+    },
     "substance": {
       "name": "Phosphorite",
       "elementID": -877427037,
@@ -10652,6 +11755,15 @@
   },
   {
     "name": "<link=\"SOLIDHYDROGEN\">Solid Hydrogen</link>",
+    "idx": 35,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 1,
+    "molarMass": 44.1,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 125
+    },
     "substance": {
       "name": "Solid Hydrogen",
       "elementID": -858172533,
@@ -10742,6 +11854,15 @@
   },
   {
     "name": "<link=\"BLEACHSTONE\">Bleach Stone</link>",
+    "idx": 36,
+    "specificHeatCapacity": 0.5,
+    "thermalConductivity": 4,
+    "molarMass": 43,
+    "maxMass": 500,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 124
+    },
     "substance": {
       "name": "Bleach Stone",
       "elementID": -839728230,
@@ -10832,6 +11953,15 @@
   },
   {
     "name": "<link=\"LEAD\">Lead</link>",
+    "idx": 37,
+    "specificHeatCapacity": 0.128,
+    "thermalConductivity": 35,
+    "molarMass": 55.845,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 115
+    },
     "substance": {
       "name": "Lead",
       "elementID": -755153220,
@@ -10922,6 +12052,15 @@
   },
   {
     "name": "<link=\"SULFUR\">Sulfur</link>",
+    "idx": 38,
+    "specificHeatCapacity": 0.7,
+    "thermalConductivity": 0.2,
+    "molarMass": 50,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 121
+    },
     "substance": {
       "name": "Sulfur",
       "elementID": -729385479,
@@ -11012,6 +12151,15 @@
   },
   {
     "name": "<link=\"LIME\">Lime</link>",
+    "idx": 39,
+    "specificHeatCapacity": 0.834,
+    "thermalConductivity": 2,
+    "molarMass": 200,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Lime",
       "elementID": -721320011,
@@ -11102,6 +12250,15 @@
   },
   {
     "name": "<link=\"SYNGAS\">Solid Synthesis Gas</link>",
+    "idx": 40,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 1,
+    "molarMass": 44.1,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 142
+    },
     "substance": {
       "name": "Solid Synthesis Gas",
       "elementID": -690658692,
@@ -11192,6 +12349,15 @@
   },
   {
     "name": "<link=\"SOLIDCHLORINE\">Solid Chlorine</link>",
+    "idx": 41,
+    "specificHeatCapacity": 0.48,
+    "thermalConductivity": 0.75,
+    "molarMass": 34.453,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 124
+    },
     "substance": {
       "name": "Solid Chlorine",
       "elementID": -690060127,
@@ -11282,6 +12448,15 @@
   },
   {
     "name": "<link=\"SOLIDMERCURY\">Mercury</link>",
+    "idx": 42,
+    "specificHeatCapacity": 0.14,
+    "thermalConductivity": 8.3,
+    "molarMass": 200.59,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 150
+    },
     "substance": {
       "name": "Mercury",
       "elementID": -537625624,
@@ -11372,6 +12547,15 @@
   },
   {
     "name": "<link=\"SOLIDNUCLEARWASTE\">Solid Nuclear Waste</link>",
+    "idx": 43,
+    "specificHeatCapacity": 7.44,
+    "thermalConductivity": 6,
+    "molarMass": 196.966568,
+    "maxMass": 9970,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 134
+    },
     "substance": {
       "name": "Solid Nuclear Waste",
       "elementID": -497625153,
@@ -11462,6 +12646,15 @@
   },
   {
     "name": "<link=\"OBSIDIAN\">Obsidian</link>",
+    "idx": 44,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Obsidian",
       "elementID": -474151749,
@@ -11552,6 +12745,15 @@
   },
   {
     "name": "<link=\"SOLIDPETROLEUM\">Solid Petroleum</link>",
+    "idx": 45,
+    "specificHeatCapacity": 1.76,
+    "thermalConductivity": 2,
+    "molarMass": 82.2,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 130
+    },
     "substance": {
       "name": "Solid Petroleum",
       "elementID": -473261502,
@@ -11642,6 +12844,15 @@
   },
   {
     "name": "<link=\"SOLIDSUPERCOOLANT\">Solid Super Coolant</link>",
+    "idx": 46,
+    "specificHeatCapacity": 8.44,
+    "thermalConductivity": 9.46,
+    "molarMass": 250,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 135
+    },
     "substance": {
       "name": "Solid Super Coolant",
       "elementID": -389019570,
@@ -11732,6 +12943,15 @@
   },
   {
     "name": "<link=\"IGNEOUSROCK\">Igneous Rock</link>",
+    "idx": 47,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 2,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Igneous Rock",
       "elementID": -355957251,
@@ -11822,6 +13042,15 @@
   },
   {
     "name": "<link=\"ENRICHEDURANIUM\">Enriched Uranium</link>",
+    "idx": 48,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 20,
+    "molarMass": 120,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 154
+    },
     "substance": {
       "name": "Enriched Uranium",
       "elementID": -348942381,
@@ -11912,6 +13141,15 @@
   },
   {
     "name": "<link=\"BRICK\">Brick</link>",
+    "idx": 49,
+    "specificHeatCapacity": 0.84,
+    "thermalConductivity": 0.62,
+    "molarMass": 25,
+    "maxMass": 2000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Brick",
       "elementID": -325269471,
@@ -12002,6 +13240,15 @@
   },
   {
     "name": "<link=\"GOLD\">Gold</link>",
+    "idx": 50,
+    "specificHeatCapacity": 0.129,
+    "thermalConductivity": 60,
+    "molarMass": 196.966568,
+    "maxMass": 9970,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 122
+    },
     "substance": {
       "name": "Gold",
       "elementID": -279785280,
@@ -12092,6 +13339,15 @@
   },
   {
     "name": "<link=\"RUST\">Rust</link>",
+    "idx": 51,
+    "specificHeatCapacity": 0.449,
+    "thermalConductivity": 4,
+    "molarMass": 159.6882,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 140
+    },
     "substance": {
       "name": "Rust",
       "elementID": -233232444,
@@ -12182,6 +13438,15 @@
   },
   {
     "name": "<link=\"GUNK\">Solid Gunk</link>",
+    "idx": 52,
+    "specificHeatCapacity": 1.2,
+    "thermalConductivity": 1.5,
+    "molarMass": 850.92,
+    "maxMass": 2500,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 127
+    },
     "substance": {
       "name": "Solid Gunk",
       "elementID": -230085045,
@@ -12272,6 +13537,15 @@
   },
   {
     "name": "<link=\"FROZENPHYTOOIL\">Frozen Phyto Oil</link>",
+    "idx": 53,
+    "specificHeatCapacity": 0.9,
+    "thermalConductivity": 2,
+    "molarMass": 4,
+    "maxMass": 870,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 137
+    },
     "substance": {
       "name": "Frozen Phyto Oil",
       "elementID": -226111914,
@@ -12362,6 +13636,15 @@
   },
   {
     "name": "<link=\"CORIUM\">Corium</link>",
+    "idx": 54,
+    "specificHeatCapacity": 7.44,
+    "thermalConductivity": 6,
+    "molarMass": 196.966568,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 180
+    },
     "substance": {
       "name": "Corium",
       "elementID": -220644613,
@@ -12452,6 +13735,15 @@
   },
   {
     "name": "<link=\"PHOSPHORUS\">Refined Phosphorus</link>",
+    "idx": 55,
+    "specificHeatCapacity": 0.7697,
+    "thermalConductivity": 0.236,
+    "molarMass": 30.9737625,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 147
+    },
     "substance": {
       "name": "Refined Phosphorus",
       "elementID": -220394187,
@@ -12542,6 +13834,15 @@
   },
   {
     "name": "<link=\"IRIDIUM\">Iridium</link>",
+    "idx": 56,
+    "specificHeatCapacity": 0.131,
+    "thermalConductivity": 170,
+    "molarMass": 183.84,
+    "maxMass": 10000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 119
+    },
     "substance": {
       "name": "Iridium",
       "elementID": -198894563,
@@ -12632,6 +13933,15 @@
   },
   {
     "name": "<link=\"GRANITE\">Granite</link>",
+    "idx": 57,
+    "specificHeatCapacity": 0.79,
+    "thermalConductivity": 3.39,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Granite",
       "elementID": -105943486,
@@ -12722,6 +14032,15 @@
   },
   {
     "name": "<link=\"RADIUM\">Radium</link>",
+    "idx": 58,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 20,
+    "molarMass": 120,
+    "maxMass": 200,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 123
+    },
     "substance": {
       "name": "Radium",
       "elementID": -47820500,
@@ -12812,6 +14131,15 @@
   },
   {
     "name": "<link=\"LIQUIDHELIUM\">Helium</link>",
+    "idx": 111,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 0.236,
+    "molarMass": 4,
+    "maxMass": 1000,
+    "lowTempTransition": null,
+    "highTempTransition": {
+      "idx": 161
+    },
     "substance": {
       "name": "Helium",
       "elementID": -1934139602,
@@ -12902,6 +14230,17 @@
   },
   {
     "name": "<link=\"LIQUIDOXYGEN\">Liquid Oxygen</link>",
+    "idx": 112,
+    "specificHeatCapacity": 1.01,
+    "thermalConductivity": 2,
+    "molarMass": 15.9994,
+    "maxMass": 500,
+    "lowTempTransition": {
+      "idx": 83
+    },
+    "highTempTransition": {
+      "idx": 162
+    },
     "substance": {
       "name": "Liquid Oxygen",
       "elementID": -1908044868,
@@ -12992,6 +14331,17 @@
   },
   {
     "name": "<link=\"VISCOGEL\">Visco-Gel Fluid</link>",
+    "idx": 113,
+    "specificHeatCapacity": 1.55,
+    "thermalConductivity": 0.45,
+    "molarMass": 10,
+    "maxMass": 100,
+    "lowTempTransition": {
+      "idx": 20
+    },
+    "highTempTransition": {
+      "idx": 144
+    },
     "substance": {
       "name": "Visco-Gel Fluid",
       "elementID": -1683093854,
@@ -13082,6 +14432,17 @@
   },
   {
     "name": "<link=\"MOLTENALUMINUM\">Molten Aluminum</link>",
+    "idx": 114,
+    "specificHeatCapacity": 0.91,
+    "thermalConductivity": 20.5,
+    "molarMass": 55.845,
+    "maxMass": 7870,
+    "lowTempTransition": {
+      "idx": 110
+    },
+    "highTempTransition": {
+      "idx": 176
+    },
     "substance": {
       "name": "Molten Aluminum",
       "elementID": -1637472877,
@@ -13172,6 +14533,17 @@
   },
   {
     "name": "<link=\"MOLTENLEAD\">Molten Lead</link>",
+    "idx": 115,
+    "specificHeatCapacity": 0.128,
+    "thermalConductivity": 11,
+    "molarMass": 196.966568,
+    "maxMass": 9970,
+    "lowTempTransition": {
+      "idx": 37
+    },
+    "highTempTransition": {
+      "idx": 179
+    },
     "substance": {
       "name": "Molten Lead",
       "elementID": -1558864561,
@@ -13262,6 +14634,17 @@
   },
   {
     "name": "<link=\"LIQUIDCARBONDIOXIDE\">Liquid Carbon Dioxide</link>",
+    "idx": 116,
+    "specificHeatCapacity": 0.846,
+    "thermalConductivity": 1.46,
+    "molarMass": 44.01,
+    "maxMass": 2000,
+    "lowTempTransition": {
+      "idx": 61
+    },
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Liquid Carbon Dioxide",
       "elementID": -1526513293,
@@ -13352,6 +14735,17 @@
   },
   {
     "name": "<link=\"CRUDEOIL\">Crude Oil</link>",
+    "idx": 117,
+    "specificHeatCapacity": 1.69,
+    "thermalConductivity": 2,
+    "molarMass": 500,
+    "maxMass": 870,
+    "lowTempTransition": {
+      "idx": 24
+    },
+    "highTempTransition": {
+      "idx": 130
+    },
     "substance": {
       "name": "Crude Oil",
       "elementID": -1412059381,
@@ -13442,6 +14836,17 @@
   },
   {
     "name": "<link=\"MOLTENGLASS\">Molten Glass</link>",
+    "idx": 118,
+    "specificHeatCapacity": 0.2,
+    "thermalConductivity": 1,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": {
+      "idx": 74
+    },
+    "highTempTransition": {
+      "idx": 173
+    },
     "substance": {
       "name": "Molten Glass",
       "elementID": -1312713527,
@@ -13532,6 +14937,17 @@
   },
   {
     "name": "<link=\"MOLTENIRIDIUM\">Molten Iridium</link>",
+    "idx": 119,
+    "specificHeatCapacity": 0.131,
+    "thermalConductivity": 170,
+    "molarMass": 183.84,
+    "maxMass": 3870,
+    "lowTempTransition": {
+      "idx": 56
+    },
+    "highTempTransition": {
+      "idx": 184
+    },
     "substance": {
       "name": "Molten Iridium",
       "elementID": -1214831670,
@@ -13622,6 +15038,17 @@
   },
   {
     "name": "<link=\"REFINEDLIPID\">Biodiesel</link>",
+    "idx": 120,
+    "specificHeatCapacity": 2.19,
+    "thermalConductivity": 2,
+    "molarMass": 450,
+    "maxMass": 870,
+    "lowTempTransition": {
+      "idx": 17
+    },
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Biodiesel",
       "elementID": -1121662089,
@@ -13712,6 +15139,17 @@
   },
   {
     "name": "<link=\"LIQUIDSULFUR\">Liquid Sulfur</link>",
+    "idx": 121,
+    "specificHeatCapacity": 0.7,
+    "thermalConductivity": 0.2,
+    "molarMass": 32,
+    "maxMass": 740,
+    "lowTempTransition": {
+      "idx": 38
+    },
+    "highTempTransition": {
+      "idx": 157
+    },
     "substance": {
       "name": "Liquid Sulfur",
       "elementID": -1108652427,
@@ -13802,6 +15240,17 @@
   },
   {
     "name": "<link=\"MOLTENGOLD\">Molten Gold</link>",
+    "idx": 122,
+    "specificHeatCapacity": 0.1291,
+    "thermalConductivity": 6,
+    "molarMass": 196.966568,
+    "maxMass": 9970,
+    "lowTempTransition": {
+      "idx": 50
+    },
+    "highTempTransition": {
+      "idx": 171
+    },
     "substance": {
       "name": "Molten Gold",
       "elementID": -1083496621,
@@ -13892,6 +15341,17 @@
   },
   {
     "name": "<link=\"MAGMA\">Magma</link>",
+    "idx": 123,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 1,
+    "molarMass": 50,
+    "maxMass": 1840,
+    "lowTempTransition": {
+      "idx": 47
+    },
+    "highTempTransition": {
+      "idx": 173
+    },
     "substance": {
       "name": "Magma",
       "elementID": -1075911705,
@@ -13982,6 +15442,17 @@
   },
   {
     "name": "<link=\"CHLORINE\">Liquid Chlorine</link>",
+    "idx": 124,
+    "specificHeatCapacity": 0.48,
+    "thermalConductivity": 0.0081,
+    "molarMass": 34.453,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 41
+    },
+    "highTempTransition": {
+      "idx": 165
+    },
     "substance": {
       "name": "Liquid Chlorine",
       "elementID": -878033482,
@@ -14072,6 +15543,17 @@
   },
   {
     "name": "<link=\"LIQUIDHYDROGEN\">Liquid Hydrogen</link>",
+    "idx": 125,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.1,
+    "molarMass": 1.00794,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 35
+    },
+    "highTempTransition": {
+      "idx": 166
+    },
     "substance": {
       "name": "Liquid Hydrogen",
       "elementID": -751997156,
@@ -14162,6 +15644,17 @@
   },
   {
     "name": "<link=\"RESIN\">Sap</link>",
+    "idx": 126,
+    "specificHeatCapacity": 1.11,
+    "thermalConductivity": 0.15,
+    "molarMass": 52.5,
+    "maxMass": 920,
+    "lowTempTransition": {
+      "idx": 94
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Sap",
       "elementID": -746800379,
@@ -14252,6 +15745,17 @@
   },
   {
     "name": "<link=\"LIQUIDGUNK\">Gunk</link>",
+    "idx": 127,
+    "specificHeatCapacity": 1.2,
+    "thermalConductivity": 1.5,
+    "molarMass": 550,
+    "maxMass": 870,
+    "lowTempTransition": {
+      "idx": 52
+    },
+    "highTempTransition": {
+      "idx": 130
+    },
     "substance": {
       "name": "Gunk",
       "elementID": -714505017,
@@ -14342,6 +15846,17 @@
   },
   {
     "name": "<link=\"LIQUIDPROPANE\">Liquid Propane</link>",
+    "idx": 128,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.1,
+    "molarMass": 44.1,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 65
+    },
+    "highTempTransition": {
+      "idx": 159
+    },
     "substance": {
       "name": "Liquid Propane",
       "elementID": -645698215,
@@ -14432,6 +15947,17 @@
   },
   {
     "name": "<link=\"MOLTENTUNGSTEN\">Molten Tungsten</link>",
+    "idx": 129,
+    "specificHeatCapacity": 0.134,
+    "thermalConductivity": 4,
+    "molarMass": 183.84,
+    "maxMass": 3870,
+    "lowTempTransition": {
+      "idx": 30
+    },
+    "highTempTransition": {
+      "idx": 177
+    },
     "substance": {
       "name": "Molten Tungsten",
       "elementID": -509585641,
@@ -14522,6 +16048,17 @@
   },
   {
     "name": "<link=\"PETROLEUM\">Petroleum</link>",
+    "idx": 130,
+    "specificHeatCapacity": 1.76,
+    "thermalConductivity": 2,
+    "molarMass": 82.2,
+    "maxMass": 740,
+    "lowTempTransition": {
+      "idx": 45
+    },
+    "highTempTransition": {
+      "idx": 167
+    },
     "substance": {
       "name": "Petroleum",
       "elementID": -486269331,
@@ -14612,6 +16149,17 @@
   },
   {
     "name": "<link=\"MOLTENSALT\">Molten Salt</link>",
+    "idx": 131,
+    "specificHeatCapacity": 0.7,
+    "thermalConductivity": 0.444,
+    "molarMass": 32,
+    "maxMass": 740,
+    "lowTempTransition": {
+      "idx": 70
+    },
+    "highTempTransition": {
+      "idx": 158
+    },
     "substance": {
       "name": "Molten Salt",
       "elementID": -422045879,
@@ -14702,6 +16250,17 @@
   },
   {
     "name": "<link=\"MOLTENCOBALT\">Molten Cobalt</link>",
+    "idx": 132,
+    "specificHeatCapacity": 0.42,
+    "thermalConductivity": 4,
+    "molarMass": 58.9,
+    "maxMass": 7870,
+    "lowTempTransition": {
+      "idx": 62
+    },
+    "highTempTransition": {
+      "idx": 163
+    },
     "substance": {
       "name": "Molten Cobalt",
       "elementID": -333255194,
@@ -14792,6 +16351,17 @@
   },
   {
     "name": "<link=\"BRINE\">Brine</link>",
+    "idx": 133,
+    "specificHeatCapacity": 3.4,
+    "thermalConductivity": 0.609,
+    "molarMass": 22,
+    "maxMass": 1200,
+    "lowTempTransition": {
+      "idx": 19
+    },
+    "highTempTransition": {
+      "idx": 168
+    },
     "substance": {
       "name": "Brine",
       "elementID": -324547888,
@@ -14882,6 +16452,17 @@
   },
   {
     "name": "<link=\"NUCLEARWASTE\">Liquid Nuclear Waste</link>",
+    "idx": 134,
+    "specificHeatCapacity": 7.44,
+    "thermalConductivity": 6,
+    "molarMass": 196.966568,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 43
+    },
+    "highTempTransition": {
+      "idx": 180
+    },
     "substance": {
       "name": "Liquid Nuclear Waste",
       "elementID": -232430636,
@@ -14972,6 +16553,17 @@
   },
   {
     "name": "<link=\"SUPERCOOLANT\">Super Coolant</link>",
+    "idx": 135,
+    "specificHeatCapacity": 8.44,
+    "thermalConductivity": 9.46,
+    "molarMass": 250,
+    "maxMass": 910,
+    "lowTempTransition": {
+      "idx": 46
+    },
+    "highTempTransition": {
+      "idx": 175
+    },
     "substance": {
       "name": "Super Coolant",
       "elementID": -123825053,
@@ -15062,6 +16654,17 @@
   },
   {
     "name": "<link=\"ETHANOL\">Ethanol</link>",
+    "idx": 136,
+    "specificHeatCapacity": 2.46,
+    "thermalConductivity": 0.171,
+    "molarMass": 46.07,
+    "maxMass": 1000,
+    "lowTempTransition": {
+      "idx": 108
+    },
+    "highTempTransition": {
+      "idx": 172
+    },
     "substance": {
       "name": "Ethanol",
       "elementID": -87974045,
@@ -15152,6 +16755,17 @@
   },
   {
     "name": "<link=\"PHYTOOIL\">Phyto Oil</link>",
+    "idx": 137,
+    "specificHeatCapacity": 0.9,
+    "thermalConductivity": 2,
+    "molarMass": 450,
+    "maxMass": 870,
+    "lowTempTransition": {
+      "idx": 53
+    },
+    "highTempTransition": {
+      "idx": 186
+    },
     "substance": {
       "name": "Phyto Oil",
       "elementID": -20315850,
@@ -15242,6 +16856,15 @@
   },
   {
     "name": "<link=\"SULFURGAS\">Sulfur Gas</link>",
+    "idx": 157,
+    "specificHeatCapacity": 0.7,
+    "thermalConductivity": 0.2,
+    "molarMass": 32,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 121
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Sulfur Gas",
       "elementID": -2120504832,
@@ -15332,6 +16955,15 @@
   },
   {
     "name": "<link=\"SALTGAS\">Salt Gas</link>",
+    "idx": 158,
+    "specificHeatCapacity": 0.88,
+    "thermalConductivity": 0.444,
+    "molarMass": 50,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 131
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Salt Gas",
       "elementID": -1946026749,
@@ -15422,6 +17054,15 @@
   },
   {
     "name": "<link=\"PROPANE\">Propane Gas</link>",
+    "idx": 159,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.015,
+    "molarMass": 44.1,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 128
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Propane Gas",
       "elementID": -1858722091,
@@ -15512,6 +17153,15 @@
   },
   {
     "name": "<link=\"NIOBIUMGAS\">Niobium Gas</link>",
+    "idx": 160,
+    "specificHeatCapacity": 0.265,
+    "thermalConductivity": 1,
+    "molarMass": 92.9,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 149
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Niobium Gas",
       "elementID": -1616033402,
@@ -15602,6 +17252,15 @@
   },
   {
     "name": "<link=\"HELIUM\">Helium</link>",
+    "idx": 161,
+    "specificHeatCapacity": 0.14,
+    "thermalConductivity": 0.236,
+    "molarMass": 4,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 111
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Helium",
       "elementID": -1554872654,
@@ -15692,6 +17351,15 @@
   },
   {
     "name": "<link=\"OXYGEN\">Oxygen</link>",
+    "idx": 162,
+    "specificHeatCapacity": 1.005,
+    "thermalConductivity": 0.024,
+    "molarMass": 15.9994,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 112
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Oxygen",
       "elementID": -1528777920,
@@ -15782,6 +17450,15 @@
   },
   {
     "name": "<link=\"COBALTGAS\">Cobalt Gas</link>",
+    "idx": 163,
+    "specificHeatCapacity": 0.42,
+    "thermalConductivity": 1,
+    "molarMass": 58.9,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 132
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Cobalt Gas",
       "elementID": -1429687642,
@@ -15872,6 +17549,15 @@
   },
   {
     "name": "<link=\"STEELGAS\">Steel Gas</link>",
+    "idx": 164,
+    "specificHeatCapacity": 0.49,
+    "thermalConductivity": 1,
+    "molarMass": 54.97,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 148
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Steel Gas",
       "elementID": -1406916018,
@@ -15962,6 +17648,15 @@
   },
   {
     "name": "<link=\"CHLORINEGAS\">Chlorine Gas</link>",
+    "idx": 165,
+    "specificHeatCapacity": 0.48,
+    "thermalConductivity": 0.0081,
+    "molarMass": 34.453,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 124
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Chlorine Gas",
       "elementID": -1324664829,
@@ -16052,6 +17747,15 @@
   },
   {
     "name": "<link=\"HYDROGEN\">Hydrogen Gas</link>",
+    "idx": 166,
+    "specificHeatCapacity": 2.4,
+    "thermalConductivity": 0.168,
+    "molarMass": 1.00794,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 125
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Hydrogen Gas",
       "elementID": -1046145888,
@@ -16142,6 +17846,15 @@
   },
   {
     "name": "<link=\"SOURGAS\">Sour Gas</link>",
+    "idx": 167,
+    "specificHeatCapacity": 1.898,
+    "thermalConductivity": 0.018,
+    "molarMass": 19.044,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 139
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Sour Gas",
       "elementID": -927923200,
@@ -16232,6 +17945,15 @@
   },
   {
     "name": "<link=\"STEAM\">Steam</link>",
+    "idx": 168,
+    "specificHeatCapacity": 4.179,
+    "thermalConductivity": 0.184,
+    "molarMass": 18.01528,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 152
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Steam",
       "elementID": -899515856,
@@ -16322,6 +18044,15 @@
   },
   {
     "name": "<link=\"METHANE\">Natural Gas</link>",
+    "idx": 169,
+    "specificHeatCapacity": 2.191,
+    "thermalConductivity": 0.035,
+    "molarMass": 16.044,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 139
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Natural Gas",
       "elementID": -841236436,
@@ -16412,6 +18143,15 @@
   },
   {
     "name": "<link=\"MERCURYGAS\">Mercury Gas</link>",
+    "idx": 170,
+    "specificHeatCapacity": 0.14,
+    "thermalConductivity": 8.3,
+    "molarMass": 200.59,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 150
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Mercury Gas",
       "elementID": -839856666,
@@ -16502,6 +18242,15 @@
   },
   {
     "name": "<link=\"GOLDGAS\">Gold Gas</link>",
+    "idx": 171,
+    "specificHeatCapacity": 0.1291,
+    "thermalConductivity": 1,
+    "molarMass": 196.966568,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 122
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Gold Gas",
       "elementID": -805366663,
@@ -16592,6 +18341,15 @@
   },
   {
     "name": "<link=\"ETHANOLGAS\">Ethanol Gas</link>",
+    "idx": 172,
+    "specificHeatCapacity": 2.148,
+    "thermalConductivity": 0.167,
+    "molarMass": 46.07,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 136
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Ethanol Gas",
       "elementID": -756961258,
@@ -16682,6 +18440,15 @@
   },
   {
     "name": "<link=\"ROCKGAS\">Rock Gas</link>",
+    "idx": 173,
+    "specificHeatCapacity": 1,
+    "thermalConductivity": 0.1,
+    "molarMass": 50,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 123
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Rock Gas",
       "elementID": -432557516,
@@ -16772,6 +18539,15 @@
   },
   {
     "name": "<link=\"CARBONGAS\">Carbon Gas</link>",
+    "idx": 174,
+    "specificHeatCapacity": 0.71,
+    "thermalConductivity": 1.7,
+    "molarMass": 12.0107,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 141
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Carbon Gas",
       "elementID": -314016756,
@@ -16862,6 +18638,15 @@
   },
   {
     "name": "<link=\"SUPERCOOLANTGAS\">Super Coolant Gas</link>",
+    "idx": 175,
+    "specificHeatCapacity": 8.44,
+    "thermalConductivity": 1.2,
+    "molarMass": 190,
+    "maxMass": 1.8,
+    "lowTempTransition": {
+      "idx": 135
+    },
+    "highTempTransition": null,
     "substance": {
       "name": "Super Coolant Gas",
       "elementID": -3376362,
@@ -16952,6 +18737,13 @@
   },
   {
     "name": "<link=\"VOID\">Void</link>",
+    "idx": 188,
+    "specificHeatCapacity": 0,
+    "thermalConductivity": 0,
+    "molarMass": 0,
+    "maxMass": 0,
+    "lowTempTransition": null,
+    "highTempTransition": null,
     "substance": {
       "name": "Void",
       "elementID": -1456075980,
@@ -17042,6 +18834,13 @@
   },
   {
     "name": "<link=\"COMPOSITION\">Composition</link>",
+    "idx": 189,
+    "specificHeatCapacity": 0,
+    "thermalConductivity": 0,
+    "molarMass": 0,
+    "maxMass": 0,
+    "lowTempTransition": null,
+    "highTempTransition": null,
     "substance": {
       "name": "Composition",
       "elementID": -1021084918,
