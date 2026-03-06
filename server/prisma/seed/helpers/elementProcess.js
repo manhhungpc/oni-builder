@@ -19,17 +19,24 @@ function processElementData(elementData) {
     const uiColour = formatColour(elementData.substance?.uiColour);
     const conduitColour = formatColour(elementData.substance?.conduitColour);
 
+    const idx = elementData.idx;
+    const specificHeatCapacity = elementData.specificHeatCapacity ?? 0;
+    const thermalConductivity = elementData.thermalConductivity ?? 0;
+
     if (!name || !texture || !type) {
         return null;
     }
 
     return {
+        idx,
         name,
         texture,
         type,
         colour,
         uiColour,
         conduitColour,
+        specificHeatCapacity,
+        thermalConductivity,
     };
 }
 

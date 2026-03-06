@@ -34,4 +34,22 @@ router.get(
     })
 );
 
+router.get(
+    '/:idx',
+    asyncHandler(async (req: Request, res: Response) => {
+        const idx = parseInt(req.params.idx);
+
+        const element = await prisma.element.findUnique({
+            where: { idx },
+        });
+
+        if (!element) {
+            res.status(404).json({ error: 'Element not found' });
+            return;
+        }
+
+        res.json(element);
+    })
+);
+
 export default router;
