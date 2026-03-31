@@ -31,8 +31,9 @@
 	import { paintElementHandlers, loadElementIcons } from '$lib/core/paintElement';
 	import { getItemsAtGridPosition, type GridQueryResult } from '$lib/utils/grid/query';
 	import { pipeFlowState } from '$lib/state/flowSimulation.svelte';
-	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/renderer';
-	import { hasConduit } from '$lib/core/simulation/helpers';
+	import { thermalSimState } from '$lib/state/thermalSimulation.svelte';
+	import { renderFilledPipes, renderDirectionArrows } from '$lib/core/simulation/flow/renderer';
+	import { hasConduit } from '$lib/core/simulation/flow/helpers';
 	import { rgbaToHex } from '$lib/utils/color';
 
 	interface Props {
@@ -655,6 +656,23 @@
 			app.ticker.remove(tickerFn);
 		};
 	});
+
+	// Handle THERMAL simulation ticker
+	$effect(() => {
+		const app = blueprint.pixiApp;
+		const isRunning = thermalSimState.isRunning;
+
+		if (!app || !isRunning) return;
+
+		const tickerFn = (ticker: PIXI.Ticker) => {
+			thermalSimState.update(ticker.deltaMS);
+		};
+		app.ticker.add(tickerFn);
+
+		return () => {
+			app.ticker.remove(tickerFn);
+		};
+	});
 </script>
 
 <div class="grid-wrapper">
@@ -700,6 +718,11 @@
 					{#if selectModeHoverResult?.tile}
 						<div class="px-0.5 text-sm">
 							{selectModeHoverResult.tile.displayName || selectModeHoverResult.tile.name || 'Tile'}
+						</div>
+					{/if}
+					{#if selectModeHoverResult?.element}
+						<div class="px-0.5 text-sm">
+							{selectModeHoverResult.element.name} ({selectModeHoverResult.element.type}) - {selectModeHoverResult.element.temperature}°C - {selectModeHoverResult.element.mass} kg
 						</div>
 					{/if}
 				</div>

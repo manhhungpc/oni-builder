@@ -23,5 +23,9 @@ export interface PlacedElement {
 	name: string;
 	type: string;
 	colour: string | null;
+	mass: number; // kg
+	temperature: number; // °C
+	specificHeatCapacity: number; // DTU/(g·°C)
+	thermalConductivity: number; // DTU/(m·s·°C)
 	container?: Container;
 }

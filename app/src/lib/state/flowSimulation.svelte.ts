@@ -5,11 +5,12 @@ import {
 	clearDirectionArrows,
 	animatePacketsFlow,
 	resetFlowCirclePositions
-} from '$lib/core/simulation/renderer';
-import { autoFillFromPosition } from '$lib/core/simulation/fill';
-import { calculateDirections, initPackets, applyMoves } from '$lib/core/simulation/calculation';
-import { getConnectedPipes } from '$lib/core/simulation/helpers';
+} from '$lib/core/simulation/flow/renderer';
+import { autoFillFromPosition } from '$lib/core/simulation/flow/fill';
+import { calculateDirections, initPackets, applyMoves } from '$lib/core/simulation/flow/calculation';
+import { getConnectedPipes } from '$lib/core/simulation/flow/helpers';
 import { blueprint } from '$lib/state/blueprint.svelte';
+import { thermalSimState } from '$lib/state/thermalSimulation.svelte';
 import { appConfig } from '$lib/state/config.svelte';
 import { ACTION } from '$lib/constant';
 
@@ -37,6 +38,7 @@ class FlowSimulation {
 	enterSimulationMode() {
 		this.isSimulationMode = true;
 		appConfig.selectedAction = ACTION.SELECT;
+		thermalSimState.init();
 	}
 
 	exitSimulationMode() {
@@ -53,6 +55,7 @@ class FlowSimulation {
 
 		this.selectedElement = null;
 		this.fillMode = 'auto';
+		thermalSimState.cleanup();
 		this.isSimulationMode = false;
 	}
 
@@ -102,8 +105,6 @@ class FlowSimulation {
 	}
 
 	startSimulation() {
-		if (!this.selectedElement) return;
-		if (this.filledPipes.size === 0) return;
 		if (this.isRunning) return;
 
 		// Resume: if packetStates exist from a previous pause, just resume
@@ -112,25 +113,28 @@ class FlowSimulation {
 			return;
 		}
 
-		calculateDirections(this.filledPipes);
+		// Init pipe flow if pipes are filled with an element
+		if (this.selectedElement && this.filledPipes.size > 0) {
+			calculateDirections(this.filledPipes);
 
-		if (this.pipeDirections.size === 0) {
-			return;
-		}
+			if (this.pipeDirections.size > 0) {
+				this.packetStates = initPackets(this.filledPipes, this.selectedElement);
 
-		this.packetStates = initPackets(this.filledPipes, this.selectedElement);
-
-		// Attach graphics references from filledPipeGraphics
-		for (const packet of this.packetStates) {
-			packet.graphics = this.renderState.filledPipeGraphics.get(packet.from);
+				// Attach graphics references from filledPipeGraphics
+				for (const packet of this.packetStates) {
+					packet.graphics = this.renderState.filledPipeGraphics.get(packet.from);
+				}
+			}
 		}
 
 		this.flowProgress = 0;
 		this.isRunning = true;
+		thermalSimState.start();
 	}
 
 	stopSimulation() {
 		this.isRunning = false;
+		thermalSimState.stop();
 	}
 
 	resetSimulation() {
@@ -139,6 +143,8 @@ class FlowSimulation {
 		this.portPairs = new Map();
 		this.packetStates = [];
 		this.flowProgress = 0;
+
+		thermalSimState.reset();
 
 		resetFlowCirclePositions(this.renderState);
 		clearDirectionArrows(this.renderState);

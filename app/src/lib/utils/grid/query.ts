@@ -2,11 +2,13 @@ import { blueprint, ConduitType } from '$lib/state/blueprint.svelte';
 import { checkBuildingBoundary } from '$lib/utils';
 import type { PlacedBuildings } from 'src/interface';
 import type { GridNodeData } from 'src/interface/building';
+import type { PlacedElement } from 'src/interface/element';
 
 export interface GridQueryResult {
 	buildings: PlacedBuildings[];
 	conduits: Array<{ type: ConduitType; displayName: string }>;
 	tile: GridNodeData | null;
+	element: PlacedElement | null;
 	isEmpty: boolean;
 }
 
@@ -48,10 +50,14 @@ export function getItemsAtGridPosition(gridX: number, gridY: number): GridQueryR
 		tile = blueprint.placedTiles.get(key)!;
 	}
 
+	// Check elements
+	const element = blueprint.placedElements.get(key) ?? null;
+
 	return {
 		buildings,
 		conduits,
 		tile,
-		isEmpty: buildings.length === 0 && conduits.length === 0 && !tile
+		element,
+		isEmpty: buildings.length === 0 && conduits.length === 0 && !tile && !element
 	};
 }

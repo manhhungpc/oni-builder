@@ -67,6 +67,10 @@ export function placeElement(element: IElement, gridPos: Position): boolean {
 		name: element.name,
 		type: element.type,
 		colour: element.colour,
+		mass: appConfig.paintMass,
+		temperature: appConfig.paintTemperature,
+		specificHeatCapacity: element.specificHeatCapacity,
+		thermalConductivity: element.thermalConductivity,
 		container
 	};
 

@@ -1,5 +1,5 @@
 import type { ElementWithThermal } from 'src/interface/element';
-import { applicableTC } from 'src/lib/core/thermal/conductivity';
+import { applicableTC } from 'src/lib/core/simulation/thermal/conductivity';
 
 const API_URL = 'http://localhost:3003/api';
 
@@ -62,33 +62,3 @@ export function calculateHeatChange(elementA: ElementWithThermal, elementB: Elem
 		finalTempB
 	};
 }
-
-// Building ↔ Element
-
-// export function transferBuildingToElement(
-// 	building: IElement,
-// 	element: IElement,
-// 	tempBuilding: number,
-// 	tempElement: number,
-// 	massHot: number,
-// 	area: number,
-// 	massScale: number,
-// 	deltaTime: number
-// ): number {
-// 	return 0;
-// }
-
-// Building ↔ Building
-
-// export function transferBuildingToBuilding(
-// 	buildingA: IElement,
-// 	buildingB: IElement,
-// 	tempBuildingA: number,
-// 	tempBuildingB: number,
-// 	massHot: number,
-// 	area: number,
-// 	massScale: number,
-// 	deltaTime: number
-// ): number {
-// 	return 0;
-// }

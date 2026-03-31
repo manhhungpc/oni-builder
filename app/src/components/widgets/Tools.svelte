@@ -17,6 +17,7 @@
 	import Pencil from '@lucide/svelte/icons/pencil';
 	import LogOut from '@lucide/svelte/icons/log-out';
 	import SimulationPanel from './SimulationPanel.svelte';
+	import PropertiesPanel from './PropertiesPanel.svelte';
 	import { ACTION } from '$lib/constant';
 	import { OVERLAY } from '$lib/constant';
 	import { cn } from '$lib/utils';
@@ -178,8 +179,9 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="fixed top-20 right-2 z-20 flex flex-col items-end gap-2">
 <div
-	class="fixed top-20 right-2 z-20 min-w-64 rounded-md border border-orange-primary bg-dark-primary p-4"
+	class="w-64 rounded-md border border-orange-primary bg-dark-primary p-4"
 	onclick={() => {
 		// Dispatch custom event to close building modal
 		window.dispatchEvent(new CustomEvent('close-building-modal'));
@@ -280,6 +282,8 @@
 			</Button>
 		{/if}
 	</div>
+</div>
+<PropertiesPanel />
 </div>
 
 <!-- Bottom bar shown alongside tools when simulating -->

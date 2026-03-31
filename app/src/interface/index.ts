@@ -23,6 +23,8 @@ export interface AppConfig {
 	selectedOverlay: OVERLAY;
 	selectedToBuild: null | IBuilding;
 	selectedElement: null | IElement;
+	paintMass: number; // kg per cell
+	paintTemperature: number; // °C
 	sidebarOpen: boolean;
 	devMode: boolean;
 }

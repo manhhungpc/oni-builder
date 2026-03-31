@@ -9,6 +9,8 @@ export const appConfig = $state<AppConfig>({
 	selectedOverlay: OVERLAY.BUILDING,
 	selectedToBuild: null,
 	selectedElement: null,
+	paintMass: 100,
+	paintTemperature: 20,
 	sidebarOpen: false,
 	devMode: false
 });
